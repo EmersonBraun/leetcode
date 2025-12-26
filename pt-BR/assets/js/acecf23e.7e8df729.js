@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkleetcode=self.webpackChunkleetcode||[]).push([[1903],{1912:e=>{e.exports=JSON.parse('{"blogBasePath":"/leetcode/pt-BR/blog","blogTitle":"Blog","authorsListPath":"/leetcode/pt-BR/blog/authors"}')}}]);

@@ -1,8 +1,0 @@
-{
-  "label": "LeetCode Problems",
-  "position": 3,
-  "link": {
-    "type": "generated-index",
-    "description": "A collection of LeetCode-style problems with solutions in JavaScript and Python, including interactive code runners."
-  }
-}
