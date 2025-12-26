@@ -1,0 +1,454 @@
+---
+id: reorganize-string
+title: Reorganize String
+slug: /problems/reorganize-string
+difficulty: Medium
+tags: [string, greedy, heap, hash-table, sorting]
+leetcode: https://leetcode.com/problems/reorganize-string/
+---
+
+# Reorganize String
+
+This question is asked by Facebook. Given a string, check if it can be modified such that no two adjacent characters are the same. If it is possible, return any string that satisfies this condition and if it is not possible return an empty string.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: s = "abb"
+Output: "bab"
+Explanation:
+Original: "abb" has adjacent 'b's
+Reorganized: "bab" has no adjacent same characters
+```
+
+**Example 2:**
+```
+Input: s = "xxxy"
+Output: ""
+Explanation:
+Character 'x' appears 3 times out of 4 total.
+It's impossible to arrange so no two 'x's are adjacent.
+```
+
+**Example 3:**
+```
+Input: s = "aab"
+Output: "aba"
+Explanation:
+Original: "aab" has adjacent 'a's
+Reorganized: "aba" has no adjacent same characters
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses a **greedy approach with max heap**:
+
+1. **Count frequencies**: Count how many times each character appears
+2. **Check possibility**: If any character appears more than (n+1)/2 times, it's impossible
+3. **Greedy placement**: Use max heap to place most frequent characters first
+4. **Avoid adjacent**: Always place the second most frequent character after the most frequent
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Greedy with Heap"
+  code={`/**
+ * Reorganize string so no two adjacent characters are same
+ * @param {string} s - Input string
+ * @return {string} - Reorganized string or empty string if impossible
+ */
+function reorganizeString(s) {
+  // Count frequency of each character
+  const freq = new Map();
+  for (const char of s) {
+    freq.set(char, (freq.get(char) || 0) + 1);
+  }
+  
+  // Check if it's possible
+  const maxFreq = Math.max(...Array.from(freq.values()));
+  const n = s.length;
+  
+  // If any character appears more than (n+1)/2 times, it's impossible
+  if (maxFreq > Math.floor((n + 1) / 2)) {
+    return '';
+  }
+  
+  // Create array of [char, count] and sort by frequency (descending)
+  const chars = Array.from(freq.entries())
+    .map(([char, count]) => [char, count])
+    .sort((a, b) => b[1] - a[1]);
+  
+  // Build result using greedy approach
+  const result = new Array(n);
+  let index = 0;
+  
+  // Place characters starting with most frequent
+  for (const [char, count] of chars) {
+    for (let i = 0; i < count; i++) {
+      // Place at even indices first, then odd indices
+      if (index >= n) {
+        index = 1; // Switch to odd indices
+      }
+      result[index] = char;
+      index += 2;
+    }
+  }
+  
+  return result.join('');
+}
+
+// Test cases
+console.log('Example 1:', reorganizeString("abb")); 
+// "bab"
+
+console.log('Example 2:', reorganizeString("xxxy")); 
+// ""
+
+console.log('Example 3:', reorganizeString("aab")); 
+// "aba"
+
+console.log('Test 4:', reorganizeString("aaab")); 
+// ""`}
+  testCases={[
+    { input: 'reorganizeString("abb")', expected: '"bab"' },
+    { input: 'reorganizeString("xxxy")', expected: '""' },
+    { input: 'reorganizeString("aab")', expected: '"aba"' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Greedy with Heap"
+  code={`from collections import Counter
+
+def reorganize_string(s: str) -> str:
+    """
+    Reorganize string so no two adjacent characters are same
+    
+    Args:
+        s: Input string
+        
+    Returns:
+        str: Reorganized string or empty string if impossible
+    """
+    # Count frequency of each character
+    freq = Counter(s)
+    
+    # Check if it's possible
+    max_freq = max(freq.values())
+    n = len(s)
+    
+    # If any character appears more than (n+1)/2 times, it's impossible
+    if max_freq > (n + 1) // 2:
+        return ''
+    
+    # Create list of (char, count) and sort by frequency (descending)
+    chars = sorted(freq.items(), key=lambda x: x[1], reverse=True)
+    
+    # Build result using greedy approach
+    result = [''] * n
+    index = 0
+    
+    # Place characters starting with most frequent
+    for char, count in chars:
+        for _ in range(count):
+            # Place at even indices first, then odd indices
+            if index >= n:
+                index = 1  # Switch to odd indices
+            result[index] = char
+            index += 2
+    
+    return ''.join(result)
+
+# Test cases
+print('Example 1:', reorganize_string("abb"))  
+# "bab"
+
+print('Example 2:', reorganize_string("xxxy"))  
+# ""
+
+print('Example 3:', reorganize_string("aab"))  
+# "aba"
+
+print('Test 4:', reorganize_string("aaab"))  
+# ""`}
+  testCases={[
+    { input: 'reorganize_string("abb")', expected: '"bab"' },
+    { input: 'reorganize_string("xxxy")', expected: '""' },
+    { input: 'reorganize_string("aab")', expected: '"aba"' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Max Heap)
+
+Here's a version using a max heap to always get the two most frequent characters:
+
+<Tabs>
+<TabItem value="javascript-heap" label="JavaScript Max Heap" default>
+
+```javascript
+/**
+ * Using max heap approach
+ */
+function reorganizeStringHeap(s) {
+  // Count frequency
+  const freq = new Map();
+  for (const char of s) {
+    freq.set(char, (freq.get(char) || 0) + 1);
+  }
+  
+  // Check possibility
+  const maxFreq = Math.max(...Array.from(freq.values()));
+  if (maxFreq > Math.floor((s.length + 1) / 2)) {
+    return '';
+  }
+  
+  // Max heap (using array sorted by frequency)
+  const heap = Array.from(freq.entries())
+    .map(([char, count]) => ({ char, count }))
+    .sort((a, b) => b.count - a.count);
+  
+  const result = [];
+  
+  while (heap.length > 0) {
+    // Get most frequent character
+    const first = heap.shift();
+    result.push(first.char);
+    first.count--;
+    
+    if (heap.length > 0) {
+      // Get second most frequent character
+      const second = heap.shift();
+      result.push(second.char);
+      second.count--;
+      
+      // Re-insert if count > 0
+      if (second.count > 0) {
+        insertSorted(heap, second);
+      }
+    }
+    
+    // Re-insert first if count > 0
+    if (first.count > 0) {
+      insertSorted(heap, first);
+    }
+  }
+  
+  return result.join('');
+}
+
+function insertSorted(heap, item) {
+  let i = 0;
+  while (i < heap.length && heap[i].count > item.count) {
+    i++;
+  }
+  heap.splice(i, 0, item);
+}
+```
+
+</TabItem>
+<TabItem value="python-heap" label="Python Max Heap">
+
+```python
+import heapq
+from collections import Counter
+
+def reorganize_string_heap(s: str) -> str:
+    """
+    Using max heap approach
+    """
+    # Count frequency
+    freq = Counter(s)
+    
+    # Check possibility
+    max_freq = max(freq.values())
+    if max_freq > (len(s) + 1) // 2:
+        return ''
+    
+    # Max heap (negate counts for min-heap to work as max-heap)
+    heap = [(-count, char) for char, count in freq.items()]
+    heapq.heapify(heap)
+    
+    result = []
+    prev = None
+    
+    while heap:
+        # Get most frequent character
+        count1, char1 = heapq.heappop(heap)
+        
+        # Avoid using same character consecutively
+        if char1 == prev and heap:
+            count2, char2 = heapq.heappop(heap)
+            result.append(char2)
+            count2 += 1
+            if count2 < 0:
+                heapq.heappush(heap, (count2, char2))
+            heapq.heappush(heap, (count1, char1))
+            prev = char2
+        else:
+            result.append(char1)
+            count1 += 1
+            if count1 < 0:
+                heapq.heappush(heap, (count1, char1))
+            prev = char1
+    
+    return ''.join(result)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n log k) - Where n is the length of the string and k is the number of unique characters. Sorting takes O(k log k), and building result takes O(n).
+- **Space Complexity:** O(n) - For the frequency map and result array.
+
+## Approach
+
+The solution uses a **greedy approach with frequency sorting**:
+
+1. **Count frequencies**: 
+   - Count how many times each character appears
+   - Find the maximum frequency
+
+2. **Check possibility**: 
+   - If any character appears more than `(n+1)/2` times, it's impossible
+   - This is because we need to alternate, and one character can't dominate
+
+3. **Greedy placement**: 
+   - Sort characters by frequency (descending)
+   - Place most frequent characters at even indices first (0, 2, 4, ...)
+   - Then place remaining at odd indices (1, 3, 5, ...)
+   - This ensures no two same characters are adjacent
+
+## Key Insights
+
+- **Impossibility check**: If max frequency > (n+1)/2, impossible
+- **Greedy placement**: Place most frequent characters first
+- **Even/odd indices**: Use even indices first, then odd indices
+- **Alternating pattern**: This naturally avoids adjacent duplicates
+- **O(n) time**: After sorting, building result is O(n)
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `s = "abb"`
+
+```
+Step 1: Count frequencies
+  'a': 1
+  'b': 2
+  maxFreq = 2, n = 3
+  Check: 2 > (3+1)/2 = 2? No, possible ✓
+
+Step 2: Sort by frequency
+  chars = [['b', 2], ['a', 1]]
+
+Step 3: Place characters
+  result = ['', '', '']
+  index = 0
+  
+  Place 'b' (count=2):
+    result[0] = 'b', index = 2
+    result[2] = 'b', index = 4 (>= 3, switch to odd)
+    index = 1
+  
+  Place 'a' (count=1):
+    result[1] = 'a', index = 3 (>= 3, done)
+  
+  result = ['b', 'a', 'b']
+  
+Result: "bab"
+```
+
+## Visual Representation
+
+```
+Example 1: s = "abb"
+
+Frequencies:
+  a: 1
+  b: 2
+
+Placement strategy:
+  Even indices: 0, 2
+  Odd indices: 1
+  
+  Place 'b' (most frequent) at even indices:
+    index 0: 'b'
+    index 2: 'b'
+  
+  Place 'a' at odd indices:
+    index 1: 'a'
+  
+  Result: "bab" ✓
+
+Example 2: s = "xxxy"
+
+Frequencies:
+  x: 3
+  y: 1
+  n = 4
+  
+  Check: maxFreq = 3 > (4+1)/2 = 2.5? Yes ✗
+  Impossible → return ""
+```
+
+## Edge Cases
+
+- **All same character**: Return "" (impossible)
+- **Single character**: Return that character
+- **Two characters alternating**: Works correctly
+- **One character dominates**: Check if frequency > (n+1)/2
+- **All different characters**: Any arrangement works
+
+## Important Notes
+
+- **Impossibility condition**: maxFreq > (n+1)/2
+- **Greedy placement**: Most frequent at even indices first
+- **Even/odd pattern**: Ensures no adjacent duplicates
+- **Any valid solution**: Problem asks for any valid string
+- **O(n) space**: For frequency map and result
+
+## Why Even/Odd Indices Work
+
+**Key insight**: 
+- Place most frequent characters at even indices (0, 2, 4, ...)
+- These indices are separated by at least one position
+- Then place remaining at odd indices (1, 3, 5, ...)
+- This ensures no two same characters are adjacent
+
+**Example**:
+```
+Indices: 0  1  2  3  4
+Even:    0     2     4  (separated)
+Odd:        1     3    (separated)
+```
+
+## Related Problems
+
+- **Task Scheduler**: Similar problem with cooldown
+- **Rearrange String k Distance Apart**: Different constraint
+- **Partition Labels**: Different problem
+- **Non-overlapping Intervals**: Different problem
+
+## Takeaways
+
+- **Impossibility check** first: maxFreq > (n+1)/2
+- **Greedy placement** at even/odd indices
+- **Most frequent first** ensures valid arrangement
+- **O(n) time** after frequency counting
+- **Any valid solution** is acceptable
+

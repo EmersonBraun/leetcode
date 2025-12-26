@@ -1,0 +1,378 @@
+---
+id: reverse-words
+title: Reverse Words in a String
+slug: /problems/reverse-words
+difficulty: Medium
+tags: [string, two-pointers, array]
+leetcode: https://leetcode.com/problems/reverse-words-in-a-string/
+---
+
+# Reverse Words in a String
+
+Given a string `s`, reverse the words.
+
+**Note:** You may assume that there are no leading or trailing whitespaces and each word within `s` is only separated by a single whitespace.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: s = "The Daily Byte"
+Output: "Byte Daily The"
+Explanation:
+Original: "The Daily Byte"
+Reversed: "Byte Daily The"
+```
+
+**Example 2:**
+```
+Input: s = "Hello World"
+Output: "World Hello"
+Explanation:
+Original: "Hello World"
+Reversed: "World Hello"
+```
+
+**Example 3:**
+```
+Input: s = "a good example"
+Output: "example good a"
+Explanation:
+Original: "a good example"
+Reversed: "example good a"
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+There are multiple approaches:
+
+1. **Split, Reverse, Join**: Simple and intuitive
+2. **Two Pointers**: Extract words and reverse order
+3. **Stack**: Push words onto stack, pop to reverse
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Split/Reverse/Join"
+  code={`/**
+ * Reverse words in a string
+ * @param {string} s - Input string
+ * @return {string} - String with words reversed
+ */
+function reverseWords(s) {
+  // Split by space, reverse array, join with space
+  return s.split(' ').reverse().join(' ');
+}
+
+// Test cases
+console.log('Example 1:', reverseWords("The Daily Byte")); 
+// "Byte Daily The"
+
+console.log('Example 2:', reverseWords("Hello World")); 
+// "World Hello"
+
+console.log('Example 3:', reverseWords("a good example")); 
+// "example good a"
+
+console.log('Test 4:', reverseWords("single")); 
+// "single"`}
+  testCases={[
+    { input: 'reverseWords("The Daily Byte")', expected: '"Byte Daily The"' },
+    { input: 'reverseWords("Hello World")', expected: '"World Hello"' },
+    { input: 'reverseWords("a good example")', expected: '"example good a"' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Split/Reverse/Join"
+  code={`def reverse_words(s: str) -> str:
+    """
+    Reverse words in a string
+    
+    Args:
+        s: Input string
+        
+    Returns:
+        str: String with words reversed
+    """
+    # Split by space, reverse list, join with space
+    return ' '.join(s.split()[::-1])
+
+# Test cases
+print('Example 1:', reverse_words("The Daily Byte"))  
+# "Byte Daily The"
+
+print('Example 2:', reverse_words("Hello World"))  
+# "World Hello"
+
+print('Example 3:', reverse_words("a good example"))  
+# "example good a"
+
+print('Test 4:', reverse_words("single"))  
+# "single"`}
+  testCases={[
+    { input: 'reverse_words("The Daily Byte")', expected: '"Byte Daily The"' },
+    { input: 'reverse_words("Hello World")', expected: '"World Hello"' },
+    { input: 'reverse_words("a good example")', expected: '"example good a"' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Two Pointers)
+
+Here's a two-pointer approach that doesn't use built-in split:
+
+<Tabs>
+<TabItem value="javascript-two-pointers" label="JavaScript Two Pointers" default>
+
+```javascript
+/**
+ * Two pointers approach
+ */
+function reverseWordsTwoPointers(s) {
+  const words = [];
+  let i = 0;
+  
+  while (i < s.length) {
+    // Skip spaces
+    while (i < s.length && s[i] === ' ') {
+      i++;
+    }
+    
+    if (i >= s.length) break;
+    
+    // Find end of word
+    let j = i;
+    while (j < s.length && s[j] !== ' ') {
+      j++;
+    }
+    
+    // Extract word
+    words.push(s.substring(i, j));
+    i = j;
+  }
+  
+  // Reverse and join
+  return words.reverse().join(' ');
+}
+```
+
+</TabItem>
+<TabItem value="python-two-pointers" label="Python Two Pointers">
+
+```python
+def reverse_words_two_pointers(s: str) -> str:
+    """
+    Two pointers approach
+    """
+    words = []
+    i = 0
+    
+    while i < len(s):
+        # Skip spaces
+        while i < len(s) and s[i] == ' ':
+            i += 1
+        
+        if i >= len(s):
+            break
+        
+        # Find end of word
+        j = i
+        while j < len(s) and s[j] != ' ':
+            j += 1
+        
+        # Extract word
+        words.append(s[i:j])
+        i = j
+    
+    # Reverse and join
+    return ' '.join(words[::-1])
+```
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (In-Place with Two Passes)
+
+For languages that support mutable strings, we can reverse in-place:
+
+<Tabs>
+<TabItem value="javascript-inplace" label="JavaScript In-Place" default>
+
+```javascript
+/**
+ * In-place approach (if string was mutable)
+ * This creates a new string but shows the logic
+ */
+function reverseWordsInPlace(s) {
+  // Convert to array for mutability
+  const chars = s.split('');
+  
+  // Reverse entire string
+  reverse(chars, 0, chars.length - 1);
+  
+  // Reverse each word
+  let start = 0;
+  for (let i = 0; i <= chars.length; i++) {
+    if (i === chars.length || chars[i] === ' ') {
+      reverse(chars, start, i - 1);
+      start = i + 1;
+    }
+  }
+  
+  return chars.join('');
+}
+
+function reverse(arr, left, right) {
+  while (left < right) {
+    [arr[left], arr[right]] = [arr[right], arr[left]];
+    left++;
+    right--;
+  }
+}
+```
+
+</TabItem>
+<TabItem value="python-inplace" label="Python In-Place">
+
+```python
+def reverse_words_in_place(s: str) -> str:
+    """
+    In-place approach (Python strings are immutable, so we use list)
+    """
+    chars = list(s)
+    
+    # Reverse entire string
+    reverse(chars, 0, len(chars) - 1)
+    
+    # Reverse each word
+    start = 0
+    for i in range(len(chars) + 1):
+        if i == len(chars) or chars[i] == ' ':
+            reverse(chars, start, i - 1)
+            start = i + 1
+    
+    return ''.join(chars)
+
+def reverse(arr, left, right):
+    while left < right:
+        arr[left], arr[right] = arr[right], arr[left]
+        left += 1
+        right -= 1
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the string. We visit each character at most twice.
+- **Space Complexity:** 
+  - **Split/Reverse/Join**: O(n) - For the array of words
+  - **Two Pointers**: O(n) - For storing words
+  - **In-Place**: O(1) extra space (if string was mutable)
+
+## Approach
+
+The simplest solution uses **split, reverse, and join**:
+
+1. **Split**: Split the string by spaces to get an array of words
+2. **Reverse**: Reverse the array of words
+3. **Join**: Join the reversed array with spaces
+
+## Key Insights
+
+- **Split by space**: Separates words into an array
+- **Reverse array**: Changes word order
+- **Join with space**: Reconstructs the string
+- **Simple and readable**: Most intuitive approach
+- **O(n) time**: Optimal (must process all characters)
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `s = "The Daily Byte"`
+
+```
+Step 1: Split by space
+  s.split(' ') = ["The", "Daily", "Byte"]
+
+Step 2: Reverse array
+  ["The", "Daily", "Byte"].reverse() = ["Byte", "Daily", "The"]
+
+Step 3: Join with space
+  ["Byte", "Daily", "The"].join(' ') = "Byte Daily The"
+
+Result: "Byte Daily The"
+```
+
+## Visual Representation
+
+```
+Example 1: s = "The Daily Byte"
+
+Original:  T h e   D a i l y   B y t e
+           └─┘     └─────┘     └───┘
+           Word1    Word2       Word3
+
+After split: ["The", "Daily", "Byte"]
+
+After reverse: ["Byte", "Daily", "The"]
+
+After join: "Byte Daily The"
+
+Result:     B y t e   D a i l y   T h e
+            └───┘     └─────┘     └─┘
+            Word3     Word2       Word1
+```
+
+## Edge Cases
+
+- **Single word**: Returns the same word
+- **Two words**: Swaps the two words
+- **Multiple words**: Reverses all words
+- **Single character words**: Works correctly
+- **Empty string**: Returns empty string (if allowed)
+
+## Important Notes
+
+- **No leading/trailing spaces**: Problem guarantees this
+- **Single space between words**: Problem guarantees this
+- **Split/Reverse/Join**: Simplest and most readable
+- **Two pointers**: More control, but more code
+- **In-place**: More complex, but uses less space
+
+## Comparison of Approaches
+
+| Approach | Time | Space | Readability | Complexity |
+|----------|------|-------|-------------|------------|
+| Split/Reverse/Join | O(n) | O(n) | Excellent | Simple |
+| Two Pointers | O(n) | O(n) | Good | Medium |
+| In-Place | O(n) | O(1) | Fair | Complex |
+
+## Related Problems
+
+- **Reverse String**: Reverse entire string
+- **Reverse Words in a String II**: Different constraints
+- **Valid Palindrome**: Different string problem
+- **Longest Common Prefix**: Different problem
+
+## Takeaways
+
+- **Split/Reverse/Join** is the simplest approach
+- **O(n) time** is optimal (must process all characters)
+- **Space O(n)** for storing words array
+- **Readable code** is often better than complex optimizations
+- **Built-in methods** make the solution concise
+

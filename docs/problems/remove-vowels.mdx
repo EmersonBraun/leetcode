@@ -1,0 +1,334 @@
+---
+id: remove-vowels
+title: Remove Vowels from String
+slug: /problems/remove-vowels
+difficulty: Easy
+tags: [string, array]
+---
+
+# Remove Vowels from String
+
+This question is asked by Amazon. Given a string `s`, remove all the vowels it contains and return the resulting string.
+
+**Note:** In this problem `y` is not considered a vowel.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: s = "aeiou"
+Output: ""
+Explanation:
+All characters are vowels (a, e, i, o, u), so removing them results in an empty string.
+```
+
+**Example 2:**
+```
+Input: s = "byte"
+Output: "byt"
+Explanation:
+- 'b' is not a vowel → keep
+- 'y' is not a vowel (per problem note) → keep
+- 't' is not a vowel → keep
+- 'e' is a vowel → remove
+Result: "byt"
+```
+
+**Example 3:**
+```
+Input: s = "xyz"
+Output: "xyz"
+Explanation:
+- 'x' is not a vowel → keep
+- 'y' is not a vowel → keep
+- 'z' is not a vowel → keep
+All characters are kept: "xyz"
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **string filtering**:
+
+1. **Define vowels**: Create a set of vowels (a, e, i, o, u)
+2. **Filter characters**: Keep only non-vowel characters
+3. **Return result**: Return the filtered string
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Filter"
+  code={`/**
+ * Remove all vowels from string
+ * @param {string} s - Input string
+ * @return {string} - String with vowels removed
+ */
+function removeVowels(s) {
+  // Define vowels (y is not considered a vowel)
+  const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']);
+  
+  // Filter out vowels
+  return s.split('').filter(char => !vowels.has(char)).join('');
+}
+
+// Test cases
+console.log('Example 1:', removeVowels("aeiou")); 
+// ""
+
+console.log('Example 2:', removeVowels("byte")); 
+// "byt"
+
+console.log('Example 3:', removeVowels("xyz")); 
+// "xyz"
+
+console.log('Test 4:', removeVowels("leetcode")); 
+// "ltcd"`}
+  testCases={[
+    { input: 'removeVowels("aeiou")', expected: '""' },
+    { input: 'removeVowels("byte")', expected: '"byt"' },
+    { input: 'removeVowels("xyz")', expected: '"xyz"' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Filter"
+  code={`def remove_vowels(s: str) -> str:
+    """
+    Remove all vowels from string
+    
+    Args:
+        s: Input string
+        
+    Returns:
+        str: String with vowels removed
+    """
+    # Define vowels (y is not considered a vowel)
+    vowels = {'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'}
+    
+    # Filter out vowels
+    return ''.join(char for char in s if char not in vowels)
+
+# Test cases
+print('Example 1:', remove_vowels("aeiou"))  
+# ""
+
+print('Example 2:', remove_vowels("byte"))  
+# "byt"
+
+print('Example 3:', remove_vowels("xyz"))  
+# "xyz"
+
+print('Test 4:', remove_vowels("leetcode"))  
+# "ltcd"`}
+  testCases={[
+    { input: 'remove_vowels("aeiou")', expected: '""' },
+    { input: 'remove_vowels("byte")', expected: '"byt"' },
+    { input: 'remove_vowels("xyz")', expected: '"xyz"' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (String Replacement)
+
+Here's a version using string replacement:
+
+<Tabs>
+<TabItem value="javascript-replace" label="JavaScript Replace" default>
+
+```javascript
+/**
+ * Using string replacement
+ */
+function removeVowelsReplace(s) {
+  return s.replace(/[aeiouAEIOU]/g, '');
+}
+```
+
+</TabItem>
+<TabItem value="python-replace" label="Python Replace">
+
+```python
+import re
+
+def remove_vowels_replace(s: str) -> str:
+    """
+    Using string replacement
+    """
+    return re.sub(r'[aeiouAEIOU]', '', s)
+```
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (String Builder)
+
+Here's a version using string building:
+
+<Tabs>
+<TabItem value="javascript-builder" label="JavaScript Builder" default>
+
+```javascript
+/**
+ * Using string builder
+ */
+function removeVowelsBuilder(s) {
+  const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']);
+  let result = '';
+  
+  for (const char of s) {
+    if (!vowels.has(char)) {
+      result += char;
+    }
+  }
+  
+  return result;
+}
+```
+
+</TabItem>
+<TabItem value="python-builder" label="Python Builder">
+
+```python
+def remove_vowels_builder(s: str) -> str:
+    """
+    Using string builder
+    """
+    vowels = {'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'}
+    result = []
+    
+    for char in s:
+        if char not in vowels:
+            result.append(char)
+    
+    return ''.join(result)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the string. We process each character once.
+- **Space Complexity:** O(n) - For the result string (or O(1) if modifying in-place, but strings are immutable in most languages).
+
+## Approach
+
+The solution uses **string filtering**:
+
+1. **Define vowels**: 
+   - Create a set of vowels: a, e, i, o, u (both lowercase and uppercase)
+   - Note: y is NOT considered a vowel
+
+2. **Filter characters**: 
+   - Iterate through each character
+   - Keep only characters that are not vowels
+
+3. **Return result**: 
+   - Join the filtered characters into a string
+   - Return the result
+
+## Key Insights
+
+- **Set for vowels**: Efficient O(1) lookup for vowel checking
+- **Filter approach**: Clean and readable
+- **Case insensitive**: Handle both uppercase and lowercase vowels
+- **Y is not a vowel**: Important constraint in this problem
+- **O(n) time**: Must process each character
+
+## Step-by-Step Example
+
+Let's trace through Example 2: `s = "byte"`
+
+```
+s = "byte"
+vowels = {'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'}
+
+Process each character:
+  'b': vowels.has('b')? No → keep
+  'y': vowels.has('y')? No → keep (y is not a vowel)
+  't': vowels.has('t')? No → keep
+  'e': vowels.has('e')? Yes → remove
+
+Filtered: ['b', 'y', 't']
+Join: "byt"
+
+Result: "byt"
+```
+
+## Visual Representation
+
+```
+Example 1: s = "aeiou"
+
+Characters: a  e  i  o  u
+Vowels?    ✓  ✓  ✓  ✓  ✓
+Keep?      ✗  ✗  ✗  ✗  ✗
+
+Result: "" (all removed)
+
+Example 2: s = "byte"
+
+Characters: b  y  t  e
+Vowels?    ✗  ✗  ✗  ✓
+Keep?      ✓  ✓  ✓  ✗
+
+Result: "byt"
+
+Example 3: s = "xyz"
+
+Characters: x  y  z
+Vowels?    ✗  ✗  ✗
+Keep?      ✓  ✓  ✓
+
+Result: "xyz" (all kept)
+```
+
+## Edge Cases
+
+- **All vowels**: Returns empty string
+- **No vowels**: Returns original string
+- **Empty string**: Returns empty string
+- **Mixed case**: Handles both uppercase and lowercase
+- **Single character**: Works correctly
+- **Only y**: Returns "y" (y is not a vowel)
+
+## Important Notes
+
+- **Y is not a vowel**: Important constraint in this problem
+- **Case insensitive**: Handle both uppercase and lowercase
+- **Set lookup**: O(1) time for vowel checking
+- **O(n) time**: Must process each character
+- **O(n) space**: For the result string
+
+## Vowel Definition
+
+**Standard vowels**: a, e, i, o, u
+- Both lowercase and uppercase: A, E, I, O, U
+- **Y is NOT a vowel** in this problem (unlike some contexts)
+
+## Related Problems
+
+- **Reverse Vowels of a String**: Different problem
+- **Longest Substring Without Repeating Characters**: Different problem
+- **Valid Anagram**: Different string problem
+- **Remove Duplicates**: Different problem
+
+## Takeaways
+
+- **Set for vowels** provides efficient O(1) lookup
+- **Filter approach** is clean and readable
+- **Y is not a vowel** is an important constraint
+- **O(n) time** is optimal (must process each character)
+- **Case handling** for both uppercase and lowercase
+

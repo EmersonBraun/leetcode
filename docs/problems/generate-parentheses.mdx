@@ -1,0 +1,381 @@
+---
+id: generate-parentheses
+title: Generate Parentheses
+slug: /problems/generate-parentheses
+difficulty: Medium
+tags: [backtracking, string, recursion]
+leetcode: https://leetcode.com/problems/generate-parentheses/
+---
+
+# Generate Parentheses
+
+This question is asked by Facebook. Given an integer N, where N represents the number of pairs of parentheses (i.e. "(" and ")") you are given, return a list containing all possible well-formed parentheses you can create.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: N = 3
+Output: [
+    "((()))",
+    "(()())",
+    "(())()",
+    "()(())",
+    "()()()"
+]
+Explanation:
+All valid combinations of 3 pairs of parentheses.
+```
+
+**Example 2:**
+```
+Input: N = 1
+Output: ["()"]
+Explanation:
+Only one valid combination with 1 pair.
+```
+
+**Example 3:**
+```
+Input: N = 2
+Output: ["(())", "()()"]
+Explanation:
+Two valid combinations with 2 pairs.
+```
+
+**Example 4:**
+```
+Input: N = 0
+Output: [""]
+Explanation:
+No parentheses, empty string.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Backtracking (DFS)**:
+
+1. **Track counts**: Keep track of open and close parentheses used
+2. **Add opening**: Can add '(' if open < N
+3. **Add closing**: Can add ')' if close < open (valid)
+4. **Base case**: When open === close === N, we have a valid combination
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Backtracking"
+  code={`/**
+ * Generate all valid parentheses combinations
+ * @param {number} N - Number of pairs of parentheses
+ * @return {string[]} - All valid combinations
+ */
+function generateParenthesis(N) {
+  const result = [];
+  const current = [];
+  
+  /**
+   * Backtracking function
+   * @param {number} open - Number of opening parentheses used
+   * @param {number} close - Number of closing parentheses used
+   */
+  function backtrack(open, close) {
+    // Base case: used all N pairs
+    if (open === N && close === N) {
+      result.push(current.join(''));
+      return;
+    }
+    
+    // Can add opening parenthesis if we haven't used all N
+    if (open < N) {
+      current.push('(');
+      backtrack(open + 1, close);
+      current.pop(); // Backtrack
+    }
+    
+    // Can add closing parenthesis if we have more open than close
+    // This ensures the parentheses are well-formed
+    if (close < open) {
+      current.push(')');
+      backtrack(open, close + 1);
+      current.pop(); // Backtrack
+    }
+  }
+  
+  backtrack(0, 0);
+  return result;
+}
+
+// Test cases
+console.log('Example 1:', generateParenthesis(3)); 
+// ["((()))", "(()())", "(())()", "()(())", "()()()"]
+
+console.log('Example 2:', generateParenthesis(1)); 
+// ["()"]
+
+console.log('Example 3:', generateParenthesis(2)); 
+// ["(())", "()()"]`}
+  testCases={[
+    { input: 'JSON.stringify(generateParenthesis(3))', expected: '["((()))","(()())","(())()","()(())","()()()"]' },
+    { input: 'JSON.stringify(generateParenthesis(2))', expected: '["(())","()()"]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Backtracking"
+  code={`from typing import List
+
+def generate_parenthesis(N: int) -> List[str]:
+    """
+    Generate all valid parentheses combinations
+    
+    Args:
+        N: Number of pairs of parentheses
+        
+    Returns:
+        List[str]: All valid combinations
+    """
+    result = []
+    current = []
+    
+    def backtrack(open_count: int, close_count: int):
+        """
+        Backtracking function
+        
+        Args:
+            open_count: Number of opening parentheses used
+            close_count: Number of closing parentheses used
+        """
+        # Base case: used all N pairs
+        if open_count == N and close_count == N:
+            result.append(''.join(current))
+            return
+        
+        # Can add opening parenthesis if we haven't used all N
+        if open_count < N:
+            current.append('(')
+            backtrack(open_count + 1, close_count)
+            current.pop()  # Backtrack
+        
+        # Can add closing parenthesis if we have more open than close
+        # This ensures the parentheses are well-formed
+        if close_count < open_count:
+            current.append(')')
+            backtrack(open_count, close_count + 1)
+            current.pop()  # Backtrack
+    
+    backtrack(0, 0)
+    return result
+
+# Test cases
+print('Example 1:', generate_parenthesis(3))  
+# ['((()))', '(()())', '(())()', '()(())', '()()()']
+
+print('Example 2:', generate_parenthesis(1))  
+# ['()']
+
+print('Example 3:', generate_parenthesis(2))  
+# ['(())', '()()']`}
+  testCases={[
+    { input: 'generate_parenthesis(3)', expected: "['((()))', '(()())', '(())()', '()(())', '()()()']" },
+    { input: 'generate_parenthesis(2)', expected: "['(())', '()()']" }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(4^N / √N) - The number of valid parentheses combinations is the Nth Catalan number, which grows as 4^N / (N * √N). We generate all of them.
+- **Space Complexity:** O(N) - For the recursion stack and current string (excluding output space).
+
+## Approach
+
+The solution uses **Backtracking (DFS)**:
+
+1. **Track counts**: 
+   - `open`: Number of opening parentheses '(' used
+   - `close`: Number of closing parentheses ')' used
+
+2. **Backtracking function**: 
+   - `backtrack(open, close)`: Generate combinations with given counts
+
+3. **Two choices at each step**: 
+   - **Add '('**: If `open < N`, we can add an opening parenthesis
+   - **Add ')'**: If `close < open`, we can add a closing parenthesis
+     - This ensures we always have more or equal opening than closing (well-formed)
+
+4. **Base case**: 
+   - When `open === N && close === N`, we've used all N pairs
+   - Add current combination to results
+
+5. **Backtracking**: 
+   - After recursive call, remove last added character
+   - This allows exploring other possibilities
+
+## Key Insights
+
+- **Backtracking**: Explore all possible combinations
+- **Well-formed constraint**: `close < open` ensures valid parentheses
+- **Two choices**: Add '(' or ')' at each step (if valid)
+- **Catalan numbers**: Number of combinations is the Nth Catalan number
+- **O(4^N / √N) time**: Exponential but optimized
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `N = 3`
+
+```
+N = 3
+result = []
+current = []
+
+backtrack(0, 0):
+  open=0, close=0
+  
+  Option 1: Add '(' (open < 3)
+    current = ["("]
+    backtrack(1, 0):
+      open=1, close=0
+      Option 1: Add '(' (open < 3)
+        current = ["(", "("]
+        backtrack(2, 0):
+          open=2, close=0
+          Option 1: Add '(' (open < 3)
+            current = ["(", "(", "("]
+            backtrack(3, 0):
+              open=3, close=0
+              Option 1: Add '(' (open >= 3, skip)
+              Option 2: Add ')' (close < open, 0 < 3)
+                current = ["(", "(", "(", ")"]
+                backtrack(3, 1):
+                  open=3, close=1
+                  Option 2: Add ')' (close < open, 1 < 3)
+                    current = ["(", "(", "(", ")", ")"]
+                    backtrack(3, 2):
+                      open=3, close=2
+                      Option 2: Add ')' (close < open, 2 < 3)
+                        current = ["(", "(", "(", ")", ")", ")"]
+                        backtrack(3, 3):
+                          open=3, close=3 → add "((()))" to result
+                        current.pop() → ["(", "(", "(", ")", ")"]
+                    current.pop() → ["(", "(", "(", ")"]
+                current.pop() → ["(", "(", "("]
+            current.pop() → ["(", "("]
+          Option 2: Add ')' (close < open, 0 < 2)
+            current = ["(", "(", ")"]
+            backtrack(2, 1):
+              ... (continues similarly)
+              Eventually: "(()())", "(())()"
+        current.pop() → ["("]
+      Option 2: Add ')' (close < open, 0 < 1)
+        current = ["(", ")"]
+        backtrack(1, 1):
+          ... (continues similarly)
+          Eventually: "()(())", "()()()"
+    current.pop() → []
+
+Result: ["((()))", "(()())", "(())()", "()(())", "()()()"]
+```
+
+## Visual Representation
+
+```
+Example 1: N = 3
+
+Backtracking tree:
+  backtrack(0, 0)
+    ├─ Add '(' → backtrack(1, 0)
+    │   ├─ Add '(' → backtrack(2, 0)
+    │   │   ├─ Add '(' → backtrack(3, 0)
+    │   │   │   └─ Add ')' → backtrack(3, 1)
+    │   │   │       └─ Add ')' → backtrack(3, 2)
+    │   │   │           └─ Add ')' → backtrack(3, 3) → "((()))" ✓
+    │   │   └─ Add ')' → backtrack(2, 1)
+    │   │       ├─ Add '(' → backtrack(3, 1)
+    │   │       │   └─ Add ')' → backtrack(3, 2)
+    │   │       │       └─ Add ')' → backtrack(3, 3) → "(()())" ✓
+    │   │       └─ Add ')' → backtrack(2, 2)
+    │   │           └─ Add '(' → backtrack(3, 2)
+    │   │               └─ Add ')' → backtrack(3, 3) → "(())()" ✓
+    │   └─ Add ')' → backtrack(1, 1)
+    │       ├─ Add '(' → backtrack(2, 1)
+    │       │   ├─ Add '(' → backtrack(3, 1)
+    │       │   │   └─ Add ')' → backtrack(3, 2)
+    │       │   │       └─ Add ')' → backtrack(3, 3) → "()(())" ✓
+    │       │   └─ Add ')' → backtrack(2, 2)
+    │       │       └─ Add '(' → backtrack(3, 2)
+    │       │           └─ Add ')' → backtrack(3, 3) → "()()()" ✓
+    │       └─ Add ')' → (invalid, close >= open)
+
+Result: ["((()))", "(()())", "(())()", "()(())", "()()()"]
+```
+
+## Edge Cases
+
+- **N = 0**: Return [""] (empty string)
+- **N = 1**: Return ["()"] (only one combination)
+- **N = 2**: Return ["(())", "()()"] (two combinations)
+- **Large N**: Exponential growth (Catalan numbers)
+
+## Important Notes
+
+- **Well-formed constraint**: `close < open` ensures valid parentheses
+- **Two choices**: Add '(' or ')' at each step (if constraints allow)
+- **Catalan numbers**: Number of combinations is C(2N, N) / (N + 1)
+- **O(4^N / √N) time**: Exponential but necessary to generate all
+- **Backtracking**: Systematically explores all possibilities
+
+## Why Backtracking Works
+
+**Key insight**: 
+- We need to generate all valid combinations
+- Backtracking systematically explores all possibilities
+- The constraint `close < open` ensures parentheses are well-formed
+- When `open === close === N`, we have a complete valid combination
+
+**Well-formed guarantee**: 
+- By only adding ')' when `close < open`, we ensure:
+  - We never have more closing than opening
+  - At the end, we have equal numbers (well-formed)
+- This constraint is sufficient and necessary
+
+## Mathematical Insight
+
+The number of valid parentheses combinations for N pairs is the **Nth Catalan number**:
+
+C(N) = (2N)! / ((N+1)! × N!) = C(2N, N) / (N + 1)
+
+For example:
+- N = 1: C(1) = 1 → ["()"]
+- N = 2: C(2) = 2 → ["(())", "()()"]
+- N = 3: C(3) = 5 → ["((()))", "(()())", "(())()", "()(())", "()()()"]
+- N = 4: C(4) = 14
+
+Catalan numbers grow as O(4^N / (N * √N)).
+
+## Related Problems
+
+- **Valid Parentheses**: Check if parentheses are valid
+- **Longest Valid Parentheses**: Find longest valid substring
+- **Remove Invalid Parentheses**: Remove minimum parentheses
+- **Different Ways to Add Parentheses**: Different problem
+
+## Takeaways
+
+- **Backtracking** explores all valid combinations
+- **Well-formed constraint** `close < open` ensures validity
+- **Catalan numbers** count the combinations
+- **O(4^N / √N) time** exponential but necessary
+- **Classic backtracking problem** with mathematical significance
+

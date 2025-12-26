@@ -1,0 +1,386 @@
+---
+id: sort-array-by-parity-ii
+title: Sort Array By Parity II
+slug: /problems/sort-array-by-parity-ii
+difficulty: Medium
+tags: [array, two-pointers, sorting]
+leetcode: https://leetcode.com/problems/sort-array-by-parity-ii/
+---
+
+# Sort Array By Parity II
+
+This question is asked by Amazon. Given an array of integers, `nums`, sort the array in any manner such that when `i` is even, `nums[i]` is even and when `i` is odd, `nums[i]` is odd.
+
+**Note:** It is guaranteed that a valid sorting of `nums` exists.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: nums = [1, 2, 3, 4]
+Output: [2, 1, 4, 3]
+Explanation:
+- Index 0 (even): nums[0] = 2 (even) ✓
+- Index 1 (odd): nums[1] = 1 (odd) ✓
+- Index 2 (even): nums[2] = 4 (even) ✓
+- Index 3 (odd): nums[3] = 3 (odd) ✓
+```
+
+**Example 2:**
+```
+Input: nums = [4, 2, 5, 7]
+Output: [4, 5, 2, 7]
+Explanation:
+- Index 0: 4 (even) ✓
+- Index 1: 5 (odd) ✓
+- Index 2: 2 (even) ✓
+- Index 3: 7 (odd) ✓
+```
+
+**Example 3:**
+```
+Input: nums = [2, 3]
+Output: [2, 3]
+Explanation:
+- Index 0: 2 (even) ✓
+- Index 1: 3 (odd) ✓
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **two pointers**:
+
+1. **Separate even and odd**: Collect even and odd numbers separately
+2. **Place in correct positions**: Place evens at even indices, odds at odd indices
+3. **Two pointers**: Use two pointers to efficiently place numbers
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Two Pointers"
+  code={`/**
+ * Sort array so even indices have even numbers, odd indices have odd numbers
+ * @param {number[]} nums - Input array
+ * @return {number[]} - Sorted array
+ */
+function sortArrayByParityII(nums) {
+  const n = nums.length;
+  const result = new Array(n);
+  
+  // Separate even and odd numbers
+  const evens = [];
+  const odds = [];
+  
+  for (const num of nums) {
+    if (num % 2 === 0) {
+      evens.push(num);
+    } else {
+      odds.push(num);
+    }
+  }
+  
+  // Place evens at even indices, odds at odd indices
+  let evenIndex = 0;
+  let oddIndex = 0;
+  
+  for (let i = 0; i < n; i++) {
+    if (i % 2 === 0) {
+      // Even index: place even number
+      result[i] = evens[evenIndex++];
+    } else {
+      // Odd index: place odd number
+      result[i] = odds[oddIndex++];
+    }
+  }
+  
+  return result;
+}
+
+// Test cases
+console.log('Example 1:', sortArrayByParityII([1, 2, 3, 4])); 
+// [2, 1, 4, 3]
+
+console.log('Example 2:', sortArrayByParityII([4, 2, 5, 7])); 
+// [4, 5, 2, 7]
+
+console.log('Example 3:', sortArrayByParityII([2, 3])); 
+// [2, 3]`}
+  testCases={[
+    { input: 'JSON.stringify(sortArrayByParityII([1, 2, 3, 4]))', expected: '[2,1,4,3]' },
+    { input: 'JSON.stringify(sortArrayByParityII([4, 2, 5, 7]))', expected: '[4,5,2,7]' },
+    { input: 'JSON.stringify(sortArrayByParityII([2, 3]))', expected: '[2,3]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Two Pointers"
+  code={`from typing import List
+
+def sort_array_by_parity_ii(nums: List[int]) -> List[int]:
+    """
+    Sort array so even indices have even numbers, odd indices have odd numbers
+    
+    Args:
+        nums: Input array
+        
+    Returns:
+        List[int]: Sorted array
+    """
+    n = len(nums)
+    result = [0] * n
+    
+    # Separate even and odd numbers
+    evens = []
+    odds = []
+    
+    for num in nums:
+        if num % 2 == 0:
+            evens.append(num)
+        else:
+            odds.append(num)
+    
+    # Place evens at even indices, odds at odd indices
+    even_index = 0
+    odd_index = 0
+    
+    for i in range(n):
+        if i % 2 == 0:
+            # Even index: place even number
+            result[i] = evens[even_index]
+            even_index += 1
+        else:
+            # Odd index: place odd number
+            result[i] = odds[odd_index]
+            odd_index += 1
+    
+    return result
+
+# Test cases
+print('Example 1:', sort_array_by_parity_ii([1, 2, 3, 4]))  
+# [2, 1, 4, 3]
+
+print('Example 2:', sort_array_by_parity_ii([4, 2, 5, 7]))  
+# [4, 5, 2, 7]
+
+print('Example 3:', sort_array_by_parity_ii([2, 3]))  
+# [2, 3]`}
+  testCases={[
+    { input: 'sort_array_by_parity_ii([1, 2, 3, 4])', expected: '[2, 1, 4, 3]' },
+    { input: 'sort_array_by_parity_ii([4, 2, 5, 7])', expected: '[4, 5, 2, 7]' },
+    { input: 'sort_array_by_parity_ii([2, 3])', expected: '[2, 3]' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (In-Place with Two Pointers)
+
+Here's an in-place solution that doesn't use extra arrays:
+
+<Tabs>
+<TabItem value="javascript-inplace" label="JavaScript In-Place" default>
+
+```javascript
+/**
+ * In-place solution using two pointers
+ */
+function sortArrayByParityIIInPlace(nums) {
+  const n = nums.length;
+  let evenPtr = 0; // Points to next even index that needs an even number
+  let oddPtr = 1;  // Points to next odd index that needs an odd number
+  
+  while (evenPtr < n && oddPtr < n) {
+    // Find even index with odd number
+    while (evenPtr < n && nums[evenPtr] % 2 === 0) {
+      evenPtr += 2;
+    }
+    
+    // Find odd index with even number
+    while (oddPtr < n && nums[oddPtr] % 2 === 1) {
+      oddPtr += 2;
+    }
+    
+    // Swap if both pointers are valid
+    if (evenPtr < n && oddPtr < n) {
+      [nums[evenPtr], nums[oddPtr]] = [nums[oddPtr], nums[evenPtr]];
+      evenPtr += 2;
+      oddPtr += 2;
+    }
+  }
+  
+  return nums;
+}
+```
+
+</TabItem>
+<TabItem value="python-inplace" label="Python In-Place">
+
+```python
+def sort_array_by_parity_ii_in_place(nums: List[int]) -> List[int]:
+    """
+    In-place solution using two pointers
+    """
+    n = len(nums)
+    even_ptr = 0  # Points to next even index that needs an even number
+    odd_ptr = 1   # Points to next odd index that needs an odd number
+    
+    while even_ptr < n and odd_ptr < n:
+        # Find even index with odd number
+        while even_ptr < n and nums[even_ptr] % 2 == 0:
+            even_ptr += 2
+        
+        # Find odd index with even number
+        while odd_ptr < n and nums[odd_ptr] % 2 == 1:
+            odd_ptr += 2
+        
+        # Swap if both pointers are valid
+        if even_ptr < n and odd_ptr < n:
+            nums[even_ptr], nums[odd_ptr] = nums[odd_ptr], nums[even_ptr]
+            even_ptr += 2
+            odd_ptr += 2
+    
+    return nums
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the array. We make a single pass to separate numbers, then another pass to place them.
+- **Space Complexity:** 
+  - **Two arrays approach**: O(n) - For the even and odd arrays
+  - **In-place approach**: O(1) - Only using a constant amount of extra space
+
+## Approach
+
+The solution uses **two arrays and two pointers**:
+
+1. **Separate numbers**: 
+   - Collect all even numbers in one array
+   - Collect all odd numbers in another array
+
+2. **Place in result**: 
+   - For even indices (0, 2, 4, ...): place even numbers
+   - For odd indices (1, 3, 5, ...): place odd numbers
+
+3. **Use pointers**: 
+   - `evenIndex`: tracks position in evens array
+   - `oddIndex`: tracks position in odds array
+
+## Key Insights
+
+- **Separate first**: Easier to separate even/odd, then place
+- **Two arrays**: One for evens, one for odds
+- **Two pointers**: Track positions in each array
+- **Guaranteed valid**: Problem states a valid sorting exists
+- **O(n) time**: Single pass to separate, single pass to place
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `nums = [1, 2, 3, 4]`
+
+```
+Step 1: Separate even and odd numbers
+  nums = [1, 2, 3, 4]
+  evens = [2, 4]
+  odds = [1, 3]
+
+Step 2: Place in result array
+  result = [_, _, _, _]
+  
+  i = 0 (even index):
+    result[0] = evens[0] = 2
+    evenIndex = 1
+  
+  i = 1 (odd index):
+    result[1] = odds[0] = 1
+    oddIndex = 1
+  
+  i = 2 (even index):
+    result[2] = evens[1] = 4
+    evenIndex = 2
+  
+  i = 3 (odd index):
+    result[3] = odds[1] = 3
+    oddIndex = 2
+  
+  result = [2, 1, 4, 3]
+
+Result: [2, 1, 4, 3]
+```
+
+## Visual Representation
+
+```
+Example 1: nums = [1, 2, 3, 4]
+
+Step 1: Separate
+  Evens: [2, 4]
+  Odds:  [1, 3]
+
+Step 2: Place
+  Index:  0    1    2    3
+  Type:  even odd even odd
+  Result: 2    1    4    3
+          ↑    ↑    ↑    ↑
+         even odd even odd
+
+Verification:
+  Index 0 (even): 2 (even) ✓
+  Index 1 (odd):  1 (odd) ✓
+  Index 2 (even): 4 (even) ✓
+  Index 3 (odd):  3 (odd) ✓
+```
+
+## Edge Cases
+
+- **All evens**: Works correctly
+- **All odds**: Works correctly
+- **Already sorted**: Returns correct result
+- **Two elements**: Works correctly
+- **Equal numbers**: Works correctly (e.g., [2, 2, 1, 1])
+
+## Important Notes
+
+- **Guaranteed valid**: Problem states a valid sorting exists
+- **Any valid sorting**: Multiple valid solutions possible
+- **Even indices**: 0, 2, 4, ... (0-indexed)
+- **Odd indices**: 1, 3, 5, ... (0-indexed)
+- **O(n) time**: Optimal (must process all elements)
+
+## Why It Works
+
+**Key insight**: 
+- The problem guarantees equal numbers of evens and odds
+- We need exactly `n/2` evens and `n/2` odds
+- Even indices: `0, 2, 4, ...` (n/2 positions)
+- Odd indices: `1, 3, 5, ...` (n/2 positions)
+- By separating and placing, we ensure correct positions
+
+## Related Problems
+
+- **Sort Array By Parity**: Different problem (evens first, then odds)
+- **Partition Array**: Similar partitioning problem
+- **Move Zeroes**: Different problem
+- **Wiggle Sort**: Different sorting problem
+
+## Takeaways
+
+- **Separate then place** is a clear approach
+- **Two arrays** for even and odd numbers
+- **Two pointers** track positions in each array
+- **O(n) time** is optimal
+- **O(n) space** for the two arrays (or O(1) with in-place)
+

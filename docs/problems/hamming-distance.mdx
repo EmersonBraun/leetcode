@@ -1,0 +1,397 @@
+---
+id: hamming-distance
+title: Hamming Distance
+slug: /problems/hamming-distance
+difficulty: Easy
+tags: [bit-manipulation, math]
+leetcode: https://leetcode.com/problems/hamming-distance/
+---
+
+# Hamming Distance
+
+This question is asked by Facebook. Given two integers `x` and `y`, return the hamming distance between the two numbers.
+
+**Note:** The hamming distance between two numbers is the number of bit positions in which the bits differ.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: x = 2, y = 4
+Output: 2
+Explanation:
+2 in binary is 0 0 1 0
+4 in binary is 0 1 0 0
+           Diff:   ^   ^
+The bits differ at positions 1 and 2 (0-indexed from right).
+Therefore, the hamming distance is 2.
+```
+
+**Example 2:**
+```
+Input: x = 1, y = 4
+Output: 2
+Explanation:
+1 in binary is 0 0 0 1
+4 in binary is 0 1 0 0
+           Diff:   ^   ^
+The bits differ at positions 0 and 2.
+Hamming distance is 2.
+```
+
+**Example 3:**
+```
+Input: x = 3, y = 1
+Output: 1
+Explanation:
+3 in binary is 0 0 1 1
+1 in binary is 0 0 0 1
+           Diff:     ^
+The bits differ at position 1.
+Hamming distance is 1.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **XOR and bit counting**:
+
+1. **XOR the numbers**: XOR gives 1 where bits differ, 0 where they're the same
+2. **Count set bits**: Count the number of 1s in the XOR result
+3. **Return count**: This is the hamming distance
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - XOR and Count"
+  code={`/**
+ * Calculate Hamming distance between two integers
+ * @param {number} x - First integer
+ * @param {number} y - Second integer
+ * @return {number} - Hamming distance
+ */
+function hammingDistance(x, y) {
+  // XOR gives 1 where bits differ, 0 where they're the same
+  let xor = x ^ y;
+  
+  // Count the number of set bits (1s) in xor
+  let count = 0;
+  while (xor > 0) {
+    count += xor & 1; // Check if last bit is 1
+    xor = xor >> 1;   // Shift right to check next bit
+  }
+  
+  return count;
+}
+
+// Test cases
+console.log('Example 1:', hammingDistance(2, 4)); 
+// 2
+
+console.log('Example 2:', hammingDistance(1, 4)); 
+// 2
+
+console.log('Example 3:', hammingDistance(3, 1)); 
+// 1
+
+console.log('Test 4:', hammingDistance(0, 0)); 
+// 0`}
+  testCases={[
+    { input: 'hammingDistance(2, 4)', expected: '2' },
+    { input: 'hammingDistance(1, 4)', expected: '2' },
+    { input: 'hammingDistance(3, 1)', expected: '1' },
+    { input: 'hammingDistance(0, 0)', expected: '0' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - XOR and Count"
+  code={`def hamming_distance(x: int, y: int) -> int:
+    """
+    Calculate Hamming distance between two integers
+    
+    Args:
+        x: First integer
+        y: Second integer
+        
+    Returns:
+        int: Hamming distance
+    """
+    # XOR gives 1 where bits differ, 0 where they're the same
+    xor = x ^ y
+    
+    # Count the number of set bits (1s) in xor
+    count = 0
+    while xor > 0:
+        count += xor & 1  # Check if last bit is 1
+        xor = xor >> 1    # Shift right to check next bit
+    
+    return count
+
+# Test cases
+print('Example 1:', hamming_distance(2, 4))  
+# 2
+
+print('Example 2:', hamming_distance(1, 4))  
+# 2
+
+print('Example 3:', hamming_distance(3, 1))  
+# 1
+
+print('Test 4:', hamming_distance(0, 0))  
+# 0`}
+  testCases={[
+    { input: 'hamming_distance(2, 4)', expected: '2' },
+    { input: 'hamming_distance(1, 4)', expected: '2' },
+    { input: 'hamming_distance(3, 1)', expected: '1' },
+    { input: 'hamming_distance(0, 0)', expected: '0' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Built-in Count)
+
+Here's a version using built-in functions to count bits:
+
+<Tabs>
+<TabItem value="javascript-builtin" label="JavaScript Built-in" default>
+
+```javascript
+/**
+ * Using built-in toString and count
+ */
+function hammingDistanceBuiltin(x, y) {
+  const xor = x ^ y;
+  // Convert to binary string and count '1's
+  return xor.toString(2).split('1').length - 1;
+}
+```
+
+</TabItem>
+<TabItem value="python-builtin" label="Python Built-in">
+
+```python
+def hamming_distance_builtin(x: int, y: int) -> int:
+    """
+    Using built-in bin and count
+    """
+    xor = x ^ y
+    # Convert to binary string and count '1's
+    return bin(xor).count('1')
+```
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Brian Kernighan's Algorithm)
+
+Here's an optimized version that clears the rightmost set bit:
+
+<Tabs>
+<TabItem value="javascript-kernighan" label="JavaScript Kernighan" default>
+
+```javascript
+/**
+ * Brian Kernighan's algorithm (clears rightmost set bit)
+ */
+function hammingDistanceKernighan(x, y) {
+  let xor = x ^ y;
+  let count = 0;
+  
+  // Clear rightmost set bit until xor becomes 0
+  while (xor > 0) {
+    xor = xor & (xor - 1); // Clears rightmost set bit
+    count++;
+  }
+  
+  return count;
+}
+```
+
+</TabItem>
+<TabItem value="python-kernighan" label="Python Kernighan">
+
+```python
+def hamming_distance_kernighan(x: int, y: int) -> int:
+    """
+    Brian Kernighan's algorithm (clears rightmost set bit)
+    """
+    xor = x ^ y
+    count = 0
+    
+    # Clear rightmost set bit until xor becomes 0
+    while xor > 0:
+        xor = xor & (xor - 1)  # Clears rightmost set bit
+        count += 1
+    
+    return count
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(log(max(x, y))) - Where the log is base 2. We process each bit once.
+- **Space Complexity:** O(1) - Only using a constant amount of extra space.
+
+## Approach
+
+The solution uses **XOR and bit counting**:
+
+1. **XOR operation**: 
+   - `x ^ y` gives 1 where bits differ, 0 where they're the same
+   - This identifies all positions where bits differ
+
+2. **Count set bits**: 
+   - Count the number of 1s in the XOR result
+   - This equals the hamming distance
+
+3. **Bit counting methods**: 
+   - **Shift and check**: Check each bit using `& 1` and shift right
+   - **Brian Kernighan's**: Clear rightmost set bit until zero
+   - **Built-in**: Use language functions to count bits
+
+## Key Insights
+
+- **XOR identifies differences**: `x ^ y` has 1s where bits differ
+- **Count set bits**: Number of 1s in XOR = hamming distance
+- **Bit manipulation**: Efficient way to count bits
+- **O(log n) time**: Based on number of bits
+- **O(1) space**: Only need a few variables
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `x = 2`, `y = 4`
+
+```
+Step 1: Convert to binary
+  x = 2:  0 0 1 0 (binary)
+  y = 4:  0 1 0 0 (binary)
+
+Step 2: XOR operation
+  x ^ y = 2 ^ 4
+  0 0 1 0
+  0 1 0 0
+  -------
+  0 1 1 0  (XOR result = 6)
+
+Step 3: Count set bits in XOR result
+  xor = 6 (binary: 0 1 1 0)
+  
+  Iteration 1:
+    xor & 1 = 6 & 1 = 0 (last bit is 0)
+    count = 0
+    xor = 6 >> 1 = 3
+  
+  Iteration 2:
+    xor & 1 = 3 & 1 = 1 (last bit is 1)
+    count = 1
+    xor = 3 >> 1 = 1
+  
+  Iteration 3:
+    xor & 1 = 1 & 1 = 1 (last bit is 1)
+    count = 2
+    xor = 1 >> 1 = 0
+  
+  xor = 0, exit loop
+
+Result: count = 2
+```
+
+## Visual Representation
+
+```
+Example 1: x = 2, y = 4
+
+Binary representation:
+  x = 2:  0  0  1  0
+  y = 4:  0  1  0  0
+          ↑  ↑  ↑  ↑
+        bit3 bit2 bit1 bit0
+
+XOR operation (1 where bits differ):
+  x ^ y:  0  1  1  0
+          ↑  ↑
+        bit2 bit1 differ
+
+Count set bits in XOR:
+  Positions with 1: bit2, bit1
+  Count: 2
+
+Hamming distance: 2
+```
+
+## Edge Cases
+
+- **Same numbers**: Returns 0 (x ^ y = 0)
+- **One is zero**: Works correctly
+- **Both are zero**: Returns 0
+- **Large numbers**: Works correctly
+- **Negative numbers**: Works correctly (in two's complement)
+
+## Important Notes
+
+- **XOR operation**: Key insight - identifies differing bits
+- **Bit counting**: Multiple methods available
+- **O(log n) time**: Based on number of bits
+- **O(1) space**: Constant extra space
+- **Works for any integers**: Positive, negative, zero
+
+## Why XOR Works
+
+**XOR truth table**:
+```
+x  y  x^y
+0  0   0  (same)
+0  1   1  (different)
+1  0   1  (different)
+1  1   0  (same)
+```
+
+**Key insight**: 
+- XOR gives 1 where bits differ
+- XOR gives 0 where bits are the same
+- Counting 1s in XOR result = number of differing positions = hamming distance
+
+## Brian Kernighan's Algorithm
+
+**How it works**:
+- `xor & (xor - 1)` clears the rightmost set bit
+- Each iteration clears one set bit
+- Number of iterations = number of set bits
+
+**Example**:
+```
+xor = 6 (binary: 0110)
+xor & (xor - 1) = 6 & 5 = 0110 & 0101 = 0100 = 4
+xor & (xor - 1) = 4 & 3 = 0100 & 0011 = 0000 = 0
+Count = 2 iterations = 2 set bits
+```
+
+## Related Problems
+
+- **Number of 1 Bits**: Count set bits in a number
+- **Total Hamming Distance**: Sum of hamming distances for all pairs
+- **Reverse Bits**: Different bit manipulation
+- **Single Number**: Uses XOR differently
+
+## Takeaways
+
+- **XOR** identifies where bits differ
+- **Count set bits** in XOR result to get hamming distance
+- **Multiple methods** for counting bits (shift, Kernighan's, built-in)
+- **O(log n) time** based on number of bits
+- **O(1) space** for the algorithm
+

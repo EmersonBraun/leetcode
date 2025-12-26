@@ -1,0 +1,453 @@
+---
+id: last-stone-weight
+title: Last Stone Weight
+slug: /problems/last-stone-weight
+difficulty: Easy
+tags: [heap, priority-queue, array, simulation]
+leetcode: https://leetcode.com/problems/last-stone-weight/
+---
+
+# Last Stone Weight
+
+This question is asked by Amazon. You are given a group of stones, all of which have a positive weight. At each turn, we select the heaviest two stones and smash them together. When smashing these two stones together, one of two things can happen:
+
+- If the stones are both the same weight, both stones are destroyed
+- If the weights of the stones are not equal, the smaller of the two stones is destroyed and the remaining stone's weight is updated to the difference (i.e. if we smash two stones together of weight 3 and weight 5 the stone with weight 3 is destroyed and the stone with original weight 5 now has weight 2).
+
+Continue smashing stones together until there is at most one stone left and return the weight of the remaining stone. If not stones remain, return zero.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: stones = [2, 4, 3, 8]
+Output: 1
+Explanation:
+Turn 1: Smash 8 and 4
+  8 - 4 = 4, stones: [2, 3, 4]
+Turn 2: Smash 4 and 3
+  4 - 3 = 1, stones: [2, 1]
+Turn 3: Smash 2 and 1
+  2 - 1 = 1, stones: [1]
+Result: 1
+```
+
+**Example 2:**
+```
+Input: stones = [1, 2, 3, 4]
+Output: 0
+Explanation:
+Turn 1: Smash 4 and 3
+  4 - 3 = 1, stones: [1, 2, 1]
+Turn 2: Smash 2 and 1
+  2 - 1 = 1, stones: [1, 1]
+Turn 3: Smash 1 and 1
+  1 - 1 = 0, both destroyed, stones: []
+Result: 0
+```
+
+**Example 3:**
+```
+Input: stones = [1]
+Output: 1
+Explanation:
+Only one stone, cannot smash.
+Result: 1
+```
+
+**Example 4:**
+```
+Input: stones = [2, 2]
+Output: 0
+Explanation:
+Smash 2 and 2
+  2 - 2 = 0, both destroyed
+Result: 0
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Max Heap (Priority Queue)**:
+
+1. **Build max heap**: Insert all stones into a max heap
+2. **Simulate smashing**: While heap has at least 2 stones:
+   - Extract two heaviest stones
+   - Calculate difference
+   - If difference > 0, insert back into heap
+3. **Return result**: Return remaining stone weight or 0
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Max Heap"
+  code={`/**
+ * Find last stone weight after smashing
+ * @param {number[]} stones - Array of stone weights
+ * @return {number} - Weight of last stone, or 0
+ */
+function lastStoneWeight(stones) {
+  // Use max heap (JavaScript doesn't have built-in heap, so we'll use array and sort)
+  // For efficiency, we can use a proper heap implementation
+  const heap = [...stones].sort((a, b) => b - a); // Max heap (largest first)
+  
+  while (heap.length > 1) {
+    // Get two heaviest stones
+    const first = heap.shift();  // Largest
+    const second = heap.shift(); // Second largest
+    
+    // Calculate difference
+    const diff = first - second;
+    
+    // If difference > 0, add back to heap
+    if (diff > 0) {
+      heap.push(diff);
+      // Maintain heap property (sort again, or use proper heap)
+      heap.sort((a, b) => b - a);
+    }
+    // If diff === 0, both stones are destroyed (do nothing)
+  }
+  
+  // Return last stone weight or 0
+  return heap.length === 1 ? heap[0] : 0;
+}
+
+// More efficient version using proper heap operations
+function lastStoneWeightOptimized(stones) {
+  // Build max heap
+  const heap = [...stones];
+  heap.sort((a, b) => b - a);
+  
+  while (heap.length > 1) {
+    const first = heap.shift();
+    const second = heap.shift();
+    const diff = first - second;
+    
+    if (diff > 0) {
+      // Insert diff maintaining heap order
+      let i = 0;
+      while (i < heap.length && heap[i] > diff) {
+        i++;
+      }
+      heap.splice(i, 0, diff);
+    }
+  }
+  
+  return heap.length === 1 ? heap[0] : 0;
+}
+
+// Test cases
+console.log('Example 1:', lastStoneWeight([2, 4, 3, 8])); 
+// 1
+
+console.log('Example 2:', lastStoneWeight([1, 2, 3, 4])); 
+// 0
+
+console.log('Example 3:', lastStoneWeight([1])); 
+// 1
+
+console.log('Example 4:', lastStoneWeight([2, 2])); 
+// 0`}
+  testCases={[
+    { input: 'lastStoneWeight([2, 4, 3, 8])', expected: '1' },
+    { input: 'lastStoneWeight([1, 2, 3, 4])', expected: '0' },
+    { input: 'lastStoneWeight([1])', expected: '1' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Max Heap"
+  code={`import heapq
+from typing import List
+
+def last_stone_weight(stones: List[int]) -> int:
+    """
+    Find last stone weight after smashing
+    
+    Args:
+        stones: Array of stone weights
+        
+    Returns:
+        int: Weight of last stone, or 0
+    """
+    # Python's heapq is min heap, so we negate values for max heap
+    heap = [-stone for stone in stones]
+    heapq.heapify(heap)
+    
+    while len(heap) > 1:
+        # Get two heaviest stones (negated, so we negate back)
+        first = -heapq.heappop(heap)  # Largest
+        second = -heapq.heappop(heap)  # Second largest
+        
+        # Calculate difference
+        diff = first - second
+        
+        # If difference > 0, add back to heap (negated)
+        if diff > 0:
+            heapq.heappush(heap, -diff)
+        # If diff == 0, both stones are destroyed (do nothing)
+    
+    # Return last stone weight or 0
+    return -heap[0] if heap else 0
+
+# Test cases
+print('Example 1:', last_stone_weight([2, 4, 3, 8]))  
+# 1
+
+print('Example 2:', last_stone_weight([1, 2, 3, 4]))  
+# 0
+
+print('Example 3:', last_stone_weight([1]))  
+# 1
+
+print('Example 4:', last_stone_weight([2, 2]))  
+# 0`}
+  testCases={[
+    { input: 'last_stone_weight([2, 4, 3, 8])', expected: '1' },
+    { input: 'last_stone_weight([1, 2, 3, 4])', expected: '0' },
+    { input: 'last_stone_weight([1])', expected: '1' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Using Array and Sorting)
+
+Here's a simpler solution using array and sorting (less efficient but easier to understand):
+
+<Tabs>
+<TabItem value="javascript-simple" label="JavaScript Simple" default>
+
+```javascript
+/**
+ * Simple solution: Sort array repeatedly
+ * Less efficient but easier to understand
+ */
+function lastStoneWeightSimple(stones) {
+  while (stones.length > 1) {
+    // Sort in descending order
+    stones.sort((a, b) => b - a);
+    
+    // Get two heaviest
+    const first = stones.shift();
+    const second = stones.shift();
+    const diff = first - second;
+    
+    // Add difference if > 0
+    if (diff > 0) {
+      stones.push(diff);
+    }
+  }
+  
+  return stones.length === 1 ? stones[0] : 0;
+}
+```
+
+</TabItem>
+<TabItem value="python-simple" label="Python Simple">
+
+```python
+def last_stone_weight_simple(stones: List[int]) -> int:
+    """
+    Simple solution: Sort array repeatedly
+    Less efficient but easier to understand
+    """
+    while len(stones) > 1:
+        # Sort in descending order
+        stones.sort(reverse=True)
+        
+        # Get two heaviest
+        first = stones.pop(0)
+        second = stones.pop(0)
+        diff = first - second
+        
+        # Add difference if > 0
+        if diff > 0:
+            stones.append(diff)
+    
+    return stones[0] if stones else 0
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** 
+  - **Heap approach**: O(n log n) - Building heap is O(n log n), each extraction/insertion is O(log n), worst case O(n) operations
+  - **Sorting approach**: O(n² log n) - Sort O(n log n) up to n times
+- **Space Complexity:** O(n) - For the heap/array.
+
+## Approach
+
+The solution uses **Max Heap (Priority Queue)**:
+
+1. **Build max heap**: 
+   - Insert all stones into a max heap
+   - This allows efficient access to the two heaviest stones
+
+2. **Simulate smashing**: 
+   - While heap has at least 2 stones:
+     - Extract two heaviest stones (pop from heap)
+     - Calculate difference: `diff = first - second`
+     - If `diff > 0`, insert `diff` back into heap
+     - If `diff === 0`, both stones are destroyed (do nothing)
+
+3. **Return result**: 
+   - If heap has 1 stone, return its weight
+   - If heap is empty, return 0
+
+## Key Insights
+
+- **Max heap**: Efficiently get two heaviest stones
+- **Simulation**: Repeatedly smash until at most one remains
+- **Difference calculation**: `first - second` (always non-negative)
+- **O(n log n) time**: Heap operations are efficient
+- **Greedy**: Always smash two heaviest (optimal)
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `stones = [2, 4, 3, 8]`
+
+```
+stones = [2, 4, 3, 8]
+
+Build heap: [8, 4, 3, 2] (max heap)
+
+Turn 1:
+  Extract: first = 8, second = 4
+  Diff: 8 - 4 = 4
+  Insert 4: heap = [4, 3, 2]
+
+Turn 2:
+  Extract: first = 4, second = 3
+  Diff: 4 - 3 = 1
+  Insert 1: heap = [2, 1]
+
+Turn 3:
+  Extract: first = 2, second = 1
+  Diff: 2 - 1 = 1
+  Insert 1: heap = [1]
+
+Result: 1
+```
+
+Let's trace through Example 2: `stones = [1, 2, 3, 4]`
+
+```
+stones = [1, 2, 3, 4]
+
+Build heap: [4, 3, 2, 1]
+
+Turn 1:
+  Extract: first = 4, second = 3
+  Diff: 4 - 3 = 1
+  Insert 1: heap = [2, 1, 1]
+
+Turn 2:
+  Extract: first = 2, second = 1
+  Diff: 2 - 1 = 1
+  Insert 1: heap = [1, 1]
+
+Turn 3:
+  Extract: first = 1, second = 1
+  Diff: 1 - 1 = 0
+  Both destroyed: heap = []
+
+Result: 0
+```
+
+## Visual Representation
+
+```
+Example 1: stones = [2, 4, 3, 8]
+
+Initial: [8, 4, 3, 2]
+
+Turn 1: Smash 8 and 4
+  8 - 4 = 4
+  Remaining: [4, 3, 2]
+
+Turn 2: Smash 4 and 3
+  4 - 3 = 1
+  Remaining: [2, 1]
+
+Turn 3: Smash 2 and 1
+  2 - 1 = 1
+  Remaining: [1]
+
+Result: 1
+
+Example 2: stones = [1, 2, 3, 4]
+
+Initial: [4, 3, 2, 1]
+
+Turn 1: Smash 4 and 3
+  4 - 3 = 1
+  Remaining: [2, 1, 1]
+
+Turn 2: Smash 2 and 1
+  2 - 1 = 1
+  Remaining: [1, 1]
+
+Turn 3: Smash 1 and 1
+  1 - 1 = 0
+  Both destroyed
+  Remaining: []
+
+Result: 0
+```
+
+## Edge Cases
+
+- **Single stone**: Return its weight
+- **Two equal stones**: Both destroyed, return 0
+- **All equal stones**: All destroyed in pairs, return 0
+- **One stone much larger**: Eventually becomes the last stone
+- **Empty array**: Return 0 (shouldn't happen per problem)
+
+## Important Notes
+
+- **Max heap**: Efficiently get two heaviest stones
+- **Difference**: Always `first - second` (non-negative)
+- **Equal weights**: Both destroyed (diff = 0)
+- **O(n log n) time**: Heap operations
+- **Greedy**: Always smash two heaviest (optimal)
+
+## Why Max Heap Works
+
+**Key insight**: 
+- We need to repeatedly find the two heaviest stones
+- Max heap provides O(log n) insertion and O(log n) extraction
+- This is more efficient than sorting the entire array each time
+
+**Greedy choice**: 
+- Always smashing the two heaviest stones is optimal
+- This minimizes the remaining weight after each operation
+- Leads to the correct final result
+
+## Related Problems
+
+- **Kth Largest Element**: Similar heap usage
+- **Merge K Sorted Lists**: Different heap problem
+- **Top K Frequent Elements**: Different heap problem
+- **Find Median from Data Stream**: Different heap problem
+
+## Takeaways
+
+- **Max heap** efficiently handles repeated max operations
+- **Simulation** of the smashing process
+- **Greedy** approach (always smash two heaviest)
+- **O(n log n) time** with heap
+- **Classic heap problem** with practical applications
+

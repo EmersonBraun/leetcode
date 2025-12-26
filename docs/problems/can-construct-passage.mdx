@@ -1,0 +1,358 @@
+---
+id: can-construct-passage
+title: Can Construct Passage
+slug: /problems/can-construct-passage
+difficulty: Easy
+tags: [string, hash-table, counting]
+---
+
+# Can Construct Passage
+
+This question is asked by Amazon. Given two strings, `passage` and `text`, return whether or not the characters in `text` can be used to form the given `passage`.
+
+**Note:** Each character in `text` may only be used once and `passage` and `text` will only contain lowercase alphabetical characters.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: passage = "bat", text = "cat"
+Output: false
+Explanation:
+passage needs: b, a, t
+text has: c, a, t
+text is missing 'b', so cannot form passage.
+```
+
+**Example 2:**
+```
+Input: passage = "dog", text = "didnotgo"
+Output: true
+Explanation:
+passage needs: d, o, g
+text has: d, i, d, n, o, t, g, o
+- 'd': text has 2, passage needs 1 ✓
+- 'o': text has 2, passage needs 1 ✓
+- 'g': text has 1, passage needs 1 ✓
+All characters available, can form passage.
+```
+
+**Example 3:**
+```
+Input: passage = "abc", text = "aabbcc"
+Output: true
+Explanation:
+passage needs: a, b, c (one of each)
+text has: a, a, b, b, c, c
+All characters available in sufficient quantity.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **character frequency counting**:
+
+1. **Count characters in text**: Count frequency of each character in `text`
+2. **Check passage**: For each character in `passage`, check if `text` has enough
+3. **Decrement count**: When using a character, decrement its count
+4. **Return result**: Return true if all characters in `passage` are available
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Frequency Counting"
+  code={`/**
+ * Check if text can form passage
+ * @param {string} passage - Target passage to form
+ * @param {string} text - Available characters
+ * @return {boolean} - True if passage can be formed
+ */
+function canConstruct(passage, text) {
+  // Count frequency of each character in text
+  const textCount = new Map();
+  for (const char of text) {
+    textCount.set(char, (textCount.get(char) || 0) + 1);
+  }
+  
+  // Check if we have enough characters for passage
+  for (const char of passage) {
+    const count = textCount.get(char) || 0;
+    if (count === 0) {
+      // Not enough of this character
+      return false;
+    }
+    // Use one character
+    textCount.set(char, count - 1);
+  }
+  
+  return true;
+}
+
+// Test cases
+console.log('Example 1:', canConstruct("bat", "cat")); 
+// false
+
+console.log('Example 2:', canConstruct("dog", "didnotgo")); 
+// true
+
+console.log('Example 3:', canConstruct("abc", "aabbcc")); 
+// true
+
+console.log('Test 4:', canConstruct("aabb", "ab")); 
+// false`}
+  testCases={[
+    { input: 'canConstruct("bat", "cat")', expected: 'false' },
+    { input: 'canConstruct("dog", "didnotgo")', expected: 'true' },
+    { input: 'canConstruct("abc", "aabbcc")', expected: 'true' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Frequency Counting"
+  code={`from typing import Dict
+from collections import Counter
+
+def can_construct(passage: str, text: str) -> bool:
+    """
+    Check if text can form passage
+    
+    Args:
+        passage: Target passage to form
+        text: Available characters
+        
+    Returns:
+        bool: True if passage can be formed
+    """
+    # Count frequency of each character in text
+    text_count = Counter(text)
+    
+    # Check if we have enough characters for passage
+    for char in passage:
+        if text_count[char] == 0:
+            # Not enough of this character
+            return False
+        # Use one character
+        text_count[char] -= 1
+    
+    return True
+
+# Test cases
+print('Example 1:', can_construct("bat", "cat"))  
+# False
+
+print('Example 2:', can_construct("dog", "didnotgo"))  
+# True
+
+print('Example 3:', can_construct("abc", "aabbcc"))  
+# True
+
+print('Test 4:', can_construct("aabb", "ab"))  
+# False`}
+  testCases={[
+    { input: 'can_construct("bat", "cat")', expected: 'False' },
+    { input: 'can_construct("dog", "didnotgo")', expected: 'True' },
+    { input: 'can_construct("abc", "aabbcc")', expected: 'True' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Array-based)
+
+Here's a version using an array for character counting:
+
+<Tabs>
+<TabItem value="javascript-array" label="JavaScript Array" default>
+
+```javascript
+/**
+ * Using array for character counting
+ */
+function canConstructArray(passage, text) {
+  // Array of size 26 for lowercase letters
+  const count = new Array(26).fill(0);
+  
+  // Count characters in text
+  for (const char of text) {
+    const index = char.charCodeAt(0) - 'a'.charCodeAt(0);
+    count[index]++;
+  }
+  
+  // Check passage
+  for (const char of passage) {
+    const index = char.charCodeAt(0) - 'a'.charCodeAt(0);
+    if (count[index] === 0) {
+      return false;
+    }
+    count[index]--;
+  }
+  
+  return true;
+}
+```
+
+</TabItem>
+<TabItem value="python-array" label="Python Array">
+
+```python
+def can_construct_array(passage: str, text: str) -> bool:
+    """
+    Using array for character counting
+    """
+    # Array of size 26 for lowercase letters
+    count = [0] * 26
+    
+    # Count characters in text
+    for char in text:
+        index = ord(char) - ord('a')
+        count[index] += 1
+    
+    # Check passage
+    for char in passage:
+        index = ord(char) - ord('a')
+        if count[index] == 0:
+            return False
+        count[index] -= 1
+    
+    return True
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(m + n) - Where m is the length of `passage` and n is the length of `text`. We iterate through both strings once.
+- **Space Complexity:** O(1) - For the character count map/array. Since we only have 26 lowercase letters, it's O(1) space.
+
+## Approach
+
+The solution uses **character frequency counting**:
+
+1. **Count characters in text**: 
+   - Create a frequency map/array for characters in `text`
+   - Count how many times each character appears
+
+2. **Check passage**: 
+   - For each character in `passage`, check if `text` has enough
+   - If count is 0, return false (not enough characters)
+
+3. **Decrement count**: 
+   - When using a character, decrement its count
+   - This simulates using the character once
+
+4. **Return result**: 
+   - If all characters in `passage` are available, return true
+
+## Key Insights
+
+- **Frequency counting**: Track how many of each character are available
+- **One-time use**: Each character in `text` can only be used once
+- **Check availability**: For each character in `passage`, verify it exists in `text`
+- **Decrement on use**: Simulate using characters by decrementing count
+- **O(m+n) time**: Must process both strings
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `passage = "bat"`, `text = "cat"`
+
+```
+Step 1: Count characters in text
+  text = "cat"
+  textCount = {
+    'c': 1,
+    'a': 1,
+    't': 1
+  }
+
+Step 2: Check characters in passage
+  passage = "bat"
+  
+  Check 'b':
+    textCount.get('b') = undefined → 0
+    count === 0? Yes → return false
+  
+  Result: false (missing 'b')
+```
+
+## Visual Representation
+
+```
+Example 1: passage = "bat", text = "cat"
+
+passage needs:  b  a  t
+                1  1  1
+
+text has:       c  a  t
+                1  1  1
+
+Check:
+  'b' needed: text has 0 ✗
+  Cannot form passage
+
+Example 2: passage = "dog", text = "didnotgo"
+
+passage needs:  d  o  g
+                1  1  1
+
+text has:       d  i  d  n  o  t  g  o
+                2  1  2  1  2  1  1  2
+
+Check:
+  'd' needed: text has 2 ✓ (use 1, remaining 1)
+  'o' needed: text has 2 ✓ (use 1, remaining 1)
+  'g' needed: text has 1 ✓ (use 1, remaining 0)
+  
+  Can form passage ✓
+```
+
+## Edge Cases
+
+- **Empty passage**: Return true (can form empty string)
+- **Empty text**: Return false if passage is not empty
+- **Same strings**: Return true
+- **Passage longer than text**: Return false
+- **All same character**: Works correctly (e.g., "aaa" from "aa" → false)
+- **No overlap**: Return false
+
+## Important Notes
+
+- **One-time use**: Each character in `text` can only be used once
+- **Frequency matters**: Need enough of each character
+- **Order doesn't matter**: Can rearrange characters
+- **Lowercase only**: Problem states only lowercase letters
+- **O(m+n) time**: Must process both strings
+
+## Why Frequency Counting Works
+
+**Key insight**: 
+- We need to check if `text` has enough of each character
+- Frequency map tracks available characters
+- Decrementing simulates using characters
+- If any character is missing, cannot form passage
+
+## Related Problems
+
+- **Ransom Note**: Similar problem (can form note from magazine)
+- **Valid Anagram**: Check if strings are anagrams
+- **Group Anagrams**: Different problem
+- **Isomorphic Strings**: Different problem
+
+## Takeaways
+
+- **Frequency counting** efficiently tracks available characters
+- **Hash map/array** for O(1) character lookup
+- **Decrement on use** simulates using characters
+- **O(m+n) time** is optimal (must process both strings)
+- **O(1) space** for character counting (26 letters)
+

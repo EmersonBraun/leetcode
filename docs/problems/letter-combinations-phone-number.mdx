@@ -1,0 +1,422 @@
+---
+id: letter-combinations-phone-number
+title: Letter Combinations of a Phone Number
+slug: /problems/letter-combinations-phone-number
+difficulty: Medium
+tags: [backtracking, string, recursion]
+leetcode: https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+---
+
+# Letter Combinations of a Phone Number
+
+This question is asked by Google. Given a string of digits, return all possible text messages those digits could send.
+
+**Note:** The mapping of digits to letters is as follows:
+
+- 0 → null
+- 1 → null
+- 2 → "abc"
+- 3 → "def"
+- 4 → "ghi"
+- 5 → "jkl"
+- 6 → "mno"
+- 7 → "pqrs"
+- 8 → "tuv"
+- 9 → "wxyz"
+
+## Example(s)
+
+**Example 1:**
+```
+Input: digits = "23"
+Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+Explanation:
+Digit 2 maps to "abc"
+Digit 3 maps to "def"
+All combinations: a+d, a+e, a+f, b+d, b+e, b+f, c+d, c+e, c+f
+Total: 3 × 3 = 9 combinations
+```
+
+**Example 2:**
+```
+Input: digits = "2"
+Output: ["a", "b", "c"]
+Explanation:
+Digit 2 maps to "abc"
+Only one digit, so all its letters.
+```
+
+**Example 3:**
+```
+Input: digits = ""
+Output: []
+Explanation:
+Empty string, no combinations.
+```
+
+**Example 4:**
+```
+Input: digits = "79"
+Output: ["pw", "px", "py", "pz", "qw", "qx", "qy", "qz", "rw", "rx", "ry", "rz", "sw", "sx", "sy", "sz"]
+Explanation:
+Digit 7 maps to "pqrs" (4 letters)
+Digit 9 maps to "wxyz" (4 letters)
+Total: 4 × 4 = 16 combinations
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Backtracking (DFS)**:
+
+1. **Digit mapping**: Map each digit to its corresponding letters
+2. **Backtracking**: For each digit, try all possible letters
+3. **Recursive building**: Build combinations digit by digit
+4. **Base case**: When all digits processed, add combination to results
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Backtracking"
+  code={`/**
+ * Generate all letter combinations from phone number digits
+ * @param {string} digits - String of digits
+ * @return {string[]} - All possible letter combinations
+ */
+function letterCombinations(digits) {
+  // Handle empty input
+  if (!digits || digits.length === 0) {
+    return [];
+  }
+  
+  // Digit to letters mapping
+  const digitMap = {
+    '0': '',
+    '1': '',
+    '2': 'abc',
+    '3': 'def',
+    '4': 'ghi',
+    '5': 'jkl',
+    '6': 'mno',
+    '7': 'pqrs',
+    '8': 'tuv',
+    '9': 'wxyz'
+  };
+  
+  const result = [];
+  const current = [];
+  
+  /**
+   * Backtracking function
+   * @param {number} index - Current digit index
+   */
+  function backtrack(index) {
+    // Base case: processed all digits
+    if (index === digits.length) {
+      result.push(current.join(''));
+      return;
+    }
+    
+    // Get letters for current digit
+    const digit = digits[index];
+    const letters = digitMap[digit];
+    
+    // Skip if digit maps to empty string (0 or 1)
+    if (letters.length === 0) {
+      backtrack(index + 1);
+      return;
+    }
+    
+    // Try each letter for current digit
+    for (const letter of letters) {
+      current.push(letter);
+      backtrack(index + 1);
+      current.pop(); // Backtrack
+    }
+  }
+  
+  backtrack(0);
+  return result;
+}
+
+// Test cases
+console.log('Example 1:', letterCombinations("23")); 
+// ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+
+console.log('Example 2:', letterCombinations("2")); 
+// ["a", "b", "c"]
+
+console.log('Example 3:', letterCombinations("")); 
+// []
+
+console.log('Example 4:', letterCombinations("79")); 
+// ["pw", "px", "py", "pz", "qw", "qx", "qy", "qz", "rw", "rx", "ry", "rz", "sw", "sx", "sy", "sz"]`}
+  testCases={[
+    { input: 'JSON.stringify(letterCombinations("23"))', expected: '["ad","ae","af","bd","be","bf","cd","ce","cf"]' },
+    { input: 'JSON.stringify(letterCombinations("2"))', expected: '["a","b","c"]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Backtracking"
+  code={`from typing import List
+
+def letter_combinations(digits: str) -> List[str]:
+    """
+    Generate all letter combinations from phone number digits
+    
+    Args:
+        digits: String of digits
+        
+    Returns:
+        List[str]: All possible letter combinations
+    """
+    # Handle empty input
+    if not digits:
+        return []
+    
+    # Digit to letters mapping
+    digit_map = {
+        '0': '',
+        '1': '',
+        '2': 'abc',
+        '3': 'def',
+        '4': 'ghi',
+        '5': 'jkl',
+        '6': 'mno',
+        '7': 'pqrs',
+        '8': 'tuv',
+        '9': 'wxyz'
+    }
+    
+    result = []
+    current = []
+    
+    def backtrack(index: int):
+        """
+        Backtracking function
+        
+        Args:
+            index: Current digit index
+        """
+        # Base case: processed all digits
+        if index == len(digits):
+            result.append(''.join(current))
+            return
+        
+        # Get letters for current digit
+        digit = digits[index]
+        letters = digit_map[digit]
+        
+        # Skip if digit maps to empty string (0 or 1)
+        if len(letters) == 0:
+            backtrack(index + 1)
+            return
+        
+        # Try each letter for current digit
+        for letter in letters:
+            current.append(letter)
+            backtrack(index + 1)
+            current.pop()  # Backtrack
+    
+    backtrack(0)
+    return result
+
+# Test cases
+print('Example 1:', letter_combinations("23"))  
+# ['ad', 'ae', 'af', 'bd', 'be', 'bf', 'cd', 'ce', 'cf']
+
+print('Example 2:', letter_combinations("2"))  
+# ['a', 'b', 'c']
+
+print('Example 3:', letter_combinations(""))  
+# []
+
+print('Example 4:', letter_combinations("79"))  
+# ['pw', 'px', 'py', 'pz', 'qw', 'qx', 'qy', 'qz', 'rw', 'rx', 'ry', 'rz', 'sw', 'sx', 'sy', 'sz']`}
+  testCases={[
+    { input: 'letter_combinations("23")', expected: "['ad', 'ae', 'af', 'bd', 'be', 'bf', 'cd', 'ce', 'cf']" },
+    { input: 'letter_combinations("2")', expected: "['a', 'b', 'c']" }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(4^N × N) - Where N is the number of digits. In the worst case, each digit maps to 4 letters (7 or 9), so we have 4^N combinations, and each combination takes O(N) to build.
+- **Space Complexity:** O(N) - For the recursion stack and current combination (excluding output space).
+
+## Approach
+
+The solution uses **Backtracking (DFS)**:
+
+1. **Digit mapping**: 
+   - Create a map from digits to their corresponding letters
+   - Handle special cases: 0 and 1 map to empty strings
+
+2. **Backtracking function**: 
+   - `backtrack(index)`: Generate combinations starting from digit at `index`
+   - Process digits from left to right
+
+3. **For each digit**: 
+   - Get the letters mapped to the current digit
+   - If empty (0 or 1), skip to next digit
+   - Otherwise, try each letter for this digit
+
+4. **Recursive building**: 
+   - Add letter to current combination
+   - Recursively process next digit
+   - Backtrack by removing the letter
+
+5. **Base case**: 
+   - When `index === digits.length`, we've processed all digits
+   - Add current combination to results
+
+## Key Insights
+
+- **Backtracking**: Explore all possible letter combinations
+- **Cartesian product**: Each digit contributes one letter to the combination
+- **Handle 0 and 1**: These digits map to empty strings (skip them)
+- **O(4^N) combinations**: In worst case (all 7s or 9s)
+- **Systematic exploration**: Backtracking ensures all combinations are generated
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `digits = "23"`
+
+```
+digits = "23"
+digitMap = {
+  '2': 'abc',
+  '3': 'def'
+}
+
+result = []
+current = []
+
+backtrack(0):
+  index = 0, digit = '2', letters = 'abc'
+  
+  For letter = 'a':
+    current = ['a']
+    backtrack(1):
+      index = 1, digit = '3', letters = 'def'
+      
+      For letter = 'd':
+        current = ['a', 'd']
+        backtrack(2):
+          index = 2 === length → add "ad" to result
+        current.pop() → ['a']
+      
+      For letter = 'e':
+        current = ['a', 'e']
+        backtrack(2):
+          index = 2 === length → add "ae" to result
+        current.pop() → ['a']
+      
+      For letter = 'f':
+        current = ['a', 'f']
+        backtrack(2):
+          index = 2 === length → add "af" to result
+        current.pop() → ['a']
+    
+    current.pop() → []
+  
+  For letter = 'b':
+    current = ['b']
+    backtrack(1):
+      ... (similar, generates "bd", "be", "bf")
+    current.pop() → []
+  
+  For letter = 'c':
+    current = ['c']
+    backtrack(1):
+      ... (similar, generates "cd", "ce", "cf")
+    current.pop() → []
+
+Result: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+```
+
+## Visual Representation
+
+```
+Example 1: digits = "23"
+
+Digit 2: "abc"    Digit 3: "def"
+
+Backtracking tree:
+  backtrack(0)
+    ├─ 'a' → backtrack(1)
+    │   ├─ 'd' → "ad" ✓
+    │   ├─ 'e' → "ae" ✓
+    │   └─ 'f' → "af" ✓
+    ├─ 'b' → backtrack(1)
+    │   ├─ 'd' → "bd" ✓
+    │   ├─ 'e' → "be" ✓
+    │   └─ 'f' → "bf" ✓
+    └─ 'c' → backtrack(1)
+        ├─ 'd' → "cd" ✓
+        ├─ 'e' → "ce" ✓
+        └─ 'f' → "cf" ✓
+
+Result: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+
+Total combinations: 3 × 3 = 9
+```
+
+## Edge Cases
+
+- **Empty string**: Return [] (no combinations)
+- **Single digit**: Return all letters for that digit
+- **Digits 0 or 1**: Skip them (map to empty strings)
+- **All same digit**: Generate all combinations with that digit's letters
+- **Mixed digits**: Handle different letter counts per digit
+
+## Important Notes
+
+- **Digit mapping**: Standard phone keypad mapping
+- **0 and 1**: Map to empty strings (no letters)
+- **Cartesian product**: Each digit contributes one letter
+- **O(4^N) combinations**: In worst case
+- **Backtracking**: Systematically explores all combinations
+
+## Why Backtracking Works
+
+**Key insight**: 
+- We need to generate all possible combinations of letters
+- Each digit contributes one letter to the combination
+- This is a Cartesian product of all letter sets
+- Backtracking systematically explores all possibilities
+
+**Optimal substructure**: 
+- To generate combinations for digits[index...], we:
+  - Choose a letter for digits[index]
+  - Recursively generate combinations for digits[index+1...]
+- This creates the recursive structure
+
+## Related Problems
+
+- **Generate Parentheses**: Similar backtracking problem
+- **Combination Sum**: Different backtracking problem
+- **Permutations**: Different combination problem
+- **Subsets**: Different combination problem
+
+## Takeaways
+
+- **Backtracking** explores all letter combinations
+- **Cartesian product** of letter sets for each digit
+- **Handle 0 and 1** as special cases (empty strings)
+- **O(4^N) time** exponential but necessary
+- **Classic backtracking problem** with practical applications
+

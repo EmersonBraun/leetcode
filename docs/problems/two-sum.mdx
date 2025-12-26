@@ -1,0 +1,326 @@
+---
+id: two-sum
+title: Two Sum
+slug: /problems/two-sum
+difficulty: Easy
+tags: [array, hash-table]
+leetcode: https://leetcode.com/problems/two-sum/
+---
+
+# Two Sum
+
+Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.
+
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
+
+You can return the answer in any order.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: nums = [2,7,11,15], target = 9
+Output: [0,1]
+Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
+```
+
+**Example 2:**
+```
+Input: nums = [3,2,4], target = 6
+Output: [1,2]
+Explanation: Because nums[1] + nums[2] == 6, we return [1, 2].
+```
+
+**Example 3:**
+```
+Input: nums = [3,3], target = 6
+Output: [0,1]
+Explanation: Because nums[0] + nums[1] == 6, we return [0, 1].
+```
+
+## Brute Force
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+```javascript
+/**
+ * Find two numbers that add up to target using brute force
+ * @param {number[]} nums - Input array
+ * @param {number} target - Target sum
+ * @return {number[]} - Indices of the two numbers
+ */
+function twoSum(nums, target) {
+  for (let i = 0; i < nums.length; i++) {
+    for (let j = i + 1; j < nums.length; j++) {
+      if (nums[i] + nums[j] === target) {
+        return [i, j];
+      }
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+```python
+from typing import List
+
+def two_sum(nums: List[int], target: int) -> List[int]:
+    """
+    Find two numbers that add up to target using brute force
+    
+    Args:
+        nums: Input array
+        target: Target sum
+        
+    Returns:
+        List[int]: Indices of the two numbers
+    """
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            if nums[i] + nums[j] == target:
+                return [i, j]
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity (Brute Force)
+
+- **Time Complexity:** O(n²) - Nested loops over the array
+- **Space Complexity:** O(1) - Constant extra space
+
+## Optimized Solution
+
+<Tabs>
+<TabItem value="javascript-opt" label="JavaScript Solution" default>
+
+```javascript
+/**
+ * Find two numbers that add up to target using hash map
+ * @param {number[]} nums - Input array
+ * @param {number} target - Target sum
+ * @return {number[]} - Indices of the two numbers
+ */
+function twoSumOptimized(nums, target) {
+  const numToIndex = new Map();
+  
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    if (numToIndex.has(complement)) {
+      return [numToIndex.get(complement), i];
+    }
+    numToIndex.set(nums[i], i);
+  }
+}
+```
+
+</TabItem>
+<TabItem value="python-opt" label="Python Solution">
+
+```python
+from typing import List
+
+def two_sum_optimized(nums: List[int], target: int) -> List[int]:
+    """
+    Find two numbers that add up to target using hash map
+    
+    Args:
+        nums: Input array
+        target: Target sum
+        
+    Returns:
+        List[int]: Indices of the two numbers
+    """
+    num_to_index = {}
+    
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in num_to_index:
+            return [num_to_index[complement], i]
+        num_to_index[num] = i
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity (Optimized)
+
+- **Time Complexity:** O(n) - Single pass through the array
+- **Space Complexity:** O(n) - Space for the hash map
+
+## Interactive Code Runner
+
+import CodeRunner from '@site/src/components/CodeRunner';
+
+### Test the Brute Force Solution
+
+<Tabs>
+<TabItem value="javascript-brute" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Brute Force Solution"
+  code={`/**
+ * Find two numbers that add up to target using brute force
+ * @param {number[]} nums - Input array
+ * @param {number} target - Target sum
+ * @return {number[]} - Indices of the two numbers
+ */
+function twoSum(nums, target) {
+  for (let i = 0; i < nums.length; i++) {
+    for (let j = i + 1; j < nums.length; j++) {
+      if (nums[i] + nums[j] === target) {
+        return [i, j];
+      }
+    }
+  }
+}
+
+// Test cases
+console.log(twoSum([2,7,11,15], 9)); // [0,1]
+console.log(twoSum([3,2,4], 6)); // [1,2]
+console.log(twoSum([3,3], 6)); // [0,1]
+console.log(twoSum([1,5,8,10], 9)); // [0,2]`}
+  testCases={[
+    { input: 'twoSum([2,7,11,15], 9)', expected: '[0,1]' },
+    { input: 'twoSum([3,2,4], 6)', expected: '[1,2]' },
+    { input: 'twoSum([3,3], 6)', expected: '[0,1]' },
+    { input: 'twoSum([1,5,8,10], 9)', expected: '[0,2]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python-brute" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Brute Force Solution"
+  code={`from typing import List
+
+def two_sum(nums: List[int], target: int) -> List[int]:
+    """
+    Find two numbers that add up to target using brute force
+    
+    Args:
+        nums: Input array
+        target: Target sum
+        
+    Returns:
+        List[int]: Indices of the two numbers
+    """
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            if nums[i] + nums[j] == target:
+                return [i, j]
+
+# Test cases
+print(two_sum([2,7,11,15], 9))  # [0,1]
+print(two_sum([3,2,4], 6))  # [1,2]
+print(two_sum([3,3], 6))  # [0,1]
+print(two_sum([1,5,8,10], 9))  # [0,2]`}
+  testCases={[
+    { input: 'two_sum([2,7,11,15], 9)', expected: '[0,1]' },
+    { input: 'two_sum([3,2,4], 6)', expected: '[1,2]' },
+    { input: 'two_sum([3,3], 6)', expected: '[0,1]' },
+    { input: 'two_sum([1,5,8,10], 9)', expected: '[0,2]' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+### Test the Optimized Solution
+
+<Tabs>
+<TabItem value="javascript-opt-run" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Optimized Solution"
+  code={`/**
+ * Find two numbers that add up to target using hash map
+ * @param {number[]} nums - Input array
+ * @param {number} target - Target sum
+ * @return {number[]} - Indices of the two numbers
+ */
+function twoSumOptimized(nums, target) {
+  const numToIndex = new Map();
+  
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    if (numToIndex.has(complement)) {
+      return [numToIndex.get(complement), i];
+    }
+    numToIndex.set(nums[i], i);
+  }
+}
+
+// Test cases
+console.log(twoSumOptimized([2,7,11,15], 9)); // [0,1]
+console.log(twoSumOptimized([3,2,4], 6)); // [1,2]
+console.log(twoSumOptimized([3,3], 6)); // [0,1]
+console.log(twoSumOptimized([1,5,8,10], 9)); // [0,2]`}
+  testCases={[
+    { input: 'twoSumOptimized([2,7,11,15], 9)', expected: '[0,1]' },
+    { input: 'twoSumOptimized([3,2,4], 6)', expected: '[1,2]' },
+    { input: 'twoSumOptimized([3,3], 6)', expected: '[0,1]' },
+    { input: 'twoSumOptimized([1,5,8,10], 9)', expected: '[0,2]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python-opt-run" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Optimized Solution"
+  code={`from typing import List
+
+def two_sum_optimized(nums: List[int], target: int) -> List[int]:
+    """
+    Find two numbers that add up to target using hash map
+    
+    Args:
+        nums: Input array
+        target: Target sum
+        
+    Returns:
+        List[int]: Indices of the two numbers
+    """
+    num_to_index = {}
+    
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in num_to_index:
+            return [num_to_index[complement], i]
+        num_to_index[num] = i
+
+# Test cases
+print(two_sum_optimized([2,7,11,15], 9))  # [0,1]
+print(two_sum_optimized([3,2,4], 6))  # [1,2]
+print(two_sum_optimized([3,3], 6))  # [0,1]
+print(two_sum_optimized([1,5,8,10], 9))  # [0,2]`}
+  testCases={[
+    { input: 'two_sum_optimized([2,7,11,15], 9)', expected: '[0,1]' },
+    { input: 'two_sum_optimized([3,2,4], 6)', expected: '[1,2]' },
+    { input: 'two_sum_optimized([3,3], 6)', expected: '[0,1]' },
+    { input: 'two_sum_optimized([1,5,8,10], 9)', expected: '[0,2]' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Takeaways
+
+- **Hash map approach** is more efficient than brute force for finding pairs
+- **One-pass solution** optimizes both time and implementation simplicity
+- **Index tracking** is crucial since we need to return indices, not values
+- **Edge cases** like duplicate numbers should be handled properly
+- **Assumption of exactly one solution** simplifies the implementation

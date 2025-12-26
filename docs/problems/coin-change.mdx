@@ -1,0 +1,438 @@
+---
+id: coin-change
+title: Coin Change
+slug: /problems/coin-change
+difficulty: Medium
+tags: [dynamic-programming, array, greedy]
+leetcode: https://leetcode.com/problems/coin-change/
+---
+
+# Coin Change
+
+This question is asked by Facebook. Given an array that represents different coin denominations and an amount of change you need to make, return the fewest number of coins it takes to make the given amount of change.
+
+**Note:** If it is not possible to create the amount of change with the coins you're given, return -1.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: coins = [1, 5, 10, 25], amount = 78
+Output: 6
+Explanation:
+Take three 25 coins and three 1 coins:
+  3 × 25 = 75
+  3 × 1 = 3
+  Total: 75 + 3 = 78
+  Number of coins: 3 + 3 = 6
+```
+
+**Example 2:**
+```
+Input: coins = [1, 2, 5], amount = 11
+Output: 3
+Explanation:
+Take one 5 coin, one 5 coin, and one 1 coin:
+  5 + 5 + 1 = 11
+  Number of coins: 3
+Or: 5 + 2 + 2 + 2 = 11 (4 coins, not optimal)
+```
+
+**Example 3:**
+```
+Input: coins = [2], amount = 3
+Output: -1
+Explanation:
+Cannot make amount 3 with only 2 coins.
+```
+
+**Example 4:**
+```
+Input: coins = [1], amount = 0
+Output: 0
+Explanation:
+Amount 0 requires 0 coins.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Dynamic Programming**:
+
+1. **DP state**: `dp[i]` = minimum number of coins to make amount i
+2. **Base case**: `dp[0] = 0` (0 coins needed for amount 0)
+3. **Recurrence**: For each amount, try each coin denomination
+4. **Result**: `dp[amount]` or -1 if not possible
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Dynamic Programming"
+  code={`/**
+ * Find minimum number of coins to make amount
+ * @param {number[]} coins - Array of coin denominations
+ * @param {number} amount - Target amount
+ * @return {number} - Minimum number of coins, or -1 if not possible
+ */
+function coinChange(coins, amount) {
+  // dp[i] = minimum number of coins to make amount i
+  const dp = new Array(amount + 1).fill(Infinity);
+  dp[0] = 0; // Base case: 0 coins needed for amount 0
+  
+  // Fill DP table
+  for (let i = 1; i <= amount; i++) {
+    // Try each coin denomination
+    for (const coin of coins) {
+      // If coin is not larger than current amount
+      if (coin <= i) {
+        // Update dp[i] with minimum coins needed
+        dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+      }
+    }
+  }
+  
+  // Return result or -1 if not possible
+  return dp[amount] === Infinity ? -1 : dp[amount];
+}
+
+// Test cases
+console.log('Example 1:', coinChange([1, 5, 10, 25], 78)); 
+// 6
+
+console.log('Example 2:', coinChange([1, 2, 5], 11)); 
+// 3
+
+console.log('Example 3:', coinChange([2], 3)); 
+// -1
+
+console.log('Example 4:', coinChange([1], 0)); 
+// 0`}
+  testCases={[
+    { input: 'coinChange([1, 5, 10, 25], 78)', expected: '6' },
+    { input: 'coinChange([1, 2, 5], 11)', expected: '3' },
+    { input: 'coinChange([2], 3)', expected: '-1' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Dynamic Programming"
+  code={`from typing import List
+
+def coin_change(coins: List[int], amount: int) -> int:
+    """
+    Find minimum number of coins to make amount
+    
+    Args:
+        coins: Array of coin denominations
+        amount: Target amount
+        
+    Returns:
+        int: Minimum number of coins, or -1 if not possible
+    """
+    # dp[i] = minimum number of coins to make amount i
+    dp = [float('inf')] * (amount + 1)
+    dp[0] = 0  # Base case: 0 coins needed for amount 0
+    
+    # Fill DP table
+    for i in range(1, amount + 1):
+        # Try each coin denomination
+        for coin in coins:
+            # If coin is not larger than current amount
+            if coin <= i:
+                # Update dp[i] with minimum coins needed
+                dp[i] = min(dp[i], dp[i - coin] + 1)
+    
+    # Return result or -1 if not possible
+    return dp[amount] if dp[amount] != float('inf') else -1
+
+# Test cases
+print('Example 1:', coin_change([1, 5, 10, 25], 78))  
+# 6
+
+print('Example 2:', coin_change([1, 2, 5], 11))  
+# 3
+
+print('Example 3:', coin_change([2], 3))  
+# -1
+
+print('Example 4:', coin_change([1], 0))  
+# 0`}
+  testCases={[
+    { input: 'coin_change([1, 5, 10, 25], 78)', expected: '6' },
+    { input: 'coin_change([1, 2, 5], 11)', expected: '3' },
+    { input: 'coin_change([2], 3)', expected: '-1' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (BFS Approach)
+
+Here's a BFS approach that can be more efficient in some cases:
+
+<Tabs>
+<TabItem value="javascript-bfs" label="JavaScript BFS" default>
+
+```javascript
+/**
+ * BFS approach: Find minimum steps to reach amount
+ */
+function coinChangeBFS(coins, amount) {
+  if (amount === 0) return 0;
+  
+  const queue = [0];
+  const visited = new Set([0]);
+  let level = 0;
+  
+  while (queue.length > 0) {
+    const size = queue.length;
+    level++;
+    
+    for (let i = 0; i < size; i++) {
+      const current = queue.shift();
+      
+      for (const coin of coins) {
+        const next = current + coin;
+        
+        if (next === amount) {
+          return level;
+        }
+        
+        if (next < amount && !visited.has(next)) {
+          visited.add(next);
+          queue.push(next);
+        }
+      }
+    }
+  }
+  
+  return -1;
+}
+```
+
+</TabItem>
+<TabItem value="python-bfs" label="Python BFS">
+
+```python
+from collections import deque
+
+def coin_change_bfs(coins: List[int], amount: int) -> int:
+    """
+    BFS approach: Find minimum steps to reach amount
+    """
+    if amount == 0:
+        return 0
+    
+    queue = deque([0])
+    visited = {0}
+    level = 0
+    
+    while queue:
+        size = len(queue)
+        level += 1
+        
+        for _ in range(size):
+            current = queue.popleft()
+            
+            for coin in coins:
+                next_amount = current + coin
+                
+                if next_amount == amount:
+                    return level
+                
+                if next_amount < amount and next_amount not in visited:
+                    visited.add(next_amount)
+                    queue.append(next_amount)
+    
+    return -1
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(amount × n) - Where n is the number of coin denominations. For each amount from 1 to amount, we check all n coins.
+- **Space Complexity:** O(amount) - For the DP array of size amount + 1.
+
+## Approach
+
+The solution uses **Dynamic Programming**:
+
+1. **DP state**: 
+   - `dp[i]` = minimum number of coins to make amount i
+   - Initialize all values to Infinity (impossible)
+
+2. **Base case**: 
+   - `dp[0] = 0` - Zero coins needed for amount 0
+
+3. **Recurrence**: 
+   - For each amount i from 1 to amount:
+     - For each coin denomination:
+       - If coin ≤ i, try using this coin
+       - `dp[i] = min(dp[i], dp[i - coin] + 1)`
+   - This means: to make amount i, we can use one coin of value `coin` and then make amount `i - coin`
+
+4. **Result**: 
+   - If `dp[amount]` is Infinity, return -1 (not possible)
+   - Otherwise, return `dp[amount]`
+
+## Key Insights
+
+- **Dynamic Programming**: Optimal substructure - optimal solution uses optimal subproblems
+- **Unbounded knapsack**: Can use each coin multiple times
+- **Minimize coins**: Goal is minimum number, not maximum value
+- **O(amount × n) time**: Must check all amounts and all coins
+- **Greedy doesn't work**: Cannot use greedy (e.g., always use largest coin)
+
+## Step-by-Step Example
+
+Let's trace through Example 2: `coins = [1, 2, 5]`, `amount = 11`
+
+```
+coins = [1, 2, 5]
+amount = 11
+
+DP table (dp[i]):
+  dp[0] = 0
+
+  i=1: Try coins [1, 2, 5]
+    coin=1: dp[1] = min(∞, dp[0] + 1) = 1
+    coin=2: skip (2 > 1)
+    coin=5: skip (5 > 1)
+    dp[1] = 1
+  
+  i=2: Try coins [1, 2, 5]
+    coin=1: dp[2] = min(∞, dp[1] + 1) = 2
+    coin=2: dp[2] = min(2, dp[0] + 1) = 1
+    coin=5: skip
+    dp[2] = 1
+  
+  i=3: Try coins [1, 2, 5]
+    coin=1: dp[3] = min(∞, dp[2] + 1) = 2
+    coin=2: dp[3] = min(2, dp[1] + 1) = 2
+    coin=5: skip
+    dp[3] = 2
+  
+  i=4: Try coins [1, 2, 5]
+    coin=1: dp[4] = min(∞, dp[3] + 1) = 3
+    coin=2: dp[4] = min(3, dp[2] + 1) = 2
+    coin=5: skip
+    dp[4] = 2
+  
+  i=5: Try coins [1, 2, 5]
+    coin=1: dp[5] = min(∞, dp[4] + 1) = 3
+    coin=2: dp[5] = min(3, dp[3] + 1) = 3
+    coin=5: dp[5] = min(3, dp[0] + 1) = 1
+    dp[5] = 1
+  
+  ... (continue for i=6 to 11)
+  
+  i=11: Try coins [1, 2, 5]
+    coin=1: dp[11] = min(∞, dp[10] + 1) = ...
+    coin=2: dp[11] = min(..., dp[9] + 1) = ...
+    coin=5: dp[11] = min(..., dp[6] + 1) = ...
+    dp[11] = 3
+
+Result: dp[11] = 3
+
+Optimal solution: 5 + 5 + 1 = 11 (3 coins)
+```
+
+## Visual Representation
+
+```
+Example 1: coins = [1, 5, 10, 25], amount = 78
+
+DP approach:
+  For each amount from 1 to 78, try all coins
+  
+Optimal solution:
+  3 × 25 = 75
+  3 × 1 = 3
+  Total: 78
+  Coins: 3 + 3 = 6
+
+DP table (simplified):
+  dp[0] = 0
+  dp[1] = 1  (1 coin)
+  dp[5] = 1  (1 coin)
+  dp[10] = 1 (1 coin)
+  dp[25] = 1 (1 coin)
+  ...
+  dp[75] = 3 (3 × 25)
+  dp[78] = 6 (3 × 25 + 3 × 1)
+
+Result: 6
+
+Example 2: coins = [1, 2, 5], amount = 11
+
+Optimal solution:
+  5 + 5 + 1 = 11 (3 coins)
+
+Alternative (not optimal):
+  5 + 2 + 2 + 2 = 11 (4 coins)
+  2 + 2 + 2 + 2 + 2 + 1 = 11 (6 coins)
+```
+
+## Edge Cases
+
+- **Amount = 0**: Return 0 (no coins needed)
+- **No solution**: Return -1 (e.g., coins = [2], amount = 3)
+- **Single coin**: Check if amount is divisible by coin
+- **Large amount**: DP handles efficiently
+- **Duplicate coins**: Remove duplicates for efficiency
+
+## Important Notes
+
+- **Unbounded knapsack**: Can use each coin multiple times
+- **Minimize coins**: Goal is minimum number, not maximum value
+- **Greedy doesn't work**: Cannot always use largest coin first
+- **O(amount × n) time**: Must check all amounts and coins
+- **Return -1**: If amount cannot be made
+
+## Why Dynamic Programming Works
+
+**Optimal Substructure**: 
+- To make amount i with minimum coins, we can:
+  - Use one coin of value `coin`, then make amount `i - coin` with minimum coins
+- The optimal solution uses optimal solutions to subproblems
+
+**Overlapping Subproblems**: 
+- Multiple amounts may need the same subproblem solutions
+- DP stores and reuses these values
+
+## Why Greedy Doesn't Work
+
+**Counterexample**: 
+- coins = [1, 3, 4], amount = 6
+- Greedy: 4 + 1 + 1 = 6 (3 coins)
+- Optimal: 3 + 3 = 6 (2 coins)
+- Greedy fails because it always uses the largest coin first
+
+## Related Problems
+
+- **Coin Change 2**: Count number of ways to make amount
+- **Partition Equal Subset Sum**: Similar DP problem
+- **Combination Sum**: Find all combinations
+- **Minimum Cost For Tickets**: Similar optimization problem
+
+## Takeaways
+
+- **Dynamic Programming** solves this efficiently
+- **Unbounded knapsack** pattern (can reuse coins)
+- **Minimize coins** not maximize value
+- **Greedy doesn't work** for this problem
+- **O(amount × n) time** to fill DP table
+- **Classic DP problem** with many applications
+

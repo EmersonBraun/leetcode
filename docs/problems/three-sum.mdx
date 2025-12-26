@@ -1,0 +1,423 @@
+---
+id: three-sum
+title: 3Sum
+slug: /problems/three-sum
+difficulty: Medium
+tags: [array, two-pointers, sorting]
+leetcode: https://leetcode.com/problems/3sum/
+---
+
+# 3Sum
+
+Given a list of integers, `nums`, return a list containing all triplets that sum to zero.
+
+**Note:** The solution set must not contain duplicate triplets.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: nums = [0]
+Output: []
+Explanation: Need at least 3 numbers to form a triplet.
+```
+
+**Example 2:**
+```
+Input: nums = [0, -1, 1, 1, 2, -2]
+Output: [[-2,0,2],[-2,1,1],[-1,0,1]]
+Explanation: 
+- Triplet 1: -2 + 0 + 2 = 0
+- Triplet 2: -2 + 1 + 1 = 0
+- Triplet 3: -1 + 0 + 1 = 0
+```
+
+**Example 3:**
+```
+Input: nums = [-1, 0, 1, 2, -1, -4]
+Output: [[-1,-1,2],[-1,0,1]]
+Explanation:
+- Triplet 1: -1 + -1 + 2 = 0
+- Triplet 2: -1 + 0 + 1 = 0
+Note: [-1,0,1] appears only once even though -1 appears twice in input.
+```
+
+**Example 4:**
+```
+Input: nums = [0, 0, 0]
+Output: [[0,0,0]]
+Explanation: The only triplet that sums to zero.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **sorting** and **two pointers**:
+
+1. **Sort the array** to enable two-pointer technique and skip duplicates easily
+2. **Fix one number** (first element of triplet) and use two pointers for the remaining two
+3. **Two pointers**: Start with `left = i + 1` and `right = n - 1`
+4. **Move pointers** based on whether current sum is less than, equal to, or greater than zero
+5. **Skip duplicates** to avoid duplicate triplets in the result
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution"
+  code={`/**
+ * Find all unique triplets that sum to zero
+ * @param {number[]} nums - Array of integers
+ * @return {number[][]} - Array of triplets that sum to zero
+ */
+function threeSum(nums) {
+  const result = [];
+  const n = nums.length;
+  
+  // Need at least 3 numbers
+  if (n < 3) {
+    return result;
+  }
+  
+  // Sort the array to enable two-pointer technique
+  nums.sort((a, b) => a - b);
+  
+  // Fix the first element of the triplet
+  for (let i = 0; i < n - 2; i++) {
+    // Skip duplicates for the first element
+    if (i > 0 && nums[i] === nums[i - 1]) {
+      continue;
+    }
+    
+    // Two pointers for the remaining two elements
+    let left = i + 1;
+    let right = n - 1;
+    
+    while (left < right) {
+      const sum = nums[i] + nums[left] + nums[right];
+      
+      if (sum === 0) {
+        // Found a valid triplet
+        result.push([nums[i], nums[left], nums[right]]);
+        
+        // Skip duplicates for left pointer
+        while (left < right && nums[left] === nums[left + 1]) {
+          left++;
+        }
+        // Skip duplicates for right pointer
+        while (left < right && nums[right] === nums[right - 1]) {
+          right--;
+        }
+        
+        // Move both pointers
+        left++;
+        right--;
+      } else if (sum < 0) {
+        // Sum is too small, need larger numbers
+        left++;
+      } else {
+        // Sum is too large, need smaller numbers
+        right--;
+      }
+    }
+  }
+  
+  return result;
+}
+
+// Test cases
+console.log('Example 1:', threeSum([0])); // []
+console.log('Example 2:', threeSum([0, -1, 1, 1, 2, -2])); // [[-2,0,2],[-2,1,1],[-1,0,1]]
+console.log('Example 3:', threeSum([-1, 0, 1, 2, -1, -4])); // [[-1,-1,2],[-1,0,1]]
+console.log('Example 4:', threeSum([0, 0, 0])); // [[0,0,0]]
+console.log('Test 5:', threeSum([-2, 0, 1, 1, 2])); // [[-2,0,2],[-2,1,1]]`}
+  testCases={[
+    { input: 'JSON.stringify(threeSum([0]))', expected: '[]' },
+    { input: 'JSON.stringify(threeSum([0, -1, 1, 1, 2, -2]))', expected: '[[-2,0,2],[-2,1,1],[-1,0,1]]' },
+    { input: 'JSON.stringify(threeSum([-1, 0, 1, 2, -1, -4]))', expected: '[[-1,-1,2],[-1,0,1]]' },
+    { input: 'JSON.stringify(threeSum([0, 0, 0]))', expected: '[[0,0,0]]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution"
+  code={`from typing import List
+
+def three_sum(nums: List[int]) -> List[List[int]]:
+    """
+    Find all unique triplets that sum to zero
+    
+    Args:
+        nums: List of integers
+        
+    Returns:
+        List[List[int]]: List of triplets that sum to zero
+    """
+    result = []
+    n = len(nums)
+    
+    # Need at least 3 numbers
+    if n < 3:
+        return result
+    
+    # Sort the array to enable two-pointer technique
+    nums.sort()
+    
+    # Fix the first element of the triplet
+    for i in range(n - 2):
+        # Skip duplicates for the first element
+        if i > 0 and nums[i] == nums[i - 1]:
+            continue
+        
+        # Two pointers for the remaining two elements
+        left = i + 1
+        right = n - 1
+        
+        while left < right:
+            current_sum = nums[i] + nums[left] + nums[right]
+            
+            if current_sum == 0:
+                # Found a valid triplet
+                result.append([nums[i], nums[left], nums[right]])
+                
+                # Skip duplicates for left pointer
+                while left < right and nums[left] == nums[left + 1]:
+                    left += 1
+                # Skip duplicates for right pointer
+                while left < right and nums[right] == nums[right - 1]:
+                    right -= 1
+                
+                # Move both pointers
+                left += 1
+                right -= 1
+            elif current_sum < 0:
+                # Sum is too small, need larger numbers
+                left += 1
+            else:
+                # Sum is too large, need smaller numbers
+                right -= 1
+    
+    return result
+
+# Test cases
+print('Example 1:', three_sum([0]))  # []
+print('Example 2:', three_sum([0, -1, 1, 1, 2, -2]))  # [[-2,0,2],[-2,1,1],[-1,0,1]]
+print('Example 3:', three_sum([-1, 0, 1, 2, -1, -4]))  # [[-1,-1,2],[-1,0,1]]
+print('Example 4:', three_sum([0, 0, 0]))  # [[0,0,0]]
+print('Test 5:', three_sum([-2, 0, 1, 1, 2]))  # [[-2,0,2],[-2,1,1]]`}
+  testCases={[
+    { input: 'str(three_sum([0]))', expected: '[]' },
+    { input: 'str(three_sum([0, -1, 1, 1, 2, -2]))', expected: '[[-2, 0, 2], [-2, 1, 1], [-1, 0, 1]]' },
+    { input: 'str(three_sum([-1, 0, 1, 2, -1, -4]))', expected: '[[-1, -1, 2], [-1, 0, 1]]' },
+    { input: 'str(three_sum([0, 0, 0]))', expected: '[[0, 0, 0]]' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Hash Set)
+
+Here's an alternative approach using a hash set (though less efficient):
+
+<Tabs>
+<TabItem value="javascript-hash" label="JavaScript Hash Set" default>
+
+```javascript
+/**
+ * Alternative solution using hash set (O(n²) time, O(n) space)
+ * Less efficient but might be easier to understand
+ */
+function threeSumHashSet(nums) {
+  const result = [];
+  const n = nums.length;
+  
+  if (n < 3) return result;
+  
+  nums.sort((a, b) => a - b);
+  
+  for (let i = 0; i < n - 2; i++) {
+    // Skip duplicates
+    if (i > 0 && nums[i] === nums[i - 1]) continue;
+    
+    const seen = new Set();
+    
+    for (let j = i + 1; j < n; j++) {
+      const complement = -(nums[i] + nums[j]);
+      
+      if (seen.has(complement)) {
+        result.push([nums[i], complement, nums[j]]);
+        
+        // Skip duplicates
+        while (j + 1 < n && nums[j] === nums[j + 1]) {
+          j++;
+        }
+      }
+      
+      seen.add(nums[j]);
+    }
+  }
+  
+  return result;
+}
+```
+
+</TabItem>
+<TabItem value="python-hash" label="Python Hash Set">
+
+```python
+def three_sum_hash_set(nums: List[int]) -> List[List[int]]:
+    """
+    Alternative solution using hash set (O(n²) time, O(n) space)
+    """
+    result = []
+    n = len(nums)
+    
+    if n < 3:
+        return result
+    
+    nums.sort()
+    
+    for i in range(n - 2):
+        # Skip duplicates
+        if i > 0 and nums[i] == nums[i - 1]:
+            continue
+        
+        seen = set()
+        
+        for j in range(i + 1, n):
+            complement = -(nums[i] + nums[j])
+            
+            if complement in seen:
+                result.append([nums[i], complement, nums[j]])
+                
+                # Skip duplicates
+                while j + 1 < n and nums[j] == nums[j + 1]:
+                    j += 1
+            
+            seen.add(nums[j])
+    
+    return result
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n²) - Where n is the length of the array
+  - Sorting takes O(n log n)
+  - Outer loop: O(n)
+  - Inner two-pointer loop: O(n)
+  - Total: O(n log n) + O(n²) = O(n²)
+- **Space Complexity:** O(1) or O(n) depending on sorting algorithm
+  - The result array is not counted in space complexity
+  - If sorting is in-place: O(1)
+  - If sorting uses extra space: O(n)
+
+## Approach
+
+The solution uses **sorting** and **two pointers**:
+
+1. **Sort the array**: Enables two-pointer technique and makes duplicate skipping easier
+2. **Fix first element**: Iterate through array, fixing `nums[i]` as the first element
+3. **Two pointers**: Use `left = i + 1` and `right = n - 1` to find the remaining two elements
+4. **Adjust pointers**:
+   - If `sum < 0`: Move `left` right (need larger numbers)
+   - If `sum > 0`: Move `right` left (need smaller numbers)
+   - If `sum === 0`: Found a triplet, add to result and move both pointers
+5. **Skip duplicates**: After finding a valid triplet or when moving pointers, skip duplicate values
+
+## Key Insights
+
+- **Sorting is crucial**: Enables two-pointer technique and duplicate handling
+- **Two-pointer technique**: Reduces time from O(n³) to O(n²)
+- **Duplicate handling**: Must skip duplicates at all three positions (i, left, right)
+- **Early termination**: Can optimize by checking if `nums[i] > 0`, then break (since array is sorted)
+- **Fixed + two pointers**: Pattern for finding triplets/quads in sorted arrays
+
+## Step-by-Step Example
+
+Let's trace through Example 2: `nums = [0, -1, 1, 1, 2, -2]`
+
+```
+After sorting: [-2, -1, 0, 1, 1, 2]
+
+i = 0, nums[i] = -2
+  left = 1, right = 5
+  sum = -2 + (-1) + 2 = -1 < 0 → left++
+  
+  left = 2, right = 5
+  sum = -2 + 0 + 2 = 0 ✓ → Add [-2, 0, 2]
+  Skip duplicates, left = 3, right = 4
+  
+  left = 3, right = 4
+  sum = -2 + 1 + 1 = 0 ✓ → Add [-2, 1, 1]
+  left = 4, right = 3 → break
+
+i = 1, nums[i] = -1
+  left = 2, right = 5
+  sum = -1 + 0 + 2 = 1 > 0 → right--
+  
+  left = 2, right = 4
+  sum = -1 + 0 + 1 = 0 ✓ → Add [-1, 0, 1]
+  left = 3, right = 3 → break
+
+i = 2, nums[i] = 0
+  left = 3, right = 5
+  sum = 0 + 1 + 2 = 3 > 0 → right--
+  
+  left = 3, right = 4
+  sum = 0 + 1 + 1 = 2 > 0 → right--
+  
+  left = 3, right = 3 → break
+
+Result: [[-2,0,2],[-2,1,1],[-1,0,1]]
+```
+
+## Optimization: Early Termination
+
+We can add an early termination optimization:
+
+```javascript
+// After sorting, if the first element is positive, no triplets possible
+if (nums[0] > 0) {
+  return result;
+}
+
+// In the loop, if current element is positive, break
+if (nums[i] > 0) {
+  break;
+}
+```
+
+## Edge Cases
+
+- **Less than 3 elements**: Return empty array
+- **All zeros**: `[0, 0, 0]` → `[[0, 0, 0]]`
+- **No valid triplets**: Return empty array
+- **All positive or all negative**: No triplets possible (after sorting check)
+- **Many duplicates**: Algorithm handles this efficiently by skipping
+
+## Related Problems
+
+- **Two Sum**: Find two numbers that sum to target
+- **3Sum Closest**: Find triplet with sum closest to target
+- **4Sum**: Find quadruplets that sum to target
+
+## Takeaways
+
+- **Sorting + two pointers** is a powerful pattern for array problems
+- **Duplicate handling** is crucial when the problem asks for unique solutions
+- **Two-pointer technique** reduces time complexity from O(n³) to O(n²)
+- **Early termination** can optimize average-case performance
+- **Fixed element + two pointers** is the pattern for finding k-tuples (k > 2)
+

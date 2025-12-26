@@ -1,0 +1,401 @@
+---
+id: min-cost-climbing-stairs
+title: Min Cost Climbing Stairs
+slug: /problems/min-cost-climbing-stairs
+difficulty: Easy
+tags: [dynamic-programming, array]
+leetcode: https://leetcode.com/problems/min-cost-climbing-stairs/
+---
+
+# Min Cost Climbing Stairs
+
+This question is asked by Apple. Given a staircase where the ith step has a non-negative cost associated with it given by `cost[i]`, return the minimum cost of climbing to the top of the staircase. You may climb one or two steps at a time and you may start climbing from either the first or second step.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: cost = [5, 10, 20]
+Output: 10
+Explanation:
+You can start from step 1 (index 1) with cost 10, then take 2 steps to reach the top.
+Total cost: 10
+
+Alternative paths:
+  - Start from step 0 (cost 5), go to step 1 (cost 10), then 2 steps to top: 5 + 10 = 15
+  - Start from step 0 (cost 5), go to step 2 (cost 20), then 1 step to top: 5 + 20 = 25
+  - Start from step 1 (cost 10), go to step 2 (cost 20), then 1 step to top: 10 + 20 = 30
+Minimum: 10
+```
+
+**Example 2:**
+```
+Input: cost = [1, 5, 10, 3, 7, 2]
+Output: 10
+Explanation:
+Optimal path: Start from step 0 (cost 1), go to step 2 (cost 10), go to step 4 (cost 7), then 2 steps to top.
+Total: 1 + 10 + 7 = 18... wait, let me recalculate.
+
+Actually, the optimal path might be:
+  Start from step 0 (cost 1), go to step 2 (cost 10), go to step 3 (cost 3), go to step 5 (cost 2), then 1 step to top.
+  Total: 1 + 10 + 3 + 2 = 16
+
+Or: Start from step 1 (cost 5), go to step 3 (cost 3), go to step 5 (cost 2), then 1 step to top.
+  Total: 5 + 3 + 2 = 10 ✓
+```
+
+**Example 3:**
+```
+Input: cost = [10, 15, 20]
+Output: 15
+Explanation:
+Start from step 1 (cost 15), then take 2 steps to reach the top.
+Total cost: 15
+```
+
+**Example 4:**
+```
+Input: cost = [1, 100, 1, 1, 1, 100, 1, 1, 100, 1]
+Output: 6
+Explanation:
+Optimal path uses mostly the cheaper steps.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Dynamic Programming**:
+
+1. **DP state**: `dp[i]` = minimum cost to reach step i (or top if i = n)
+2. **Base cases**: `dp[0] = cost[0]`, `dp[1] = cost[1]` (can start from either)
+3. **Recurrence**: `dp[i] = cost[i] + min(dp[i-1], dp[i-2])`
+4. **Result**: `min(dp[n-1], dp[n-2])` since we can reach top from last two steps
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Dynamic Programming"
+  code={`/**
+ * Find minimum cost to climb stairs
+ * @param {number[]} cost - Cost array for each step
+ * @return {number} - Minimum cost to reach top
+ */
+function minCostClimbingStairs(cost) {
+  const n = cost.length;
+  
+  // dp[i] = minimum cost to reach step i
+  const dp = new Array(n);
+  
+  // Base cases: can start from step 0 or step 1
+  dp[0] = cost[0];
+  dp[1] = cost[1];
+  
+  // Fill DP table
+  for (let i = 2; i < n; i++) {
+    // To reach step i, can come from step i-1 or step i-2
+    // Cost = cost[i] + minimum of previous steps
+    dp[i] = cost[i] + Math.min(dp[i - 1], dp[i - 2]);
+  }
+  
+  // Can reach top from last step (n-1) or second-to-last step (n-2)
+  return Math.min(dp[n - 1], dp[n - 2]);
+}
+
+// Test cases
+console.log('Example 1:', minCostClimbingStairs([5, 10, 20])); 
+// 10
+
+console.log('Example 2:', minCostClimbingStairs([1, 5, 10, 3, 7, 2])); 
+// 10
+
+console.log('Example 3:', minCostClimbingStairs([10, 15, 20])); 
+// 15
+
+console.log('Example 4:', minCostClimbingStairs([1, 100, 1, 1, 1, 100, 1, 1, 100, 1])); 
+// 6`}
+  testCases={[
+    { input: 'minCostClimbingStairs([5, 10, 20])', expected: '10' },
+    { input: 'minCostClimbingStairs([1, 5, 10, 3, 7, 2])', expected: '10' },
+    { input: 'minCostClimbingStairs([10, 15, 20])', expected: '15' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Dynamic Programming"
+  code={`from typing import List
+
+def min_cost_climbing_stairs(cost: List[int]) -> int:
+    """
+    Find minimum cost to climb stairs
+    
+    Args:
+        cost: Cost array for each step
+        
+    Returns:
+        int: Minimum cost to reach top
+    """
+    n = len(cost)
+    
+    # dp[i] = minimum cost to reach step i
+    dp = [0] * n
+    
+    # Base cases: can start from step 0 or step 1
+    dp[0] = cost[0]
+    dp[1] = cost[1]
+    
+    # Fill DP table
+    for i in range(2, n):
+        # To reach step i, can come from step i-1 or step i-2
+        # Cost = cost[i] + minimum of previous steps
+        dp[i] = cost[i] + min(dp[i - 1], dp[i - 2])
+    
+    # Can reach top from last step (n-1) or second-to-last step (n-2)
+    return min(dp[n - 1], dp[n - 2])
+
+# Test cases
+print('Example 1:', min_cost_climbing_stairs([5, 10, 20]))  
+# 10
+
+print('Example 2:', min_cost_climbing_stairs([1, 5, 10, 3, 7, 2]))  
+# 10
+
+print('Example 3:', min_cost_climbing_stairs([10, 15, 20]))  
+# 15
+
+print('Example 4:', min_cost_climbing_stairs([1, 100, 1, 1, 1, 100, 1, 1, 100, 1]))  
+# 6`}
+  testCases={[
+    { input: 'min_cost_climbing_stairs([5, 10, 20])', expected: '10' },
+    { input: 'min_cost_climbing_stairs([1, 5, 10, 3, 7, 2])', expected: '10' },
+    { input: 'min_cost_climbing_stairs([10, 15, 20])', expected: '15' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Space-Optimized)
+
+Here's a space-optimized version using only O(1) space:
+
+<Tabs>
+<TabItem value="javascript-optimized" label="JavaScript Optimized" default>
+
+```javascript
+/**
+ * Space-optimized: O(1) space instead of O(n)
+ */
+function minCostClimbingStairsOptimized(cost) {
+  const n = cost.length;
+  
+  // Only need last two values
+  let prev2 = cost[0]; // dp[i-2]
+  let prev1 = cost[1]; // dp[i-1]
+  
+  for (let i = 2; i < n; i++) {
+    const current = cost[i] + Math.min(prev1, prev2);
+    prev2 = prev1;
+    prev1 = current;
+  }
+  
+  return Math.min(prev1, prev2);
+}
+```
+
+</TabItem>
+<TabItem value="python-optimized" label="Python Optimized">
+
+```python
+def min_cost_climbing_stairs_optimized(cost: List[int]) -> int:
+    """
+    Space-optimized: O(1) space instead of O(n)
+    """
+    n = len(cost)
+    
+    # Only need last two values
+    prev2 = cost[0]  # dp[i-2]
+    prev1 = cost[1]  # dp[i-1]
+    
+    for i in range(2, n):
+        current = cost[i] + min(prev1, prev2)
+        prev2 = prev1
+        prev1 = current
+    
+    return min(prev1, prev2)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the number of steps. We iterate through the cost array once.
+- **Space Complexity:** 
+  - **Standard DP**: O(n) - For the DP array
+  - **Optimized**: O(1) - Using only two variables
+
+## Approach
+
+The solution uses **Dynamic Programming**:
+
+1. **DP state**: 
+   - `dp[i]` = minimum cost to reach step i (including paying cost[i])
+   - We build up from the first two steps
+
+2. **Base cases**: 
+   - `dp[0] = cost[0]` - Cost to reach step 0 (starting from step 0)
+   - `dp[1] = cost[1]` - Cost to reach step 1 (starting from step 1)
+
+3. **Recurrence**: 
+   - To reach step i, can come from step i-1 or step i-2
+   - `dp[i] = cost[i] + min(dp[i-1], dp[i-2])`
+   - We pay cost[i] when we step on it, plus the minimum cost to reach it
+
+4. **Result**: 
+   - Can reach top from last step (n-1) or second-to-last step (n-2)
+   - Return `min(dp[n-1], dp[n-2])`
+
+## Key Insights
+
+- **Dynamic Programming**: Optimal substructure - optimal solution uses optimal subproblems
+- **Two starting points**: Can start from step 0 or step 1
+- **Two choices**: Can climb 1 or 2 steps at a time
+- **O(n) time**: Must process each step once
+- **Space optimization**: Can reduce to O(1) space
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `cost = [5, 10, 20]`
+
+```
+cost = [5, 10, 20]
+n = 3
+
+DP table (dp[i]):
+  dp[0] = cost[0] = 5  (start from step 0)
+  dp[1] = cost[1] = 10 (start from step 1)
+  
+  i=2: dp[2] = cost[2] + min(dp[1], dp[0])
+       = 20 + min(10, 5)
+       = 20 + 5
+       = 25
+
+Result: min(dp[2], dp[1]) = min(25, 10) = 10
+
+Explanation:
+  - Can reach top from step 1 (cost 10) by taking 2 steps: 10
+  - Can reach top from step 2 (cost 25) by taking 1 step: 25
+  - Minimum: 10
+```
+
+Let's trace through Example 2: `cost = [1, 5, 10, 3, 7, 2]`
+
+```
+cost = [1, 5, 10, 3, 7, 2]
+n = 6
+
+DP table (dp[i]):
+  dp[0] = 1
+  dp[1] = 5
+  
+  i=2: dp[2] = 10 + min(5, 1) = 10 + 1 = 11
+  i=3: dp[3] = 3 + min(11, 5) = 3 + 5 = 8
+  i=4: dp[4] = 7 + min(8, 11) = 7 + 8 = 15
+  i=5: dp[5] = 2 + min(15, 8) = 2 + 8 = 10
+
+Result: min(dp[5], dp[4]) = min(10, 15) = 10
+
+Optimal path:
+  Start from step 1 (cost 5)
+  Go to step 3 (cost 3): total 5 + 3 = 8
+  Go to step 5 (cost 2): total 8 + 2 = 10
+  Then 1 step to top: 10
+```
+
+## Visual Representation
+
+```
+Example 1: cost = [5, 10, 20]
+
+Steps:    0    1    2    TOP
+Cost:     5   10   20
+          ↑    ↑    ↑
+          
+DP:       5   10   25
+
+Paths:
+  Path 1: Start at 0 (cost 5), go to 2 (cost 20), then top
+    Total: 5 + 20 = 25
+  
+  Path 2: Start at 1 (cost 10), go directly to top (2 steps)
+    Total: 10 ✓
+
+Result: 10
+
+Example 2: cost = [1, 5, 10, 3, 7, 2]
+
+Steps:    0    1    2    3    4    5    TOP
+Cost:     1    5   10    3    7    2
+          
+DP:       1    5   11    8   15   10
+
+Optimal path:
+  Start at 1 (cost 5)
+  → Step 3 (cost 3): total 8
+  → Step 5 (cost 2): total 10
+  → Top: 10 ✓
+```
+
+## Edge Cases
+
+- **Two steps**: Return min(cost[0], cost[1])
+- **Three steps**: Calculate dp[2] and return min(dp[1], dp[2])
+- **All same cost**: Any path works
+- **First step very expensive**: Start from second step
+- **Last step very expensive**: End at second-to-last step
+
+## Important Notes
+
+- **Two starting points**: Can start from step 0 or step 1
+- **Pay cost when stepping**: Cost is paid when you step on a step
+- **Reach top**: Top is beyond the last step (index n)
+- **O(n) time**: Must process each step
+- **Space optimization**: Can reduce to O(1) space
+
+## Why Dynamic Programming Works
+
+**Optimal Substructure**: 
+- To reach step i with minimum cost, we need to:
+  - Reach step i-1 or i-2 with minimum cost
+  - Then pay cost[i] to step on i
+- The optimal solution uses optimal solutions to subproblems
+
+**Overlapping Subproblems**: 
+- Multiple paths may pass through the same steps
+- DP stores and reuses these optimal values
+
+## Related Problems
+
+- **Climbing Stairs**: Similar but without costs
+- **House Robber**: Similar DP pattern
+- **Min Cost Path**: 2D version of this problem
+- **Maximum Subarray**: Different DP problem
+
+## Takeaways
+
+- **Dynamic Programming** solves this efficiently
+- **Two starting points** and **two step sizes** per move
+- **Pay cost when stepping** on a step
+- **O(n) time** to process all steps
+- **Space can be optimized** to O(1)
+- **Classic DP problem** with many variations
+

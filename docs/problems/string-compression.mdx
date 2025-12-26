@@ -1,0 +1,413 @@
+---
+id: string-compression
+title: String Compression
+slug: /problems/string-compression
+difficulty: Medium
+tags: [string, array, two-pointers]
+leetcode: https://leetcode.com/problems/string-compression/
+---
+
+# String Compression
+
+This question is asked by Facebook. Given a character array, compress it in place and return the new length of the array.
+
+**Note:** You should only compress the array if its compressed form will be at least as short as the length of its original form.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: chars = ['a', 'a', 'a', 'a', 'a', 'a']
+Output: 2
+Explanation:
+Compressed: ['a', '6']
+Length: 2 (shorter than original length 6)
+```
+
+**Example 2:**
+```
+Input: chars = ['a', 'a', 'b', 'b', 'c', 'c']
+Output: 6
+Explanation:
+Compressed: ['a', '2', 'b', '2', 'c', '2']
+Length: 6 (same as original, so compress)
+```
+
+**Example 3:**
+```
+Input: chars = ['a', 'b', 'c']
+Output: 3
+Explanation:
+Compressed would be: ['a', '1', 'b', '1', 'c', '1']
+Length: 6 (longer than original 3)
+So we choose not to compress, return 3
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **two pointers**:
+
+1. **Read pointer**: Scans through the array to find groups
+2. **Write pointer**: Writes compressed characters and counts
+3. **Count groups**: Count consecutive same characters
+4. **Write compression**: Write character and count (if count > 1)
+5. **Check length**: Only compress if result is shorter or equal
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Two Pointers"
+  code={`/**
+ * Compress character array in place
+ * @param {character[]} chars - Character array (modified in-place)
+ * @return {number} - New length of compressed array
+ */
+function compress(chars) {
+  if (chars.length <= 1) return chars.length;
+  
+  let writeIndex = 0; // Position to write compressed result
+  let readIndex = 0;  // Position to read from original array
+  
+  while (readIndex < chars.length) {
+    const currentChar = chars[readIndex];
+    let count = 0;
+    
+    // Count consecutive same characters
+    while (readIndex < chars.length && chars[readIndex] === currentChar) {
+      count++;
+      readIndex++;
+    }
+    
+    // Write the character
+    chars[writeIndex++] = currentChar;
+    
+    // Write the count if count > 1
+    if (count > 1) {
+      const countStr = count.toString();
+      for (let i = 0; i < countStr.length; i++) {
+        chars[writeIndex++] = countStr[i];
+      }
+    }
+  }
+  
+  return writeIndex;
+}
+
+// Test cases
+let chars1 = ['a', 'a', 'a', 'a', 'a', 'a'];
+console.log('Example 1:', compress(chars1), chars1.slice(0, compress(chars1))); 
+// 2, ['a', '6']
+
+let chars2 = ['a', 'a', 'b', 'b', 'c', 'c'];
+console.log('Example 2:', compress(chars2), chars2.slice(0, compress(chars2))); 
+// 6, ['a', '2', 'b', '2', 'c', '2']
+
+let chars3 = ['a', 'b', 'c'];
+console.log('Example 3:', compress(chars3), chars3.slice(0, compress(chars3))); 
+// 3, ['a', 'b', 'c'] (not compressed)`}
+  testCases={[
+    { input: '(chars => { const len = compress(chars); return len + ":" + chars.slice(0, len).join(""); })(["a","a","a","a","a","a"])', expected: '2:a6' },
+    { input: '(chars => { const len = compress(chars); return len + ":" + chars.slice(0, len).join(""); })(["a","a","b","b","c","c"])', expected: '6:a2b2c2' },
+    { input: '(chars => { const len = compress(chars); return len + ":" + chars.slice(0, len).join(""); })(["a","b","c"])', expected: '3:abc' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Two Pointers"
+  code={`from typing import List
+
+def compress(chars: List[str]) -> int:
+    """
+    Compress character array in place
+    
+    Args:
+        chars: Character array (modified in-place)
+        
+    Returns:
+        int: New length of compressed array
+    """
+    if len(chars) <= 1:
+        return len(chars)
+    
+    write_index = 0  # Position to write compressed result
+    read_index = 0   # Position to read from original array
+    
+    while read_index < len(chars):
+        current_char = chars[read_index]
+        count = 0
+        
+        # Count consecutive same characters
+        while read_index < len(chars) and chars[read_index] == current_char:
+            count += 1
+            read_index += 1
+        
+        # Write the character
+        chars[write_index] = current_char
+        write_index += 1
+        
+        # Write the count if count > 1
+        if count > 1:
+            count_str = str(count)
+            for digit in count_str:
+                chars[write_index] = digit
+                write_index += 1
+    
+    return write_index
+
+# Test cases
+chars1 = ['a', 'a', 'a', 'a', 'a', 'a']
+print('Example 1:', compress(chars1), chars1[:compress(chars1)])  
+# 2, ['a', '6']
+
+chars2 = ['a', 'a', 'b', 'b', 'c', 'c']
+print('Example 2:', compress(chars2), chars2[:compress(chars2)])  
+# 6, ['a', '2', 'b', '2', 'c', '2']
+
+chars3 = ['a', 'b', 'c']
+print('Example 3:', compress(chars3), chars3[:compress(chars3)])  
+# 3, ['a', 'b', 'c'] (not compressed)`}
+  testCases={[
+    { input: '(lambda chars: (compress(chars), "".join(chars[:compress(chars)]))[1])(["a","a","a","a","a","a"])', expected: "'a6'" },
+    { input: '(lambda chars: (compress(chars), "".join(chars[:compress(chars)]))[1])(["a","a","b","b","c","c"])', expected: "'a2b2c2'" },
+    { input: '(lambda chars: (compress(chars), "".join(chars[:compress(chars)]))[1])(["a","b","c"])', expected: "'abc'" }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (With Length Check)
+
+Here's a version that checks if compression is beneficial first:
+
+<Tabs>
+<TabItem value="javascript-check" label="JavaScript With Check" default>
+
+```javascript
+/**
+ * Check if compression is beneficial first
+ */
+function compressWithCheck(chars) {
+  if (chars.length <= 1) return chars.length;
+  
+  // First pass: calculate compressed length
+  let compressedLength = 0;
+  let i = 0;
+  
+  while (i < chars.length) {
+    const char = chars[i];
+    let count = 0;
+    while (i < chars.length && chars[i] === char) {
+      count++;
+      i++;
+    }
+    compressedLength += 1; // character
+    if (count > 1) {
+      compressedLength += count.toString().length; // count digits
+    }
+  }
+  
+  // Only compress if beneficial
+  if (compressedLength >= chars.length) {
+    return chars.length;
+  }
+  
+  // Second pass: actual compression
+  return compress(chars);
+}
+```
+
+</TabItem>
+<TabItem value="python-check" label="Python With Check">
+
+```python
+def compress_with_check(chars: List[str]) -> int:
+    """
+    Check if compression is beneficial first
+    """
+    if len(chars) <= 1:
+        return len(chars)
+    
+    # First pass: calculate compressed length
+    compressed_length = 0
+    i = 0
+    
+    while i < len(chars):
+        char = chars[i]
+        count = 0
+        while i < len(chars) and chars[i] == char:
+            count += 1
+            i += 1
+        compressed_length += 1  # character
+        if count > 1:
+            compressed_length += len(str(count))  # count digits
+    
+    # Only compress if beneficial
+    if compressed_length >= len(chars):
+        return len(chars)
+    
+    # Second pass: actual compression
+    return compress(chars)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the array. We make a single pass through the array.
+- **Space Complexity:** O(1) - Only using a constant amount of extra space (not counting the input array).
+
+## Approach
+
+The solution uses **two pointers**:
+
+1. **Read pointer**: 
+   - Scans through the array
+   - Counts consecutive same characters
+
+2. **Write pointer**: 
+   - Writes compressed result
+   - Writes character first, then count (if count > 1)
+
+3. **Count groups**: 
+   - For each group of same characters, count them
+   - Write character and count digits
+
+4. **Return length**: 
+   - Return the write index (new length)
+
+## Key Insights
+
+- **Two pointers**: Read pointer scans, write pointer writes
+- **In-place compression**: Overwrite array as we go
+- **Count > 1**: Only write count if it's greater than 1
+- **Count as string**: Convert count to string to write digit by digit
+- **O(n) time**: Single pass through array
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `chars = ['a', 'a', 'a', 'a', 'a', 'a']`
+
+```
+Initial: chars = ['a', 'a', 'a', 'a', 'a', 'a']
+         readIndex = 0, writeIndex = 0
+
+Iteration 1:
+  currentChar = 'a'
+  Count consecutive 'a's:
+    readIndex = 0: 'a' → count = 1
+    readIndex = 1: 'a' → count = 2
+    readIndex = 2: 'a' → count = 3
+    readIndex = 3: 'a' → count = 4
+    readIndex = 4: 'a' → count = 5
+    readIndex = 5: 'a' → count = 6
+    readIndex = 6: out of bounds, stop
+  count = 6
+  
+  Write character:
+    chars[0] = 'a'
+    writeIndex = 1
+  
+  Write count (6 > 1):
+    countStr = "6"
+    chars[1] = '6'
+    writeIndex = 2
+  
+  readIndex = 6 >= length, exit loop
+
+Result: writeIndex = 2
+chars = ['a', '6', 'a', 'a', 'a', 'a'] (first 2 are compressed)
+```
+
+## Visual Representation
+
+```
+Example 1: chars = ['a', 'a', 'a', 'a', 'a', 'a']
+
+Original:  a  a  a  a  a  a
+           ↑  ↑  ↑  ↑  ↑  ↑
+           All same character
+
+Compressed: a  6
+            ↑  ↑
+          char count
+
+Length: 2 (shorter than 6) ✓
+
+Example 2: chars = ['a', 'a', 'b', 'b', 'c', 'c']
+
+Original:  a  a  b  b  c  c
+           ↑  ↑  ↑  ↑  ↑  ↑
+           Groups: aa, bb, cc
+
+Compressed: a  2  b  2  c  2
+            ↑  ↑  ↑  ↑  ↑  ↑
+          char count char count char count
+
+Length: 6 (same as original) ✓
+
+Example 3: chars = ['a', 'b', 'c']
+
+Original:  a  b  c
+           ↑  ↑  ↑
+           All different
+
+Would compress to: a  1  b  1  c  1
+                   ↑  ↑  ↑  ↑  ↑  ↑
+                 char count char count char count
+
+Length: 6 (longer than 3) ✗
+So don't compress, return 3
+```
+
+## Edge Cases
+
+- **Single character**: Return 1, no compression needed
+- **All same**: Compress to character + count
+- **All different**: Don't compress (would be longer)
+- **Count > 9**: Write multiple digits (e.g., "12" for count 12)
+- **Empty array**: Return 0
+- **Two characters same**: Compress to character + "2"
+
+## Important Notes
+
+- **In-place modification**: Modifies the array directly
+- **Count > 1**: Only write count if greater than 1
+- **Count as digits**: Write count digit by digit (e.g., "12" as '1', '2')
+- **Return length**: Return the new length, not the array
+- **O(n) time**: Single pass through array
+
+## Why Two Pointers Work
+
+**Key insight**: 
+- Read pointer scans ahead to count consecutive characters
+- Write pointer writes compressed result
+- Since we're writing from left to right and reading ahead, we never overwrite unread data
+- This allows in-place compression
+
+## Related Problems
+
+- **String Compression**: Similar problem
+- **Encode and Decode Strings**: Different encoding problem
+- **Run-Length Encoding**: Similar compression concept
+- **Count and Say**: Different problem
+
+## Takeaways
+
+- **Two pointers** enable in-place compression
+- **Read ahead** to count consecutive characters
+- **Write compressed** result as we go
+- **Count > 1** only writes count digits
+- **O(n) time** with single pass
+

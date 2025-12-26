@@ -1,0 +1,187 @@
+---
+id: lowest-common-ancestor-bst
+title: Lowest Common Ancestor of a Binary Search Tree
+slug: /problems/lowest-common-ancestor-bst
+difficulty: Easy
+tags: [tree, binary-search-tree, recursion]
+leetcode: https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
+---
+
+# Lowest Common Ancestor of a Binary Search Tree
+
+Given a binary search tree (BST), find the lowest common ancestor (LCA) of two given nodes in the BST.
+
+According to the definition of LCA on Wikipedia: "The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself)."
+
+## Example(s)
+
+**Example 1:**
+```
+Tree:
+        7
+       / \
+      2   9
+     / \
+    1   5
+p = 2, q = 5
+Output: 2
+```
+
+**Example 2:**
+```
+Tree:
+        8
+       / \
+      3   10
+     / \
+    1   6
+p = 1, q = 6
+Output: 3
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Lowest Common Ancestor Solution"
+  code={`
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+
+/**
+ * Find lowest common ancestor in a BST
+ * @param {TreeNode} root - Root of the BST
+ * @param {TreeNode} p - First node
+ * @param {TreeNode} q - Second node
+ * @return {TreeNode} - Lowest common ancestor node
+ */
+function lowestCommonAncestor(root, p, q) {
+  const pVal = p.val;
+  const qVal = q.val;
+  let current = root;
+  
+  while (current) {
+    if (pVal < current.val && qVal < current.val) {
+      current = current.left;
+    } else if (pVal > current.val && qVal > current.val) {
+      current = current.right;
+    } else {
+      return current;
+    }
+  }
+  
+  return null;
+}
+
+// Create test tree: [7,2,9,1,5]
+const root = new TreeNode(7);
+root.left = new TreeNode(2);
+root.right = new TreeNode(9);
+root.left.left = new TreeNode(1);
+root.left.right = new TreeNode(5);
+
+const p1 = root.left;      // Node with value 2
+const q1 = root.left.right; // Node with value 5
+console.log(lowestCommonAncestor(root, p1, q1)?.val); // 2
+
+const p2 = root.left.left; // Node with value 1
+const q2 = root.left.right; // Node with value 5
+console.log(lowestCommonAncestor(root, p2, q2)?.val); // 2
+`}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Lowest Common Ancestor Solution"
+  code={`
+from typing import Optional
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def lowest_common_ancestor(root: Optional[TreeNode], p: TreeNode, q: TreeNode) -> Optional[TreeNode]:
+    """
+    Find lowest common ancestor in a BST
+    
+    Args:
+        root: Root of the BST
+        p: First node
+        q: Second node
+        
+    Returns:
+        TreeNode: Lowest common ancestor node
+    """
+    current = root
+    
+    while current:
+        if p.val < current.val and q.val < current.val:
+            current = current.left
+        elif p.val > current.val and q.val > current.val:
+            current = current.right
+        else:
+            return current
+    
+    return None
+
+# Create test tree: [7,2,9,1,5]
+root = TreeNode(7)
+root.left = TreeNode(2)
+root.right = TreeNode(9)
+root.left.left = TreeNode(1)
+root.left.right = TreeNode(5)
+
+p1 = root.left      # Node with value 2
+q1 = root.left.right # Node with value 5
+result1 = lowest_common_ancestor(root, p1, q1)
+print(result1.val if result1 else None)  # 2
+
+p2 = root.left.left # Node with value 1
+q2 = root.left.right # Node with value 5
+result2 = lowest_common_ancestor(root, p2, q2)
+print(result2.val if result2 else None)  # 2
+`}
+/>
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(h) - Where h is the height of the tree (O(n) in worst case)
+- **Space Complexity:** O(1) - Constant extra space for iterative solution
+
+## Approach
+
+The solution uses the **BST property** to efficiently find the LCA:
+
+1. **Start from root** and traverse down the tree
+2. **Compare values** of p, q, and current node
+3. **Navigate left or right** based on BST property
+4. **Return current node** when p and q diverge
+
+## Key Insights
+
+- **BST property** allows us to eliminate half the tree at each step
+- **Iterative approach** is more space-efficient than recursion
+- **LCA is found** when p and q are in different subtrees
+- **Edge cases** include when p or q is the root
+- **O(h) time complexity** where h is the height of the tree

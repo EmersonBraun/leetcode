@@ -1,0 +1,383 @@
+---
+id: reverse-vowels
+title: Reverse Vowels of a String
+slug: /problems/reverse-vowels
+difficulty: Easy
+tags: [string, two-pointers]
+leetcode: https://leetcode.com/problems/reverse-vowels-of-a-string/
+---
+
+# Reverse Vowels of a String
+
+This question is asked by Facebook. Given a string, reverse the vowels of it.
+
+**Note:** In this problem `y` is not considered a vowel.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: s = "computer"
+Output: "cemputor"
+Explanation:
+Original vowels: o, u, e (positions 1, 4, 6)
+Reversed vowels: e, u, o (positions 6, 4, 1)
+Result: c-e-m-p-u-t-o-r → "cemputor"
+```
+
+**Example 2:**
+```
+Input: s = "The Daily Byte"
+Output: "The Dialy Byte"
+Explanation:
+Original vowels: e, a, i, e (positions 2, 5, 7, 11)
+Reversed vowels: e, i, a, e (positions 11, 7, 5, 2)
+Result: "The Dialy Byte"
+```
+
+**Example 3:**
+```
+Input: s = "leetcode"
+Output: "leotcede"
+Explanation:
+Original vowels: e, e, o, e (positions 1, 2, 4, 7)
+Reversed vowels: e, o, e, e (positions 7, 4, 2, 1)
+Result: "leotcede"
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **two pointers**:
+
+1. **Left and right pointers**: Start from both ends
+2. **Find vowels**: Move pointers until they find vowels
+3. **Swap vowels**: Swap vowels when both pointers find them
+4. **Continue**: Move pointers inward and repeat
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Two Pointers"
+  code={`/**
+ * Reverse vowels in a string
+ * @param {string} s - Input string
+ * @return {string} - String with vowels reversed
+ */
+function reverseVowels(s) {
+  // Define vowels (y is not considered a vowel)
+  const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']);
+  
+  // Convert to array for in-place modification
+  const chars = s.split('');
+  let left = 0;
+  let right = chars.length - 1;
+  
+  while (left < right) {
+    // Find vowel from left
+    while (left < right && !vowels.has(chars[left])) {
+      left++;
+    }
+    
+    // Find vowel from right
+    while (left < right && !vowels.has(chars[right])) {
+      right--;
+    }
+    
+    // Swap vowels
+    if (left < right) {
+      [chars[left], chars[right]] = [chars[right], chars[left]];
+      left++;
+      right--;
+    }
+  }
+  
+  return chars.join('');
+}
+
+// Test cases
+console.log('Example 1:', reverseVowels("computer")); 
+// "cemputor"
+
+console.log('Example 2:', reverseVowels("The Daily Byte")); 
+// "The Dialy Byte"
+
+console.log('Example 3:', reverseVowels("leetcode")); 
+// "leotcede"
+
+console.log('Test 4:', reverseVowels("hello")); 
+// "holle"`}
+  testCases={[
+    { input: 'reverseVowels("computer")', expected: '"cemputor"' },
+    { input: 'reverseVowels("The Daily Byte")', expected: '"The Dialy Byte"' },
+    { input: 'reverseVowels("leetcode")', expected: '"leotcede"' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Two Pointers"
+  code={`def reverse_vowels(s: str) -> str:
+    """
+    Reverse vowels in a string
+    
+    Args:
+        s: Input string
+        
+    Returns:
+        str: String with vowels reversed
+    """
+    # Define vowels (y is not considered a vowel)
+    vowels = {'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'}
+    
+    # Convert to list for in-place modification
+    chars = list(s)
+    left = 0
+    right = len(chars) - 1
+    
+    while left < right:
+        # Find vowel from left
+        while left < right and chars[left] not in vowels:
+            left += 1
+        
+        # Find vowel from right
+        while left < right and chars[right] not in vowels:
+            right -= 1
+        
+        # Swap vowels
+        if left < right:
+            chars[left], chars[right] = chars[right], chars[left]
+            left += 1
+            right -= 1
+    
+    return ''.join(chars)
+
+# Test cases
+print('Example 1:', reverse_vowels("computer"))  
+# "cemputor"
+
+print('Example 2:', reverse_vowels("The Daily Byte"))  
+# "The Dialy Byte"
+
+print('Example 3:', reverse_vowels("leetcode"))  
+# "leotcede"
+
+print('Test 4:', reverse_vowels("hello"))  
+# "holle"`}
+  testCases={[
+    { input: 'reverse_vowels("computer")', expected: '"cemputor"' },
+    { input: 'reverse_vowels("The Daily Byte")', expected: '"The Dialy Byte"' },
+    { input: 'reverse_vowels("leetcode")', expected: '"leotcede"' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Collect and Replace)
+
+Here's a version that collects vowels first, then replaces:
+
+<Tabs>
+<TabItem value="javascript-collect" label="JavaScript Collect" default>
+
+```javascript
+/**
+ * Collect vowels, reverse, then replace
+ */
+function reverseVowelsCollect(s) {
+  const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']);
+  const chars = s.split('');
+  const vowelIndices = [];
+  const vowelChars = [];
+  
+  // Collect vowels and their indices
+  for (let i = 0; i < chars.length; i++) {
+    if (vowels.has(chars[i])) {
+      vowelIndices.push(i);
+      vowelChars.push(chars[i]);
+    }
+  }
+  
+  // Reverse vowel characters
+  vowelChars.reverse();
+  
+  // Replace vowels in reverse order
+  for (let i = 0; i < vowelIndices.length; i++) {
+    chars[vowelIndices[i]] = vowelChars[i];
+  }
+  
+  return chars.join('');
+}
+```
+
+</TabItem>
+<TabItem value="python-collect" label="Python Collect">
+
+```python
+def reverse_vowels_collect(s: str) -> str:
+    """
+    Collect vowels, reverse, then replace
+    """
+    vowels = {'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'}
+    chars = list(s)
+    vowel_indices = []
+    vowel_chars = []
+    
+    # Collect vowels and their indices
+    for i, char in enumerate(chars):
+        if char in vowels:
+            vowel_indices.append(i)
+            vowel_chars.append(char)
+    
+    # Reverse vowel characters
+    vowel_chars.reverse()
+    
+    # Replace vowels in reverse order
+    for i, idx in enumerate(vowel_indices):
+        chars[idx] = vowel_chars[i]
+    
+    return ''.join(chars)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the string. We make a single pass through the string.
+- **Space Complexity:** O(n) - For the character array (or O(1) if we can modify the string in-place, but strings are immutable in most languages).
+
+## Approach
+
+The solution uses **two pointers**:
+
+1. **Left and right pointers**: 
+   - Start from both ends of the string
+   - Move inward until they meet
+
+2. **Find vowels**: 
+   - Move left pointer until it finds a vowel
+   - Move right pointer until it finds a vowel
+
+3. **Swap vowels**: 
+   - When both pointers point to vowels, swap them
+   - Move both pointers inward
+
+4. **Continue**: 
+   - Repeat until pointers meet
+
+## Key Insights
+
+- **Two pointers**: Efficiently swap vowels from both ends
+- **Skip non-vowels**: Move pointers past non-vowel characters
+- **Swap when both find vowels**: Only swap when both pointers are on vowels
+- **Y is not a vowel**: Important constraint
+- **O(n) time**: Single pass through string
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `s = "computer"`
+
+```
+s = "computer"
+vowels = {'a','e','i','o','u','A','E','I','O','U'}
+chars = ['c','o','m','p','u','t','e','r']
+left = 0, right = 7
+
+Iteration 1:
+  left = 0: 'c' not vowel → left = 1
+  left = 1: 'o' is vowel ✓
+  right = 7: 'r' not vowel → right = 6
+  right = 6: 'e' is vowel ✓
+  Swap: chars[1]='o' ↔ chars[6]='e'
+  chars = ['c','e','m','p','u','t','o','r']
+  left = 2, right = 5
+
+Iteration 2:
+  left = 2: 'm' not vowel → left = 3
+  left = 3: 'p' not vowel → left = 4
+  left = 4: 'u' is vowel ✓
+  right = 5: 't' not vowel → right = 4
+  right = 4: 'u' is vowel ✓
+  left === right, stop
+
+Result: "cemputor"
+```
+
+## Visual Representation
+
+```
+Example 1: s = "computer"
+
+Original:  c  o  m  p  u  t  e  r
+           ↑  ↑           ↑  ↑
+         left vowel    vowel right
+
+Swap:      c  e  m  p  u  t  o  r
+           ↑  ↑           ↑  ↑
+         swapped        swapped
+
+Result: "cemputor"
+
+Example 2: s = "The Daily Byte"
+
+Original:  T  h  e     D  a  i  l  y     B  y  t  e
+           ↑  ↑  ↑           ↑  ↑              ↑  ↑
+         left vowels                      vowels right
+
+After swaps: T  h  e     D  i  a  l  y     B  y  t  e
+             ↑  ↑  ↑           ↑  ↑              ↑  ↑
+           swapped          swapped
+
+Result: "The Dialy Byte"
+```
+
+## Edge Cases
+
+- **No vowels**: Returns original string
+- **Single vowel**: Returns original string
+- **All vowels**: Reverses entire string
+- **Mixed case**: Handles both uppercase and lowercase
+- **Consecutive vowels**: Works correctly
+- **Y is not vowel**: Y is kept in place
+
+## Important Notes
+
+- **Y is not a vowel**: Important constraint in this problem
+- **Case sensitive**: Preserves case of vowels
+- **Two pointers**: Efficient O(n) solution
+- **In-place modification**: Modifies array, then joins
+- **O(n) time**: Single pass through string
+
+## Why Two Pointers Work
+
+**Key insight**: 
+- We want to reverse the order of vowels
+- Two pointers from both ends naturally reverse order
+- When both find vowels, swapping reverses their positions
+- This continues until all vowels are swapped
+
+## Related Problems
+
+- **Reverse String**: Reverse entire string
+- **Valid Palindrome**: Different problem
+- **Remove Vowels**: Different problem
+- **Reverse Words**: Different problem
+
+## Takeaways
+
+- **Two pointers** efficiently reverse vowels
+- **Skip non-vowels** by moving pointers
+- **Swap when both find vowels** to reverse order
+- **Y is not a vowel** is an important constraint
+- **O(n) time** with single pass
+

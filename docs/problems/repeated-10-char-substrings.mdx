@@ -1,0 +1,373 @@
+---
+id: repeated-10-char-substrings
+title: Repeated 10 Character Substrings
+slug: /problems/repeated-10-char-substrings
+difficulty: Medium
+tags: [string, hash-table, sliding-window]
+---
+
+# Repeated 10 Character Substrings
+
+Given a string `s`, return all of its repeated 10 character substrings.
+
+**Note:** You may assume `s` only contains uppercase alphabetical characters.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: s = "BBBBBBBBBBB"
+Output: ["BBBBBBBBBB"]
+Explanation:
+The string has 11 characters. The 10-character substring "BBBBBBBBBB" appears:
+- At position 0-9: "BBBBBBBBBB"
+- At position 1-10: "BBBBBBBBBB"
+Since it appears more than once, it's included in the result.
+```
+
+**Example 2:**
+```
+Input: s = "ABABABABABABBBBBBBBBBB"
+Output: ["ABABABABAB","BBBBBBBBBB"]
+Explanation:
+10-character substrings that appear more than once:
+- "ABABABABAB" appears at positions 0-9 and 2-11
+- "BBBBBBBBBB" appears multiple times in the last part
+```
+
+**Example 3:**
+```
+Input: s = "AAAAACCCCCAAAAACCCCCAAAAAGGGTTT"
+Output: ["AAAAACCCCC","CCCCCAAAAA"]
+Explanation:
+- "AAAAACCCCC" appears twice
+- "CCCCCAAAAA" appears twice
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses a **sliding window with hash map**:
+
+1. **Sliding window**: Extract all substrings of length 10
+2. **Count occurrences**: Use a hash map to count how many times each substring appears
+3. **Filter repeated**: Return all substrings that appear more than once
+4. **Avoid duplicates**: Use a set to return unique repeated substrings
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Sliding Window"
+  code={`/**
+ * Find all repeated 10-character substrings
+ * @param {string} s - Input string
+ * @return {string[]} - Array of repeated 10-character substrings
+ */
+function findRepeatedDnaSequences(s) {
+  if (s.length < 10) {
+    return [];
+  }
+  
+  const substringCount = new Map();
+  
+  // Extract all 10-character substrings using sliding window
+  for (let i = 0; i <= s.length - 10; i++) {
+    const substring = s.substring(i, i + 10);
+    substringCount.set(substring, (substringCount.get(substring) || 0) + 1);
+  }
+  
+  // Find all substrings that appear more than once
+  const result = [];
+  for (const [substring, count] of substringCount.entries()) {
+    if (count > 1) {
+      result.push(substring);
+    }
+  }
+  
+  return result;
+}
+
+// Test cases
+console.log('Example 1:', findRepeatedDnaSequences("BBBBBBBBBBB")); 
+// ["BBBBBBBBBB"]
+
+console.log('Example 2:', findRepeatedDnaSequences("ABABABABABABBBBBBBBBBB")); 
+// ["ABABABABAB","BBBBBBBBBB"]
+
+console.log('Example 3:', findRepeatedDnaSequences("AAAAACCCCCAAAAACCCCCAAAAAGGGTTT")); 
+// ["AAAAACCCCC","CCCCCAAAAA"]
+
+console.log('Test 4:', findRepeatedDnaSequences("AAAAAAAAAAA")); 
+// ["AAAAAAAAAA"]
+
+console.log('Test 5:', findRepeatedDnaSequences("ABCDEFGHIJ")); 
+// [] (no repeats)`}
+  testCases={[
+    { input: 'JSON.stringify(findRepeatedDnaSequences("BBBBBBBBBBB"))', expected: '["BBBBBBBBBB"]' },
+    { input: 'JSON.stringify(findRepeatedDnaSequences("ABABABABABABBBBBBBBBBB").sort())', expected: '["ABABABABAB","BBBBBBBBBB"]' },
+    { input: 'JSON.stringify(findRepeatedDnaSequences("AAAAACCCCCAAAAACCCCCAAAAAGGGTTT").sort())', expected: '["AAAAACCCCC","CCCCCAAAAA"]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Sliding Window"
+  code={`from typing import List
+from collections import defaultdict
+
+def find_repeated_dna_sequences(s: str) -> List[str]:
+    """
+    Find all repeated 10-character substrings
+    
+    Args:
+        s: Input string
+        
+    Returns:
+        List[str]: List of repeated 10-character substrings
+    """
+    if len(s) < 10:
+        return []
+    
+    substring_count = defaultdict(int)
+    
+    # Extract all 10-character substrings using sliding window
+    for i in range(len(s) - 9):  # i can go up to len(s) - 10
+        substring = s[i:i + 10]
+        substring_count[substring] += 1
+    
+    # Find all substrings that appear more than once
+    result = []
+    for substring, count in substring_count.items():
+        if count > 1:
+            result.append(substring)
+    
+    return result
+
+# Test cases
+print('Example 1:', find_repeated_dna_sequences("BBBBBBBBBBB"))  
+# ["BBBBBBBBBB"]
+
+print('Example 2:', find_repeated_dna_sequences("ABABABABABABBBBBBBBBBB"))  
+# ["ABABABABAB","BBBBBBBBBB"]
+
+print('Example 3:', find_repeated_dna_sequences("AAAAACCCCCAAAAACCCCCAAAAAGGGTTT"))  
+# ["AAAAACCCCC","CCCCCAAAAA"]
+
+print('Test 4:', find_repeated_dna_sequences("AAAAAAAAAAA"))  
+# ["AAAAAAAAAA"]
+
+print('Test 5:', find_repeated_dna_sequences("ABCDEFGHIJ"))  
+# [] (no repeats)`}
+  testCases={[
+    { input: 'sorted(find_repeated_dna_sequences("BBBBBBBBBBB"))', expected: "['BBBBBBBBBB']" },
+    { input: 'sorted(find_repeated_dna_sequences("ABABABABABABBBBBBBBBBB"))', expected: "['ABABABABAB', 'BBBBBBBBBB']" },
+    { input: 'sorted(find_repeated_dna_sequences("AAAAACCCCCAAAAACCCCCAAAAAGGGTTT"))', expected: "['AAAAACCCCC', 'CCCCCAAAAA']" }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Using Set)
+
+Here's a version that uses sets to track seen and repeated substrings:
+
+<Tabs>
+<TabItem value="javascript-set" label="JavaScript Set Approach" default>
+
+```javascript
+/**
+ * Using sets to track seen and repeated substrings
+ */
+function findRepeatedDnaSequencesSet(s) {
+  if (s.length < 10) {
+    return [];
+  }
+  
+  const seen = new Set();
+  const repeated = new Set();
+  
+  // Extract all 10-character substrings
+  for (let i = 0; i <= s.length - 10; i++) {
+    const substring = s.substring(i, i + 10);
+    
+    if (seen.has(substring)) {
+      // Already seen, so it's repeated
+      repeated.add(substring);
+    } else {
+      // First time seeing this substring
+      seen.add(substring);
+    }
+  }
+  
+  return Array.from(repeated);
+}
+```
+
+</TabItem>
+<TabItem value="python-set" label="Python Set Approach">
+
+```python
+def find_repeated_dna_sequences_set(s: str) -> List[str]:
+    """
+    Using sets to track seen and repeated substrings
+    """
+    if len(s) < 10:
+        return []
+    
+    seen = set()
+    repeated = set()
+    
+    # Extract all 10-character substrings
+    for i in range(len(s) - 9):
+        substring = s[i:i + 10]
+        
+        if substring in seen:
+            # Already seen, so it's repeated
+            repeated.add(substring)
+        else:
+            # First time seeing this substring
+            seen.add(substring)
+    
+    return list(repeated)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the string. We iterate through the string once, and each substring operation is O(10) = O(1).
+- **Space Complexity:** O(n) - In the worst case, we might store all unique substrings. The hash map/set can contain up to n-9 entries.
+
+## Approach
+
+The solution uses a **sliding window with hash map**:
+
+1. **Sliding window**: 
+   - Iterate through the string
+   - Extract each 10-character substring starting at position i
+
+2. **Count occurrences**: 
+   - Use a hash map to count how many times each substring appears
+   - Key: substring, Value: count
+
+3. **Filter repeated**: 
+   - Iterate through the hash map
+   - Add substrings that have count > 1 to the result
+
+4. **Return result**: 
+   - Return array of repeated substrings
+
+## Key Insights
+
+- **Sliding window**: Extract all substrings of fixed length (10)
+- **Hash map**: Efficiently count occurrences
+- **Repeated means count > 1**: Not just appearing twice, but appearing multiple times
+- **Fixed length**: All substrings are exactly 10 characters
+- **O(n) time**: Single pass through the string
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `s = "BBBBBBBBBBB"` (11 characters)
+
+```
+String: "BBBBBBBBBBB" (indices 0-10)
+
+Step 1: Extract all 10-character substrings
+  i = 0: substring = s[0:10] = "BBBBBBBBBB"
+  i = 1: substring = s[1:11] = "BBBBBBBBBB"
+
+Step 2: Count occurrences
+  substringCount = {
+    "BBBBBBBBBB": 2
+  }
+
+Step 3: Filter repeated (count > 1)
+  "BBBBBBBBBB" has count 2 > 1 ✓
+  Result: ["BBBBBBBBBB"]
+
+Final: ["BBBBBBBBBB"]
+```
+
+## Visual Representation
+
+```
+Example 1: s = "BBBBBBBBBBB"
+
+Positions: 0 1 2 3 4 5 6 7 8 9 10
+String:    B B B B B B B B B B B
+
+Substring at i=0: [BBBBBBBBBB] (positions 0-9)
+Substring at i=1:  [BBBBBBBBBB] (positions 1-10)
+
+Both are "BBBBBBBBBB" → appears 2 times → repeated ✓
+
+Example 2: s = "ABABABABABABBBBBBBBBBB"
+
+First part: "ABABABABABAB"
+  Substring at i=0: "ABABABABAB" (positions 0-9)
+  Substring at i=2: "ABABABABAB" (positions 2-11) → repeated ✓
+
+Second part: "BBBBBBBBBB"
+  Multiple overlapping "BBBBBBBBBB" substrings → repeated ✓
+```
+
+## Edge Cases
+
+- **String length < 10**: Return empty array (no 10-character substrings possible)
+- **String length = 10**: Check if it appears (it can't, since there's only one substring)
+- **No repeats**: Return empty array
+- **All same character**: If length >= 11, the substring will be repeated
+- **All unique**: No repeated substrings
+
+## Important Notes
+
+- **Fixed length**: All substrings must be exactly 10 characters
+- **Repeated means > 1**: Substring must appear at least twice
+- **Overlapping allowed**: Substrings can overlap (as in Example 1)
+- **Case sensitive**: Problem states uppercase only, but solution works for any case
+- **Order**: Result order may vary (can sort if needed)
+
+## Optimization: Early Termination
+
+If we only need to know if a substring is repeated (not the count), we can use sets:
+
+```javascript
+// More memory efficient if we don't need exact counts
+const seen = new Set();
+const repeated = new Set();
+
+for (let i = 0; i <= s.length - 10; i++) {
+  const substring = s.substring(i, i + 10);
+  if (seen.has(substring)) {
+    repeated.add(substring);
+  } else {
+    seen.add(substring);
+  }
+}
+```
+
+## Related Problems
+
+- **Longest Substring Without Repeating Characters**: Different problem
+- **Repeated DNA Sequences**: Similar problem (LeetCode 187)
+- **Find All Anagrams in a String**: Different sliding window problem
+- **Minimum Window Substring**: Different constraint
+
+## Takeaways
+
+- **Sliding window** extracts all substrings of fixed length
+- **Hash map** efficiently counts occurrences
+- **O(n) time** is optimal (must check all substrings)
+- **Fixed length** simplifies the problem
+- **Repeated means count > 1**, not just appearing twice
+

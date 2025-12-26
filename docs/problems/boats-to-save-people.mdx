@@ -1,0 +1,379 @@
+---
+id: boats-to-save-people
+title: Boats to Save People
+slug: /problems/boats-to-save-people
+difficulty: Medium
+tags: [greedy, array, two-pointers, sorting]
+leetcode: https://leetcode.com/problems/boats-to-save-people/
+---
+
+# Boats to Save People
+
+This question is asked by Amazon. A ship is about to set sail and you are responsible for its safety precautions. More specifically, you are responsible for determining how many life rafts to carry onboard. You are given a list of all the passengers' weights and are informed that a single life raft has a maximum capacity of limit and can hold at most two people. Return the minimum number of life rafts you must take onboard to ensure the safety of all your passengers.
+
+**Note:** You may assume that the maximum weight of any individual is at most limit.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: weights = [1, 3, 5, 2], limit = 5
+Output: 3
+Explanation:
+Boat 1: Person with weight 5 (alone, 5 <= 5)
+Boat 2: Person with weight 3 (alone, 3 <= 5)
+Boat 3: Persons with weights 1 and 2 (1 + 2 = 3 <= 5)
+Total: 3 boats
+```
+
+**Example 2:**
+```
+Input: weights = [1, 2], limit = 3
+Output: 1
+Explanation:
+Boat 1: Persons with weights 1 and 2 (1 + 2 = 3 <= 3)
+Total: 1 boat
+```
+
+**Example 3:**
+```
+Input: weights = [4, 2, 3, 3], limit = 5
+Output: 3
+Explanation:
+Boat 1: Person with weight 4 (alone, 4 <= 5)
+Boat 2: Persons with weights 3 and 2 (3 + 2 = 5 <= 5)
+Boat 3: Person with weight 3 (alone, 3 <= 5)
+Total: 3 boats
+```
+
+**Example 4:**
+```
+Input: weights = [3, 2, 2, 1], limit = 3
+Output: 3
+Explanation:
+Boat 1: Persons with weights 3 and 1 (3 + 1 = 4 > 3, cannot pair)
+  Actually: Person with weight 3 alone
+Boat 2: Persons with weights 2 and 1 (2 + 1 = 3 <= 3)
+Boat 3: Person with weight 2 (alone)
+Total: 3 boats
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Greedy Algorithm with Two Pointers**:
+
+1. **Sort weights**: Sort in ascending order
+2. **Two pointers**: One at start (lightest), one at end (heaviest)
+3. **Greedy pairing**: Try to pair heaviest with lightest
+4. **Count boats**: Each successful pairing or single person uses one boat
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Greedy Two Pointers"
+  code={`/**
+ * Find minimum number of boats needed
+ * @param {number[]} weights - Array of passenger weights
+ * @param {number} limit - Maximum capacity of a boat
+ * @return {number} - Minimum number of boats
+ */
+function numRescueBoats(weights, limit) {
+  // Sort weights in ascending order
+  const sorted = [...weights].sort((a, b) => a - b);
+  
+  let left = 0;           // Pointer to lightest person
+  let right = sorted.length - 1; // Pointer to heaviest person
+  let boats = 0;
+  
+  while (left <= right) {
+    // If heaviest and lightest can fit together
+    if (sorted[left] + sorted[right] <= limit) {
+      // Pair them in one boat
+      left++;
+      right--;
+    } else {
+      // Heaviest person needs their own boat
+      right--;
+    }
+    boats++;
+  }
+  
+  return boats;
+}
+
+// Test cases
+console.log('Example 1:', numRescueBoats([1, 3, 5, 2], 5)); 
+// 3
+
+console.log('Example 2:', numRescueBoats([1, 2], 3)); 
+// 1
+
+console.log('Example 3:', numRescueBoats([4, 2, 3, 3], 5)); 
+// 3
+
+console.log('Example 4:', numRescueBoats([3, 2, 2, 1], 3)); 
+// 3`}
+  testCases={[
+    { input: 'numRescueBoats([1, 3, 5, 2], 5)', expected: '3' },
+    { input: 'numRescueBoats([1, 2], 3)', expected: '1' },
+    { input: 'numRescueBoats([4, 2, 3, 3], 5)', expected: '3' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Greedy Two Pointers"
+  code={`from typing import List
+
+def num_rescue_boats(weights: List[int], limit: int) -> int:
+    """
+    Find minimum number of boats needed
+    
+    Args:
+        weights: Array of passenger weights
+        limit: Maximum capacity of a boat
+        
+    Returns:
+        int: Minimum number of boats
+    """
+    # Sort weights in ascending order
+    sorted_weights = sorted(weights)
+    
+    left = 0           # Pointer to lightest person
+    right = len(sorted_weights) - 1  # Pointer to heaviest person
+    boats = 0
+    
+    while left <= right:
+        # If heaviest and lightest can fit together
+        if sorted_weights[left] + sorted_weights[right] <= limit:
+            # Pair them in one boat
+            left += 1
+            right -= 1
+        else:
+            # Heaviest person needs their own boat
+            right -= 1
+        boats += 1
+    
+    return boats
+
+# Test cases
+print('Example 1:', num_rescue_boats([1, 3, 5, 2], 5))  
+# 3
+
+print('Example 2:', num_rescue_boats([1, 2], 3))  
+# 1
+
+print('Example 3:', num_rescue_boats([4, 2, 3, 3], 5))  
+# 3
+
+print('Example 4:', num_rescue_boats([3, 2, 2, 1], 3))  
+# 3`}
+  testCases={[
+    { input: 'num_rescue_boats([1, 3, 5, 2], 5)', expected: '3' },
+    { input: 'num_rescue_boats([1, 2], 3)', expected: '1' },
+    { input: 'num_rescue_boats([4, 2, 3, 3], 5)', expected: '3' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n log n) - Where n is the number of passengers. Sorting takes O(n log n), then the two-pointer approach takes O(n).
+- **Space Complexity:** O(1) - Only using a few variables (or O(n) if we create a sorted copy).
+
+## Approach
+
+The solution uses **Greedy Algorithm with Two Pointers**:
+
+1. **Sort weights**: 
+   - Sort in ascending order
+   - This allows us to pair lightest with heaviest efficiently
+
+2. **Two pointers**: 
+   - `left` points to the lightest person (start of array)
+   - `right` points to the heaviest person (end of array)
+
+3. **Greedy pairing**: 
+   - If `weights[left] + weights[right] <= limit`: Pair them in one boat
+     - Move both pointers inward
+   - Else: Heaviest person needs their own boat
+     - Move only right pointer inward
+   - Increment boat count
+
+4. **Why greedy works**: 
+   - If the heaviest person can't pair with the lightest, they can't pair with anyone
+   - So they need their own boat
+   - If they can pair, we maximize boat usage by pairing them
+
+## Key Insights
+
+- **Greedy algorithm**: Always try to pair heaviest with lightest
+- **Two pointers**: Efficiently process sorted array
+- **Sorting**: Essential for the greedy approach
+- **O(n log n) time**: Dominated by sorting
+- **Optimal**: This greedy strategy is optimal
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `weights = [1, 3, 5, 2]`, `limit = 5`
+
+```
+weights = [1, 3, 5, 2]
+Sorted: [1, 2, 3, 5]
+limit = 5
+
+left = 0, right = 3, boats = 0
+
+Iteration 1:
+  weights[left] + weights[right] = 1 + 5 = 6 > 5
+  Heaviest (5) needs own boat
+  right = 2, boats = 1
+
+Iteration 2:
+  weights[left] + weights[right] = 1 + 3 = 4 <= 5
+  Pair them
+  left = 1, right = 1, boats = 2
+
+Iteration 3:
+  left == right, process last person
+  weights[left] = 2 <= 5
+  Person needs own boat
+  left = 2, right = 0, boats = 3
+
+Result: 3 boats
+```
+
+Let's trace through Example 3: `weights = [4, 2, 3, 3]`, `limit = 5`
+
+```
+weights = [4, 2, 3, 3]
+Sorted: [2, 3, 3, 4]
+limit = 5
+
+left = 0, right = 3, boats = 0
+
+Iteration 1:
+  weights[left] + weights[right] = 2 + 4 = 6 > 5
+  Heaviest (4) needs own boat
+  right = 2, boats = 1
+
+Iteration 2:
+  weights[left] + weights[right] = 2 + 3 = 5 <= 5
+  Pair them
+  left = 1, right = 1, boats = 2
+
+Iteration 3:
+  left == right, process last person
+  weights[left] = 3 <= 5
+  Person needs own boat
+  left = 2, right = 0, boats = 3
+
+Result: 3 boats
+```
+
+## Visual Representation
+
+```
+Example 1: weights = [1, 3, 5, 2], limit = 5
+
+Sorted: [1, 2, 3, 5]
+        ↑        ↑
+      left    right
+
+Step 1: 1 + 5 = 6 > 5
+  Boat 1: [5] (alone)
+  Sorted: [1, 2, 3]
+          ↑     ↑
+        left  right
+
+Step 2: 1 + 3 = 4 <= 5
+  Boat 2: [1, 3]
+  Sorted: [2]
+          ↑
+        left/right
+
+Step 3: [2] (alone)
+  Boat 3: [2]
+
+Result: 3 boats
+
+Example 3: weights = [4, 2, 3, 3], limit = 5
+
+Sorted: [2, 3, 3, 4]
+        ↑        ↑
+      left    right
+
+Step 1: 2 + 4 = 6 > 5
+  Boat 1: [4] (alone)
+  Sorted: [2, 3, 3]
+          ↑     ↑
+        left  right
+
+Step 2: 2 + 3 = 5 <= 5
+  Boat 2: [2, 3]
+  Sorted: [3]
+          ↑
+        left/right
+
+Step 3: [3] (alone)
+  Boat 3: [3]
+
+Result: 3 boats
+```
+
+## Edge Cases
+
+- **Empty array**: Return 0 (no boats needed)
+- **Single person**: Return 1 (one boat)
+- **All same weight**: Can pair if 2 × weight <= limit
+- **All too heavy**: Each person needs own boat
+- **All light**: Can pair everyone
+
+## Important Notes
+
+- **Two people max**: Each boat can hold at most 2 people
+- **Greedy is optimal**: Pairing heaviest with lightest is optimal
+- **Sorting required**: Must sort for greedy to work
+- **O(n log n) time**: Dominated by sorting
+- **Two pointers**: Efficient O(n) processing after sorting
+
+## Why Greedy Works
+
+**Key insight**: 
+- If the heaviest person can't pair with the lightest person, they can't pair with anyone
+- Therefore, they must have their own boat
+- If they can pair with the lightest, pairing them maximizes boat usage
+- This greedy choice is optimal
+
+**Proof sketch**: 
+- Suppose we have an optimal solution that doesn't pair the heaviest with the lightest
+- If heaviest is alone, we can swap to pair them with lightest (if possible) without increasing boats
+- If heaviest is paired with someone else, we can swap to pair with lightest (if possible) without increasing boats
+- Therefore, greedy is optimal
+
+## Related Problems
+
+- **Two Sum**: Similar two-pointer approach
+- **3Sum**: Different two-pointer problem
+- **Container With Most Water**: Different two-pointer problem
+- **Partition Labels**: Different greedy problem
+
+## Takeaways
+
+- **Greedy algorithm** with two pointers is optimal
+- **Sort first** to enable greedy pairing
+- **Pair heaviest with lightest** when possible
+- **O(n log n) time** dominated by sorting
+- **Classic greedy problem** with practical applications
+

@@ -1,0 +1,363 @@
+---
+id: is-subsequence
+title: Is Subsequence
+slug: /problems/is-subsequence
+difficulty: Easy
+tags: [string, two-pointers, greedy]
+leetcode: https://leetcode.com/problems/is-subsequence/
+---
+
+# Is Subsequence
+
+This question is asked by Google. Given two strings `s` and `t`, return whether or not `s` is a subsequence of `t`.
+
+**Note:** You may assume both `s` and `t` only consist of lowercase characters and both have a length of at least one.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: s = "abc", t = "aabbcc"
+Output: true
+Explanation:
+Characters of "abc" appear in "aabbcc" in order:
+- 'a' at position 0
+- 'b' at position 2
+- 'c' at position 4
+```
+
+**Example 2:**
+```
+Input: s = "cpu", t = "computer"
+Output: true
+Explanation:
+Characters of "cpu" appear in "computer" in order:
+- 'c' at position 0
+- 'p' at position 1
+- 'u' at position 4
+```
+
+**Example 3:**
+```
+Input: s = "xyz", t = "axbyc"
+Output: false
+Explanation:
+Characters of "xyz" do not all appear in "axbyc":
+- 'x' at position 1 ✓
+- 'y' at position 3 ✓
+- 'z' not found ✗
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **two pointers**:
+
+1. **Pointer for s**: Tracks position in string `s`
+2. **Pointer for t**: Scans through string `t`
+3. **Match characters**: When characters match, advance pointer in `s`
+4. **Check completion**: If we match all characters in `s`, it's a subsequence
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Two Pointers"
+  code={`/**
+ * Check if s is a subsequence of t
+ * @param {string} s - Subsequence to check
+ * @param {string} t - String to search in
+ * @return {boolean} - True if s is subsequence of t
+ */
+function isSubsequence(s, t) {
+  if (s.length === 0) return true;
+  if (s.length > t.length) return false;
+  
+  let sIndex = 0; // Pointer for string s
+  
+  // Scan through string t
+  for (let tIndex = 0; tIndex < t.length; tIndex++) {
+    // If current character in t matches current character in s
+    if (t[tIndex] === s[sIndex]) {
+      sIndex++;
+      // If we've matched all characters in s, it's a subsequence
+      if (sIndex === s.length) {
+        return true;
+      }
+    }
+  }
+  
+  // If we didn't match all characters, it's not a subsequence
+  return sIndex === s.length;
+}
+
+// Test cases
+console.log('Example 1:', isSubsequence("abc", "aabbcc")); 
+// true
+
+console.log('Example 2:', isSubsequence("cpu", "computer")); 
+// true
+
+console.log('Example 3:', isSubsequence("xyz", "axbyc")); 
+// false
+
+console.log('Test 4:', isSubsequence("ace", "abcde")); 
+// true`}
+  testCases={[
+    { input: 'isSubsequence("abc", "aabbcc")', expected: 'true' },
+    { input: 'isSubsequence("cpu", "computer")', expected: 'true' },
+    { input: 'isSubsequence("xyz", "axbyc")', expected: 'false' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Two Pointers"
+  code={`def is_subsequence(s: str, t: str) -> bool:
+    """
+    Check if s is a subsequence of t
+    
+    Args:
+        s: Subsequence to check
+        t: String to search in
+        
+    Returns:
+        bool: True if s is subsequence of t
+    """
+    if len(s) == 0:
+        return True
+    if len(s) > len(t):
+        return False
+    
+    s_index = 0  # Pointer for string s
+    
+    # Scan through string t
+    for t_index in range(len(t)):
+        # If current character in t matches current character in s
+        if t[t_index] == s[s_index]:
+            s_index += 1
+            # If we've matched all characters in s, it's a subsequence
+            if s_index == len(s):
+                return True
+    
+    # If we didn't match all characters, it's not a subsequence
+    return s_index == len(s)
+
+# Test cases
+print('Example 1:', is_subsequence("abc", "aabbcc"))  
+# True
+
+print('Example 2:', is_subsequence("cpu", "computer"))  
+# True
+
+print('Example 3:', is_subsequence("xyz", "axbyc"))  
+# False
+
+print('Test 4:', is_subsequence("ace", "abcde"))  
+# True`}
+  testCases={[
+    { input: 'is_subsequence("abc", "aabbcc")', expected: 'True' },
+    { input: 'is_subsequence("cpu", "computer")', expected: 'True' },
+    { input: 'is_subsequence("xyz", "axbyc")', expected: 'False' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Recursive)
+
+Here's a recursive version:
+
+<Tabs>
+<TabItem value="javascript-recursive" label="JavaScript Recursive" default>
+
+```javascript
+/**
+ * Recursive approach
+ */
+function isSubsequenceRecursive(s, t) {
+  // Base cases
+  if (s.length === 0) return true;
+  if (t.length === 0) return false;
+  
+  // If first characters match, check rest
+  if (s[0] === t[0]) {
+    return isSubsequenceRecursive(s.substring(1), t.substring(1));
+  }
+  
+  // If don't match, skip character in t
+  return isSubsequenceRecursive(s, t.substring(1));
+}
+```
+
+</TabItem>
+<TabItem value="python-recursive" label="Python Recursive">
+
+```python
+def is_subsequence_recursive(s: str, t: str) -> bool:
+    """
+    Recursive approach
+    """
+    # Base cases
+    if len(s) == 0:
+        return True
+    if len(t) == 0:
+        return False
+    
+    # If first characters match, check rest
+    if s[0] == t[0]:
+        return is_subsequence_recursive(s[1:], t[1:])
+    
+    # If don't match, skip character in t
+    return is_subsequence_recursive(s, t[1:])
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of `t`. We scan through `t` once.
+- **Space Complexity:** O(1) - Only using a constant amount of extra space (two pointers).
+
+## Approach
+
+The solution uses **two pointers**:
+
+1. **Pointer for s**: 
+   - Tracks which character in `s` we're looking for
+   - Only advances when we find a match
+
+2. **Pointer for t**: 
+   - Scans through `t` sequentially
+   - Checks if current character matches what we need in `s`
+
+3. **Match and advance**: 
+   - When characters match, advance pointer in `s`
+   - Continue scanning `t`
+
+4. **Check completion**: 
+   - If we match all characters in `s`, return true
+   - If we finish scanning `t` without matching all, return false
+
+## Key Insights
+
+- **Two pointers**: One for each string
+- **Greedy approach**: Match first occurrence of each character
+- **Order matters**: Characters must appear in same order
+- **Not consecutive**: Characters don't need to be adjacent
+- **O(n) time**: Single pass through `t`
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `s = "abc"`, `t = "aabbcc"`
+
+```
+s = "abc"
+t = "aabbcc"
+sIndex = 0
+
+tIndex = 0: t[0] = 'a'
+  t[0] === s[0]? Yes ('a' === 'a')
+  sIndex = 1
+
+tIndex = 1: t[1] = 'a'
+  t[1] === s[1]? No ('a' !== 'b')
+  Continue
+
+tIndex = 2: t[2] = 'b'
+  t[2] === s[1]? Yes ('b' === 'b')
+  sIndex = 2
+
+tIndex = 3: t[3] = 'b'
+  t[3] === s[2]? No ('b' !== 'c')
+  Continue
+
+tIndex = 4: t[4] = 'c'
+  t[4] === s[2]? Yes ('c' === 'c')
+  sIndex = 3
+  
+  sIndex === s.length? Yes (3 === 3)
+  Return true
+```
+
+## Visual Representation
+
+```
+Example 1: s = "abc", t = "aabbcc"
+
+t:  a  a  b  b  c  c
+    ↑     ↑        ↑
+    Match 'a' at position 0
+         Match 'b' at position 2
+              Match 'c' at position 4
+
+s:  a  b  c
+    ✓  ✓  ✓
+    All matched in order
+
+Result: true
+
+Example 3: s = "xyz", t = "axbyc"
+
+t:  a  x  b  y  c
+       ↑     ↑
+       Match 'x' at position 1
+            Match 'y' at position 3
+                 'z' not found
+
+s:  x  y  z
+    ✓  ✓  ✗
+    'z' not found
+
+Result: false
+```
+
+## Edge Cases
+
+- **s is empty**: Return true (empty string is subsequence of any string)
+- **s longer than t**: Return false
+- **s equals t**: Return true
+- **s is single character**: Works correctly
+- **t is single character**: Works correctly
+- **No matches**: Return false
+
+## Important Notes
+
+- **Subsequence vs substring**: Subsequence doesn't require consecutive characters
+- **Order matters**: Characters must appear in same order
+- **Greedy matching**: Match first occurrence of each character
+- **O(n) time**: Single pass through `t`
+- **O(1) space**: Only two pointers needed
+
+## Why Two Pointers Work
+
+**Key insight**: 
+- We need to find characters of `s` in `t` in order
+- Once we match a character in `s`, we move to the next
+- We only scan forward in `t`, never backward
+- This greedy approach finds the subsequence if it exists
+
+## Related Problems
+
+- **Longest Common Subsequence**: Different problem (find longest)
+- **Isomorphic Strings**: Different problem
+- **Valid Anagram**: Different problem
+- **Edit Distance**: Different problem
+
+## Takeaways
+
+- **Two pointers** efficiently check subsequence
+- **Greedy matching** finds first occurrence of each character
+- **Order matters** - characters must appear in same order
+- **O(n) time** with single pass through `t`
+- **O(1) space** using only two pointers
+

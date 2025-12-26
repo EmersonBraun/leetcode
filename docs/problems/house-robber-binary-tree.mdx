@@ -1,0 +1,400 @@
+---
+id: house-robber-binary-tree
+title: House Robber Binary Tree
+slug: /problems/house-robber-binary-tree
+difficulty: Medium
+tags: [tree, binary-tree, dynamic-programming, recursion]
+leetcode: https://leetcode.com/problems/house-robber-iii/
+---
+
+# House Robber Binary Tree
+
+You're a thief trying to rob a binary tree. As a thief, you are trying to steal as much money as possible. The amount of money you steal is equivalent to the sum of all the node's values that you decide to rob. If two adjacent nodes are robbed, the authorities are automatically alerted. Return the maximum loot that you can steal without alerting the authorities.
+
+**Note:** Two nodes are considered adjacent if they have a direct parent-child relationship.
+
+## Example(s)
+
+**Example 1:**
+```
+Input:
+        2
+      /   \
+     5     7
+
+Output: 12
+Explanation: Rob nodes 5 and 7 (5 + 7 = 12). 
+Cannot rob node 2 with either child since they are adjacent.
+```
+
+**Example 2:**
+```
+Input:
+        4
+      /   \
+     3     2
+      \     \
+       9     7
+
+Output: 20
+Explanation: Rob nodes 4, 9, and 7 (4 + 9 + 7 = 20).
+Cannot rob node 3 or 2 since they are adjacent to 4.
+```
+
+**Example 3:**
+```
+Input:
+        3
+      /   \
+     2     3
+      \     \
+       3     1
+
+Output: 7
+Explanation: Rob nodes 3 (root), 3 (left subtree), and 1 (right subtree) = 3 + 3 + 1 = 7.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **dynamic programming** with a **post-order traversal**:
+
+For each node, we calculate two values:
+1. **Rob this node**: Value of this node + maximum loot from grandchildren (since we can't rob children)
+2. **Don't rob this node**: Maximum loot from children (can choose to rob or not rob each child)
+
+We use a post-order traversal (left, right, root) to process children before the parent, allowing us to use the children's results to compute the parent's result.
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution"
+  code={`/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+
+/**
+ * Calculate maximum loot from robbing a binary tree
+ * @param {TreeNode} root - Root of the binary tree
+ * @return {number} - Maximum loot possible
+ */
+function rob(root) {
+  /**
+   * Helper function that returns [rob, notRob] for a node
+   * @param {TreeNode} node - Current node
+   * @return {number[]} - [max loot if we rob this node, max loot if we don't]
+   */
+  function dfs(node) {
+    if (!node) {
+      return [0, 0]; // [rob, notRob]
+    }
+    
+    // Post-order traversal: process children first
+    const [leftRob, leftNotRob] = dfs(node.left);
+    const [rightRob, rightNotRob] = dfs(node.right);
+    
+    // If we rob this node, we can't rob children
+    // So we take the "not rob" values from children
+    const robThis = node.val + leftNotRob + rightNotRob;
+    
+    // If we don't rob this node, we can choose the best option for each child
+    // (either rob or not rob, whichever gives more)
+    const notRobThis = Math.max(leftRob, leftNotRob) + Math.max(rightRob, rightNotRob);
+    
+    return [robThis, notRobThis];
+  }
+  
+  const [robRoot, notRobRoot] = dfs(root);
+  return Math.max(robRoot, notRobRoot);
+}
+
+// Helper function to create a tree node
+function TreeNode(val, left, right) {
+  this.val = (val===undefined ? 0 : val);
+  this.left = (left===undefined ? null : left);
+  this.right = (right===undefined ? null : right);
+}
+
+// Test case 1: [2, 5, 7]
+const tree1 = new TreeNode(2);
+tree1.left = new TreeNode(5);
+tree1.right = new TreeNode(7);
+console.log('Example 1:', rob(tree1)); // 12
+
+// Test case 2: [4, 3, 2, null, 9, null, 7]
+const tree2 = new TreeNode(4);
+tree2.left = new TreeNode(3);
+tree2.right = new TreeNode(2);
+tree2.left.right = new TreeNode(9);
+tree2.right.right = new TreeNode(7);
+console.log('Example 2:', rob(tree2)); // 20
+
+// Test case 3: [3, 2, 3, null, 3, null, 1]
+const tree3 = new TreeNode(3);
+tree3.left = new TreeNode(2);
+tree3.right = new TreeNode(3);
+tree3.left.right = new TreeNode(3);
+tree3.right.right = new TreeNode(1);
+console.log('Example 3:', rob(tree3)); // 7
+
+// Test case 4: Single node
+const tree4 = new TreeNode(5);
+console.log('Single node:', rob(tree4)); // 5`}
+  testCases={[
+    { input: '(() => { const t = new TreeNode(2, new TreeNode(5), new TreeNode(7)); return rob(t); })()', expected: '12' },
+    { input: '(() => { const t = new TreeNode(4, new TreeNode(3, null, new TreeNode(9)), new TreeNode(2, null, new TreeNode(7))); return rob(t); })()', expected: '20' },
+    { input: '(() => { const t = new TreeNode(3, new TreeNode(2, null, new TreeNode(3)), new TreeNode(3, null, new TreeNode(1))); return rob(t); })()', expected: '7' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution"
+  code={`from typing import Optional, Tuple
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def rob(root: Optional[TreeNode]) -> int:
+    """
+    Calculate maximum loot from robbing a binary tree
+    
+    Args:
+        root: Root of the binary tree
+        
+    Returns:
+        int: Maximum loot possible
+    """
+    def dfs(node: Optional[TreeNode]) -> Tuple[int, int]:
+        """
+        Helper function that returns (rob, not_rob) for a node
+        
+        Returns:
+            Tuple[int, int]: (max loot if we rob this node, max loot if we don't)
+        """
+        if not node:
+            return (0, 0)  # (rob, not_rob)
+        
+        # Post-order traversal: process children first
+        left_rob, left_not_rob = dfs(node.left)
+        right_rob, right_not_rob = dfs(node.right)
+        
+        # If we rob this node, we can't rob children
+        # So we take the "not rob" values from children
+        rob_this = node.val + left_not_rob + right_not_rob
+        
+        # If we don't rob this node, we can choose the best option for each child
+        # (either rob or not rob, whichever gives more)
+        not_rob_this = max(left_rob, left_not_rob) + max(right_rob, right_not_rob)
+        
+        return (rob_this, not_rob_this)
+    
+    rob_root, not_rob_root = dfs(root)
+    return max(rob_root, not_rob_root)
+
+# Test case 1: [2, 5, 7]
+tree1 = TreeNode(2)
+tree1.left = TreeNode(5)
+tree1.right = TreeNode(7)
+print('Example 1:', rob(tree1))  # 12
+
+# Test case 2: [4, 3, 2, None, 9, None, 7]
+tree2 = TreeNode(4)
+tree2.left = TreeNode(3)
+tree2.right = TreeNode(2)
+tree2.left.right = TreeNode(9)
+tree2.right.right = TreeNode(7)
+print('Example 2:', rob(tree2))  # 20
+
+# Test case 3: [3, 2, 3, None, 3, None, 1]
+tree3 = TreeNode(3)
+tree3.left = TreeNode(2)
+tree3.right = TreeNode(3)
+tree3.left.right = TreeNode(3)
+tree3.right.right = TreeNode(1)
+print('Example 3:', rob(tree3))  # 7
+
+# Test case 4: Single node
+tree4 = TreeNode(5)
+print('Single node:', rob(tree4))  # 5`}
+  testCases={[
+    { input: '(() => { t = TreeNode(2, TreeNode(5), TreeNode(7)); return rob(t); })()', expected: '12' },
+    { input: '(() => { t = TreeNode(4, TreeNode(3, None, TreeNode(9)), TreeNode(2, None, TreeNode(7))); return rob(t); })()', expected: '20' },
+    { input: '(() => { t = TreeNode(3, TreeNode(2, None, TreeNode(3)), TreeNode(3, None, TreeNode(1))); return rob(t); })()', expected: '7' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (More Explicit)
+
+Here's a more explicit version that might be easier to understand:
+
+<Tabs>
+<TabItem value="javascript-alt" label="JavaScript Alternative" default>
+
+```javascript
+/**
+ * Alternative approach with more explicit variable names
+ */
+function robAlternative(root) {
+  function dfs(node) {
+    if (!node) {
+      return { rob: 0, skip: 0 };
+    }
+    
+    const left = dfs(node.left);
+    const right = dfs(node.right);
+    
+    // Option 1: Rob this node
+    // Can't rob children, so use their "skip" values
+    const robThis = node.val + left.skip + right.skip;
+    
+    // Option 2: Skip this node
+    // Can choose best option for each child independently
+    const skipThis = Math.max(left.rob, left.skip) + Math.max(right.rob, right.skip);
+    
+    return { rob: robThis, skip: skipThis };
+  }
+  
+  const result = dfs(root);
+  return Math.max(result.rob, result.skip);
+}
+```
+
+</TabItem>
+<TabItem value="python-alt" label="Python Alternative">
+
+```python
+def rob_alternative(root: Optional[TreeNode]) -> int:
+    """
+    Alternative approach with more explicit variable names
+    """
+    def dfs(node: Optional[TreeNode]) -> dict:
+        if not node:
+            return {'rob': 0, 'skip': 0}
+        
+        left = dfs(node.left)
+        right = dfs(node.right)
+        
+        # Option 1: Rob this node
+        # Can't rob children, so use their "skip" values
+        rob_this = node.val + left['skip'] + right['skip']
+        
+        # Option 2: Skip this node
+        # Can choose best option for each child independently
+        skip_this = max(left['rob'], left['skip']) + max(right['rob'], right['skip'])
+        
+        return {'rob': rob_this, 'skip': skip_this}
+    
+    result = dfs(root)
+    return max(result['rob'], result['skip'])
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the number of nodes. We visit each node exactly once.
+- **Space Complexity:** O(h) - Where h is the height of the tree. This is the space used by the recursion stack. In the worst case (skewed tree), this is O(n), but for a balanced tree it's O(log n).
+
+## Approach
+
+The solution uses **dynamic programming** with a **post-order traversal**:
+
+1. **Post-order traversal**: Process children before parent (left → right → root)
+   - This allows us to use children's results to compute parent's result
+
+2. **Two-state DP**: For each node, we compute two values:
+   - **Rob this node**: `node.val + leftNotRob + rightNotRob`
+     - If we rob a node, we cannot rob its children
+     - So we take the "not rob" values from children
+   - **Don't rob this node**: `max(leftRob, leftNotRob) + max(rightRob, rightNotRob)`
+     - If we don't rob a node, we can independently choose the best option for each child
+
+3. **Base case**: For null nodes, return `[0, 0]` (no loot from empty subtree)
+
+4. **Final answer**: Take the maximum of robbing or not robbing the root
+
+## Key Insights
+
+- **Post-order traversal** is crucial - we need children's results before processing parent
+- **Two-state DP** - each node has two choices: rob or don't rob
+- **Independent choices** - when not robbing a node, we can independently optimize each child
+- **Optimal substructure** - the problem exhibits optimal substructure (optimal solution contains optimal solutions to subproblems)
+- **No overlapping subproblems** - each subtree is processed once, making this more efficient than naive recursion
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `[2, 5, 7]`
+
+```
+Tree:
+        2
+      /   \
+     5     7
+
+Post-order traversal: 5 → 7 → 2
+
+Step 1: Process node 5 (leaf)
+  - rob = 5 + 0 + 0 = 5
+  - notRob = max(0,0) + max(0,0) = 0
+  - Return [5, 0]
+
+Step 2: Process node 7 (leaf)
+  - rob = 7 + 0 + 0 = 7
+  - notRob = max(0,0) + max(0,0) = 0
+  - Return [7, 0]
+
+Step 3: Process node 2 (root)
+  - left = [5, 0], right = [7, 0]
+  - rob = 2 + 0 + 0 = 2 (can't rob children)
+  - notRob = max(5,0) + max(7,0) = 5 + 7 = 12
+  - Return [2, 12]
+
+Final answer: max(2, 12) = 12
+```
+
+## Edge Cases
+
+- **Single node**: Return the node's value
+- **Empty tree**: Return 0
+- **All negative values**: Algorithm still works (though robbing might not be profitable)
+- **Skewed tree**: Works correctly with left-skewed or right-skewed trees
+- **Large values**: Works with any integer values
+
+## Comparison with House Robber I & II
+
+- **House Robber I**: Linear array, adjacent houses can't be robbed
+- **House Robber II**: Circular array (first and last are adjacent)
+- **House Robber III**: Binary tree, parent and child can't both be robbed
+
+All three use similar DP concepts but with different adjacency constraints.
+
+## Takeaways
+
+- **Dynamic programming on trees** often uses post-order traversal
+- **Two-state DP** is common when each element has two choices
+- **Optimal substructure** allows us to build solution from subproblems
+- **Post-order ensures** children are processed before parent
+- **Independent optimization** of subtrees when skipping a node is key to the solution
+

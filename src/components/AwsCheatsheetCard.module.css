@@ -1,0 +1,120 @@
+/* AwsCheatsheetCard Component Styles */
+.container {
+  background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+  border-radius: var(--card-border-radius);
+  padding: 3rem 2rem;
+  margin: 3rem 0;
+  color: white;
+  box-shadow: 0 10px 30px rgba(255, 94, 98, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(255, 94, 98, 0.3);
+}
+
+/* Abstract decoration cloud */
+.container::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  right: -20px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.title {
+  color: white;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.description {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.listContainer {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.list {
+  text-align: left;
+  display: inline-block;
+  list-style: none;
+  padding: 0;
+}
+
+.listItem {
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.checkIcon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  padding: 4px;
+  font-size: 0.9rem;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.button {
+  background-color: white !important;
+  color: #ff5e62 !important;
+  font-weight: 800 !important;
+  border: none !important;
+  padding: 1rem 2.5rem !important;
+  font-size: 1.2rem !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  filter: brightness(1.05);
+}
+
+.footer {
+  font-size: 0.9rem;
+  margin-top: 1.5rem;
+  opacity: 0.8;
+  text-align: center;
+  font-weight: 500;
+}

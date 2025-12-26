@@ -1,0 +1,328 @@
+---
+id: column-order-traversal
+title: Binary Tree Column Order Traversal
+slug: /problems/column-order-traversal
+difficulty: Medium
+tags: [tree, binary-tree, breadth-first-search, hash-table]
+leetcode: https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
+---
+
+# Binary Tree Column Order Traversal
+
+Given a binary tree, return its column order traversal from top to bottom and left to right. Note: if two nodes are in the same row and column, order them from left to right.
+
+## Example(s)
+
+**Example 1:**
+```
+Tree:
+    8
+   / \
+  2   29
+     /  \
+    3    9
+Output: [[2],[8,3],[29],[9]]
+```
+
+**Example 2:**
+```
+Tree:
+     100
+    /   \
+   53    78
+  / \   /  \
+ 32  3  9   20
+Output: [[32],[53],[100,3,9],[78],[20]]
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+```javascript
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+
+/**
+ * Perform column order traversal of a binary tree
+ * @param {TreeNode} root - Root of the binary tree
+ * @return {number[][]} - Column order traversal result
+ */
+function verticalOrder(root) {
+  if (!root) return [];
+  
+  const map = new Map();
+  const queue = [[root, 0, 0]]; // [node, col, row]
+  let minCol = 0, maxCol = 0;
+  
+  while (queue.length) {
+    const [node, col, row] = queue.shift();
+    
+    if (!map.has(col)) {
+      map.set(col, []);
+    }
+    map.get(col).push([row, node.val]);
+    
+    minCol = Math.min(minCol, col);
+    maxCol = Math.max(maxCol, col);
+    
+    if (node.left) queue.push([node.left, col - 1, row + 1]);
+    if (node.right) queue.push([node.right, col + 1, row + 1]);
+  }
+  
+  const result = [];
+  for (let col = minCol; col <= maxCol; col++) {
+    if (map.has(col)) {
+      // Sort by row and then by value for same row
+      const nodes = map.get(col)
+        .sort((a, b) => a[0] === b[0] ? a[1] - b[1] : a[0] - b[0])
+        .map(item => item[1]);
+      result.push(nodes);
+    }
+  }
+  
+  return result;
+}
+```
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+```python
+from typing import Optional, List
+from collections import deque, defaultdict
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def vertical_order(root: Optional[TreeNode]) -> List[List[int]]:
+    """
+    Perform column order traversal of a binary tree
+    
+    Args:
+        root: Root of the binary tree
+        
+    Returns:
+        List[List[int]]: Column order traversal result
+    """
+    if not root:
+        return []
+    
+    map = defaultdict(list)
+    queue = deque([(root, 0, 0)])  # (node, col, row)
+    min_col, max_col = 0, 0
+    
+    while queue:
+        node, col, row = queue.popleft()
+        
+        map[col].append((row, node.val))
+        
+        min_col = min(min_col, col)
+        max_col = max(max_col, col)
+        
+        if node.left:
+            queue.append((node.left, col - 1, row + 1))
+        if node.right:
+            queue.append((node.right, col + 1, row + 1))
+    
+    result = []
+    for col in range(min_col, max_col + 1):
+        if col in map:
+            # Sort by row and then by value for same row
+            nodes = [val for _, val in sorted(map[col], key=lambda x: (x[0], x[1]))]
+            result.append(nodes)
+    
+    return result
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n log n) - Where n is the number of nodes, due to sorting nodes in each column
+- **Space Complexity:** O(n) - For storing nodes in the queue and hash map
+
+## Interactive Code Runner
+
+import CodeRunner from '@site/src/components/CodeRunner';
+
+### Test the Solution
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Column Order Traversal Solution"
+  code={`
+function TreeNode(val, left, right) {
+    this.val = (val===undefined ? 0 : val)
+    this.left = (left===undefined ? null : left)
+    this.right = (right===undefined ? null : right)
+}
+
+/**
+ * Perform column order traversal of a binary tree
+ * @param {TreeNode} root - Root of the binary tree
+ * @return {number[][]} - Column order traversal result
+ */
+function verticalOrder(root) {
+  if (!root) return [];
+  
+  const map = new Map();
+  const queue = [[root, 0, 0]];
+  let minCol = 0, maxCol = 0;
+  
+  while (queue.length) {
+    const [node, col, row] = queue.shift();
+    
+    if (!map.has(col)) {
+      map.set(col, []);
+    }
+    map.get(col).push([row, node.val]);
+    
+    minCol = Math.min(minCol, col);
+    maxCol = Math.max(maxCol, col);
+    
+    if (node.left) queue.push([node.left, col - 1, row + 1]);
+    if (node.right) queue.push([node.right, col + 1, row + 1]);
+  }
+  
+  const result = [];
+  for (let col = minCol; col <= maxCol; col++) {
+    if (map.has(col)) {
+      const nodes = map.get(col)
+        .sort((a, b) => a[0] === b[0] ? a[1] - b[1] : a[0] - b[0])
+        .map(item => item[1]);
+      result.push(nodes);
+    }
+  }
+  
+  return result;
+}
+
+// Test case 1: [8,2,29,3,9]
+const tree1 = new TreeNode(8);
+tree1.left = new TreeNode(2);
+tree1.right = new TreeNode(29);
+tree1.right.left = new TreeNode(3);
+tree1.right.right = new TreeNode(9);
+
+// Test case 2: [100,53,78,32,3,9,20]
+const tree2 = new TreeNode(100);
+tree2.left = new TreeNode(53);
+tree2.right = new TreeNode(78);
+tree2.left.left = new TreeNode(32);
+tree2.left.right = new TreeNode(3);
+tree2.right.left = new TreeNode(9);
+tree2.right.right = new TreeNode(20);
+
+// Test cases
+console.log(verticalOrder(tree1)); // [[2],[8,3],[29],[9]]
+console.log(verticalOrder(tree2)); // [[32],[53],[100,3,9],[78],[20]]
+console.log(verticalOrder(null)); // []`}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Column Order Traversal Solution"
+  code={`
+from typing import Optional, List
+from collections import deque, defaultdict
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def vertical_order(root: Optional[TreeNode]) -> List[List[int]]:
+    """
+    Perform column order traversal of a binary tree
+    
+    Args:
+        root: Root of the binary tree
+        
+    Returns:
+        List[List[int]]: Column order traversal result
+    """
+    if not root:
+        return []
+    
+    map = defaultdict(list)
+    queue = deque([(root, 0, 0)])
+    min_col, max_col = 0, 0
+    
+    while queue:
+        node, col, row = queue.popleft()
+        
+        map[col].append((row, node.val))
+        
+        min_col = min(min_col, col)
+        max_col = max(max_col, col)
+        
+        if node.left:
+            queue.append((node.left, col - 1, row + 1))
+        if node.right:
+            queue.append((node.right, col + 1, row + 1))
+    
+    result = []
+    for col in range(min_col, max_col + 1):
+        if col in map:
+            nodes = [val for _, val in sorted(map[col], key=lambda x: (x[0], x[1]))]
+            result.append(nodes)
+    
+    return result
+
+# Test case 1: [8,2,29,3,9]
+tree1 = TreeNode(8)
+tree1.left = TreeNode(2)
+tree1.right = TreeNode(29)
+tree1.right.left = TreeNode(3)
+tree1.right.right = TreeNode(9)
+
+# Test case 2: [100,53,78,32,3,9,20]
+tree2 = TreeNode(100)
+tree2.left = TreeNode(53)
+tree2.right = TreeNode(78)
+tree2.left.left = TreeNode(32)
+tree2.left.right = TreeNode(3)
+tree2.right.left = TreeNode(9)
+tree2.right.right = TreeNode(20)
+
+# Test cases
+print(vertical_order(tree1))  # [[2],[8,3],[29],[9]]
+print(vertical_order(tree2))  # [[32],[53],[100,3,9],[78],[20]]
+print(vertical_order(None))  # []`}
+/>
+
+</TabItem>
+</Tabs>
+
+## Takeaways
+
+- **Breadth-first search** ensures nodes are processed level by level
+- **Column tracking** uses a hash map to group nodes by vertical position
+- **Sorting by row and value** ensures correct ordering within each column
+- **Edge cases** include empty tree, single-node tree, and nodes in the same row and column
+- **O(n log n) time** due to sorting nodes in each column
+```

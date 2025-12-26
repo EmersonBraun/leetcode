@@ -1,0 +1,422 @@
+---
+id: binary-search-tree
+title: Search in a Binary Search Tree
+slug: /problems/binary-search-tree
+difficulty: Easy
+tags: [tree, binary-search-tree, recursion]
+leetcode: https://leetcode.com/problems/search-in-a-binary-search-tree/
+---
+
+# Search in a Binary Search Tree
+
+Given the reference to the root of a binary search tree and a search value, return the reference to the node that contains the value if it exists and `null` otherwise.
+
+**Note:** All values in the binary search tree will be unique.
+
+## Example(s)
+
+**Example 1:**
+```
+Tree:
+        3
+       / \
+      1   4
+Search value: 1
+Output: Reference to node containing 1
+```
+
+**Example 2:**
+```
+Tree:
+        7
+       / \
+      5   9
+         / \ 
+        8   10
+Search value: 9
+Output: Reference to node containing 9
+```
+
+**Example 3:**
+```
+Tree:
+        8
+       / \
+      6   9
+Search value: 7
+Output: null
+```
+
+## Recursive Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+```javascript
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+
+/**
+ * Search in a binary search tree recursively
+ * @param {TreeNode} root - Root of the BST
+ * @param {number} val - Value to search
+ * @return {TreeNode} - Node containing the value or null
+ */
+function searchBST(root, val) {
+  if (!root) return null;
+  if (root.val === val) return root;
+  if (val < root.val) return searchBST(root.left, val);
+  return searchBST(root.right, val);
+}
+```
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+```python
+from typing import Optional
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def search_bst(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    """
+    Search in a binary search tree recursively
+    
+    Args:
+        root: Root of the BST
+        val: Value to search
+        
+    Returns:
+        TreeNode: Node containing the value or None
+    """
+    if not root:
+        return None
+    if root.val == val:
+        return root
+    if val < root.val:
+        return search_bst(root.left, val)
+    return search_bst(root.right, val)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity (Recursive)
+
+- **Time Complexity:** O(h) - Where h is the height of the tree (O(n) in worst case)
+- **Space Complexity:** O(h) - Recursion stack space
+
+## Iterative Solution
+
+<Tabs>
+<TabItem value="javascript-iter" label="JavaScript Solution" default>
+
+```javascript
+// Definition for a binary tree node.
+function TreeNode(val, left, right) {
+    this.val = (val===undefined ? 0 : val)
+    this.left = (left===undefined ? null : left)
+    this.right = (right===undefined ? null : right)
+}
+
+/**
+ * Search in a binary search tree iteratively
+ * @param {TreeNode} root - Root of the BST
+ * @param {number} val - Value to search
+ * @return {TreeNode} - Node containing the value or null
+ */
+function searchBSTIterative(root, val) {
+  let current = root;
+  while (current) {
+    if (current.val === val) return current;
+    if (val < current.val) {
+      current = current.left;
+    } else {
+      current = current.right;
+    }
+  }
+  return null;
+}
+```
+
+</TabItem>
+<TabItem value="python-iter" label="Python Solution">
+
+```python
+from typing import Optional
+
+def search_bst_iterative(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    """
+    Search in a binary search tree iteratively
+    
+    Args:
+        root: Root of the BST
+        val: Value to search
+        
+    Returns:
+        TreeNode: Node containing the value or None
+    """
+    current = root
+    while current:
+        if current.val == val:
+            return current
+        if val < current.val:
+            current = current.left
+        else:
+            current = current.right
+    return None
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity (Iterative)
+
+- **Time Complexity:** O(h) - Where h is the height of the tree (O(n) in worst case)
+- **Space Complexity:** O(1) - Constant extra space
+
+## Interactive Code Runner
+
+import CodeRunner from '@site/src/components/CodeRunner';
+
+### Test the Recursive Solution
+
+<Tabs>
+<TabItem value="javascript-recursive" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Recursive Solution"
+  code={`
+// Definition for a binary tree node.
+function TreeNode(val, left, right) {
+    this.val = (val===undefined ? 0 : val)
+    this.left = (left===undefined ? null : left)
+    this.right = (right===undefined ? null : right)
+}
+
+/**
+ * Search in a binary search tree recursively
+ * @param {TreeNode} root - Root of the BST
+ * @param {number} val - Value to search
+ * @return {TreeNode} - Node containing the value or null
+ */
+function searchBST(root, val) {
+  if (!root) return null;
+  if (root.val === val) return root;
+  if (val < root.val) return searchBST(root.left, val);
+  return searchBST(root.right, val);
+}
+
+// Create test tree: [3,1,4]
+const root = new TreeNode(3);
+root.left = new TreeNode(1);
+root.right = new TreeNode(4);
+
+// Test cases
+console.log(searchBST(root, 1)?.val); // 1
+console.log(searchBST(root, 4)?.val); // 4
+console.log(searchBST(root, 7)); // null`}
+  testCases={[
+    { input: 'searchBST(root, 1)?.val', expected: '1' },
+    { input: 'searchBST(root, 4)?.val', expected: '4' },
+    { input: 'searchBST(root, 7)', expected: 'null' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python-recursive" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Recursive Solution"
+  code={`from typing import Optional
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def search_bst(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    """
+    Search in a binary search tree recursively
+    
+    Args:
+        root: Root of the BST
+        val: Value to search
+        
+    Returns:
+        TreeNode: Node containing the value or None
+    """
+    if not root:
+        return None
+    if root.val == val:
+        return root
+    if val < root.val:
+        return search_bst(root.left, val)
+    return search_bst(root.right, val)
+
+# Create test tree: [3,1,4]
+root = TreeNode(3)
+root.left = TreeNode(1)
+root.right = TreeNode(4)
+
+# Test cases
+result1 = search_bst(root, 1)
+print(result1.val if result1 else None)  # 1
+result2 = search_bst(root, 4)
+print(result2.val if result2 else None)  # 4
+result3 = search_bst(root, 7)
+print(result3)  # None`}
+  testCases={[
+    { input: 'result1.val if result1 else None', expected: '1' },
+    { input: 'result2.val if result2 else None', expected: '4' },
+    { input: 'result3', expected: 'None' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+### Test the Iterative Solution
+
+<Tabs>
+<TabItem value="javascript-iterative" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Iterative Solution"
+  code={`
+// Definition for a binary tree node.
+function TreeNode(val, left, right) {
+    this.val = (val===undefined ? 0 : val)
+    this.left = (left===undefined ? null : left)
+    this.right = (right===undefined ? null : right)
+}
+
+/**
+ * Search in a binary search tree iteratively
+ * @param {TreeNode} root - Root of the BST
+ * @param {number} val - Value to search
+ * @return {TreeNode} - Node containing the value or null
+ */
+function TreeNode(val, left, right) {
+    this.val = (val===undefined ? 0 : val)
+    this.left = (left===undefined ? null : left)
+    this.right = (right===undefined ? null : right)
+}
+
+function searchBSTIterative(root, val) {
+  let current = root;
+  while (current) {
+    if (current.val === val) return current;
+    if (val < current.val) {
+      current = current.left;
+    } else {
+      current = current.right;
+    }
+  }
+  return null;
+}
+
+// Create test tree: [7,5,9,null,null,8,10]
+const root = new TreeNode(7);
+root.left = new TreeNode(5);
+root.right = new TreeNode(9);
+root.right.left = new TreeNode(8);
+root.right.right = new TreeNode(10);
+
+// Test cases
+console.log(searchBSTIterative(root, 9)?.val); // 9
+console.log(searchBSTIterative(root, 8)?.val); // 8
+console.log(searchBSTIterative(root, 6)); // null`}
+  testCases={[
+    { input: 'searchBSTIterative(root, 9)?.val', expected: '9' },
+    { input: 'searchBSTIterative(root, 8)?.val', expected: '8' },
+    { input: 'searchBSTIterative(root, 6)', expected: 'null' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python-iterative" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Iterative Solution"
+  code={`from typing import Optional
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def search_bst_iterative(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    """
+    Search in a binary search tree iteratively
+    
+    Args:
+        root: Root of the BST
+        val: Value to search
+        
+    Returns:
+        TreeNode: Node containing the value or None
+    """
+    current = root
+    while current:
+        if current.val == val:
+            return current
+        if val < current.val:
+            current = current.left
+        else:
+            current = current.right
+    return None
+
+# Create test tree: [7,5,9,null,null,8,10]
+root = TreeNode(7)
+root.left = TreeNode(5)
+root.right = TreeNode(9)
+root.right.left = TreeNode(8)
+root.right.right = TreeNode(10)
+
+# Test cases
+result1 = search_bst_iterative(root, 9)
+print(result1.val if result1 else None)  # 9
+result2 = search_bst_iterative(root, 8)
+print(result2.val if result2 else None)  # 8
+result3 = search_bst_iterative(root, 6)
+print(result3)  # None`}
+  testCases={[
+    { input: 'result1.val if result1 else None', expected: '9' },
+    { input: 'result2.val if result2 else None', expected: '8' },
+    { input: 'result3', expected: 'None' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Takeaways
+
+- **BST Property utilization** leads to efficient search by pruning half the tree at each step
+- **Iterative approach** saves space compared to recursive, especially for deep trees
+- **Unique values** simplify the search without handling duplicates
+- **Edge cases** include empty tree, root match, and value not present
+- **Height dependency** means balanced BST ensures O(log n) average time

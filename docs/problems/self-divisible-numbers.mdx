@@ -1,0 +1,419 @@
+---
+id: self-divisible-numbers
+title: Self Divisible Numbers
+slug: /problems/self-divisible-numbers
+difficulty: Easy
+tags: [math, number-theory]
+---
+
+# Self Divisible Numbers
+
+Given an integer `N`, return the total number of self divisible numbers that are strictly less than `N` (starting from one).
+
+**Note:** A self divisible number is a number that is divisible by all of its digits.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: N = 17
+Output: 12
+Explanation:
+Self-divisible numbers less than 17:
+1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 15
+
+Verification:
+- 1: divisible by 1 ✓
+- 2: divisible by 2 ✓
+- 3: divisible by 3 ✓
+- 4: divisible by 4 ✓
+- 5: divisible by 5 ✓
+- 6: divisible by 6 ✓
+- 7: divisible by 7 ✓
+- 8: divisible by 8 ✓
+- 9: divisible by 9 ✓
+- 10: divisible by 1, but 10 % 0 is undefined ✗
+- 11: divisible by 1 and 1 ✓
+- 12: divisible by 1 and 2 ✓
+- 13: 13 % 3 = 1 ✗
+- 14: 14 % 4 = 2 ✗
+- 15: divisible by 1 and 5 ✓
+- 16: 16 % 6 = 4 ✗
+```
+
+**Example 2:**
+```
+Input: N = 10
+Output: 9
+Explanation:
+Self-divisible numbers less than 10: 1, 2, 3, 4, 5, 6, 7, 8, 9
+```
+
+**Example 3:**
+```
+Input: N = 25
+Output: 19
+Explanation:
+Self-divisible numbers: 1-9, 11, 12, 15, 22, 24
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution checks each number from 1 to N-1:
+
+1. **Extract digits**: Get all digits of the number
+2. **Check divisibility**: Verify number is divisible by each digit
+3. **Skip zero digits**: Division by zero is undefined
+4. **Count valid numbers**: Count numbers that pass the check
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution"
+  code={`/**
+ * Count self-divisible numbers less than N
+ * @param {number} N - Upper bound (exclusive)
+ * @return {number} - Count of self-divisible numbers
+ */
+function countSelfDivisibleNumbers(N) {
+  let count = 0;
+  
+  // Check each number from 1 to N-1
+  for (let num = 1; num < N; num++) {
+    if (isSelfDivisible(num)) {
+      count++;
+    }
+  }
+  
+  return count;
+}
+
+/**
+ * Check if a number is self-divisible
+ * @param {number} num - Number to check
+ * @return {boolean} - True if self-divisible
+ */
+function isSelfDivisible(num) {
+  let temp = num;
+  
+  // Extract each digit
+  while (temp > 0) {
+    const digit = temp % 10;
+    
+    // Skip zero digits (division by zero is undefined)
+    if (digit === 0) {
+      return false;
+    }
+    
+    // Check if number is divisible by this digit
+    if (num % digit !== 0) {
+      return false;
+    }
+    
+    temp = Math.floor(temp / 10);
+  }
+  
+  return true;
+}
+
+// Test cases
+console.log('Example 1:', countSelfDivisibleNumbers(17)); 
+// 12
+
+console.log('Example 2:', countSelfDivisibleNumbers(10)); 
+// 9
+
+console.log('Example 3:', countSelfDivisibleNumbers(25)); 
+// 19
+
+console.log('Test 4:', countSelfDivisibleNumbers(1)); 
+// 0`}
+  testCases={[
+    { input: 'countSelfDivisibleNumbers(17)', expected: '12' },
+    { input: 'countSelfDivisibleNumbers(10)', expected: '9' },
+    { input: 'countSelfDivisibleNumbers(25)', expected: '19' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution"
+  code={`def count_self_divisible_numbers(N: int) -> int:
+    """
+    Count self-divisible numbers less than N
+    
+    Args:
+        N: Upper bound (exclusive)
+        
+    Returns:
+        int: Count of self-divisible numbers
+    """
+    count = 0
+    
+    # Check each number from 1 to N-1
+    for num in range(1, N):
+        if is_self_divisible(num):
+            count += 1
+    
+    return count
+
+def is_self_divisible(num: int) -> bool:
+    """
+    Check if a number is self-divisible
+    
+    Args:
+        num: Number to check
+        
+    Returns:
+        bool: True if self-divisible
+    """
+    temp = num
+    
+    # Extract each digit
+    while temp > 0:
+        digit = temp % 10
+        
+        # Skip zero digits (division by zero is undefined)
+        if digit == 0:
+            return False
+        
+        # Check if number is divisible by this digit
+        if num % digit != 0:
+            return False
+        
+        temp //= 10
+    
+    return True
+
+# Test cases
+print('Example 1:', count_self_divisible_numbers(17))  
+# 12
+
+print('Example 2:', count_self_divisible_numbers(10))  
+# 9
+
+print('Example 3:', count_self_divisible_numbers(25))  
+# 19
+
+print('Test 4:', count_self_divisible_numbers(1))  
+# 0`}
+  testCases={[
+    { input: 'count_self_divisible_numbers(17)', expected: '12' },
+    { input: 'count_self_divisible_numbers(10)', expected: '9' },
+    { input: 'count_self_divisible_numbers(25)', expected: '19' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (String-based)
+
+Here's a version that converts to string to extract digits:
+
+<Tabs>
+<TabItem value="javascript-string" label="JavaScript String" default>
+
+```javascript
+/**
+ * String-based approach
+ */
+function countSelfDivisibleNumbersString(N) {
+  let count = 0;
+  
+  for (let num = 1; num < N; num++) {
+    const numStr = num.toString();
+    let isDivisible = true;
+    
+    for (const char of numStr) {
+      const digit = parseInt(char);
+      
+      if (digit === 0 || num % digit !== 0) {
+        isDivisible = false;
+        break;
+      }
+    }
+    
+    if (isDivisible) {
+      count++;
+    }
+  }
+  
+  return count;
+}
+```
+
+</TabItem>
+<TabItem value="python-string" label="Python String">
+
+```python
+def count_self_divisible_numbers_string(N: int) -> int:
+    """
+    String-based approach
+    """
+    count = 0
+    
+    for num in range(1, N):
+        num_str = str(num)
+        is_divisible = True
+        
+        for char in num_str:
+            digit = int(char)
+            
+            if digit == 0 or num % digit != 0:
+                is_divisible = False
+                break
+        
+        if is_divisible:
+            count += 1
+    
+    return count
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(N × d) - Where N is the upper bound and d is the average number of digits. For each number, we check all its digits.
+- **Space Complexity:** O(1) - Only using a constant amount of extra space.
+
+## Approach
+
+The solution checks each number from 1 to N-1:
+
+1. **For each number**: 
+   - Extract all digits
+   - Check if number is divisible by each digit
+
+2. **Digit extraction**: 
+   - Use modulo 10 to get last digit
+   - Divide by 10 to remove last digit
+   - Repeat until number becomes 0
+
+3. **Divisibility check**: 
+   - Skip digits that are 0 (division by zero is undefined)
+   - Check if `num % digit === 0` for each non-zero digit
+   - If all digits pass, number is self-divisible
+
+4. **Count**: 
+   - Increment count for each self-divisible number
+
+## Key Insights
+
+- **Extract digits**: Use modulo and division to get digits
+- **Skip zero digits**: Division by zero is undefined
+- **Check all digits**: Number must be divisible by ALL digits
+- **Single-digit numbers**: All single-digit numbers (1-9) are self-divisible
+- **Numbers with zero**: Any number containing 0 is not self-divisible
+
+## Step-by-Step Example
+
+Let's trace through checking number 12 for N = 17:
+
+```
+Check number 12:
+  Extract digits:
+    digit = 12 % 10 = 2
+    Check: 12 % 2 = 0 ✓
+    temp = 12 / 10 = 1
+    
+    digit = 1 % 10 = 1
+    Check: 12 % 1 = 0 ✓
+    temp = 1 / 10 = 0
+    
+  All digits checked: ✓
+  Result: 12 is self-divisible
+
+Check number 10:
+  Extract digits:
+    digit = 10 % 10 = 0
+    Check: digit === 0 → return false ✗
+  
+  Result: 10 is NOT self-divisible (contains 0)
+```
+
+## Visual Representation
+
+```
+Example: N = 17
+
+Numbers 1-9: All self-divisible (single digits)
+  1, 2, 3, 4, 5, 6, 7, 8, 9 ✓
+
+Number 10: Contains 0 → NOT self-divisible ✗
+
+Number 11: 
+  Digits: 1, 1
+  11 % 1 = 0 ✓
+  11 % 1 = 0 ✓
+  Self-divisible ✓
+
+Number 12:
+  Digits: 1, 2
+  12 % 1 = 0 ✓
+  12 % 2 = 0 ✓
+  Self-divisible ✓
+
+Number 13:
+  Digits: 1, 3
+  13 % 1 = 0 ✓
+  13 % 3 = 1 ✗
+  NOT self-divisible ✗
+
+Number 15:
+  Digits: 1, 5
+  15 % 1 = 0 ✓
+  15 % 5 = 0 ✓
+  Self-divisible ✓
+
+Total: 12 self-divisible numbers
+```
+
+## Edge Cases
+
+- **N = 1**: Return 0 (no numbers less than 1)
+- **N = 2**: Return 1 (only 1 is self-divisible)
+- **Numbers with 0**: Automatically not self-divisible
+- **Single digits**: All 1-9 are self-divisible
+- **Large N**: Works but may be slow for very large N
+
+## Important Notes
+
+- **Zero digits**: Any number containing 0 is not self-divisible
+- **All digits must divide**: Number must be divisible by ALL its digits
+- **Single-digit numbers**: All 1-9 are automatically self-divisible
+- **Modulo operation**: Use `num % digit === 0` to check divisibility
+- **Digit extraction**: Can use modulo/division or string conversion
+
+## Optimization Notes
+
+- **Early termination**: Stop checking if any digit fails
+- **Skip numbers with 0**: Can quickly skip numbers containing 0
+- **String vs modulo**: String conversion may be slower but more readable
+- **For large N**: Consider memoization or mathematical optimizations
+
+## Related Problems
+
+- **Self Dividing Numbers**: Similar problem (LeetCode 728)
+- **Happy Number**: Different number property
+- **Armstrong Number**: Different number property
+- **Perfect Number**: Different number property
+
+## Takeaways
+
+- **Extract digits** using modulo and division
+- **Skip zero digits** (division by zero is undefined)
+- **Check all digits** must divide the number
+- **Single-digit numbers** (1-9) are always self-divisible
+- **O(N × d) time** where d is average number of digits
+

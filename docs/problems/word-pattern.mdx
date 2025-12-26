@@ -1,0 +1,500 @@
+---
+id: word-pattern
+title: Word Pattern
+slug: /problems/word-pattern
+difficulty: Easy
+tags: [string, hash-table]
+leetcode: https://leetcode.com/problems/word-pattern/
+---
+
+# Word Pattern
+
+Given a string `s` and a string `code`, return whether or not `s` could have been encrypted using the pattern represented in `code`.
+
+**Note:** An encryption pattern means:
+- Each character in `code` represents a word in `s`
+- The same character must always map to the same word
+- Different characters must map to different words
+- The number of words in `s` must equal the length of `code`
+
+## Example(s)
+
+**Example 1:**
+```
+Input: s = "the daily byte", code = "abc"
+Output: true
+Explanation:
+- 'a' maps to "the"
+- 'b' maps to "daily"
+- 'c' maps to "byte"
+Each character maps to a unique word, so the pattern matches.
+```
+
+**Example 2:**
+```
+Input: s = "the daily byte curriculum", code = "abcc"
+Output: false
+Explanation:
+- 'a' maps to "the"
+- 'b' maps to "daily"
+- 'c' maps to "byte"
+- 'c' appears again but should map to "curriculum"
+However, 'c' already maps to "byte", so the pattern doesn't match.
+```
+
+**Example 3:**
+```
+Input: s = "dog cat cat dog", code = "abba"
+Output: true
+Explanation:
+- 'a' maps to "dog"
+- 'b' maps to "cat"
+- 'b' maps to "cat" (consistent)
+- 'a' maps to "dog" (consistent)
+The pattern matches.
+```
+
+**Example 4:**
+```
+Input: s = "dog cat cat fish", code = "abba"
+Output: false
+Explanation:
+- 'a' maps to "dog"
+- 'b' maps to "cat"
+- 'b' maps to "cat" (consistent)
+- 'a' should map to "dog" but we have "fish"
+The pattern doesn't match.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **two hash maps** to maintain a bijection:
+
+1. **Split string**: Split `s` into words
+2. **Check length**: Number of words must equal length of `code`
+3. **Character to word mapping**: Map each character in `code` to its corresponding word
+4. **Word to character mapping**: Map each word to its corresponding character
+5. **Validate consistency**: 
+   - If a character is seen before, it must map to the same word
+   - If a word is seen before, it must map to the same character
+   - Different characters must map to different words
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution"
+  code={`/**
+ * Check if string matches the encryption pattern
+ * @param {string} s - String to check
+ * @param {string} code - Pattern code
+ * @return {boolean} - True if pattern matches
+ */
+function wordPattern(s, code) {
+  // Split string into words
+  const words = s.split(' ');
+  
+  // Check if number of words matches pattern length
+  if (words.length !== code.length) {
+    return false;
+  }
+  
+  // Two maps for bijection: char -> word and word -> char
+  const charToWord = new Map();
+  const wordToChar = new Map();
+  
+  // Iterate through pattern and words simultaneously
+  for (let i = 0; i < code.length; i++) {
+    const char = code[i];
+    const word = words[i];
+    
+    // Check if character is already mapped
+    if (charToWord.has(char)) {
+      // Character must map to the same word
+      if (charToWord.get(char) !== word) {
+        return false;
+      }
+    } else {
+      // Check if word is already mapped to a different character
+      if (wordToChar.has(word)) {
+        // Word is already mapped to a different character
+        return false;
+      }
+      // Create new mapping
+      charToWord.set(char, word);
+      wordToChar.set(word, char);
+    }
+  }
+  
+  return true;
+}
+
+// Test cases
+console.log('Example 1:', wordPattern("the daily byte", "abc")); // true
+console.log('Example 2:', wordPattern("the daily byte curriculum", "abcc")); // false
+console.log('Example 3:', wordPattern("dog cat cat dog", "abba")); // true
+console.log('Example 4:', wordPattern("dog cat cat fish", "abba")); // false
+console.log('Test 5:', wordPattern("a b", "aa")); // false
+console.log('Test 6:', wordPattern("a a", "ab")); // false`}
+  testCases={[
+    { input: 'wordPattern("the daily byte", "abc")', expected: 'true' },
+    { input: 'wordPattern("the daily byte curriculum", "abcc")', expected: 'false' },
+    { input: 'wordPattern("dog cat cat dog", "abba")', expected: 'true' },
+    { input: 'wordPattern("dog cat cat fish", "abba")', expected: 'false' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution"
+  code={`from typing import Dict
+
+def word_pattern(s: str, code: str) -> bool:
+    """
+    Check if string matches the encryption pattern
+    
+    Args:
+        s: String to check
+        code: Pattern code
+        
+    Returns:
+        bool: True if pattern matches
+    """
+    # Split string into words
+    words = s.split()
+    
+    # Check if number of words matches pattern length
+    if len(words) != len(code):
+        return False
+    
+    # Two maps for bijection: char -> word and word -> char
+    char_to_word: Dict[str, str] = {}
+    word_to_char: Dict[str, str] = {}
+    
+    # Iterate through pattern and words simultaneously
+    for i in range(len(code)):
+        char = code[i]
+        word = words[i]
+        
+        # Check if character is already mapped
+        if char in char_to_word:
+            # Character must map to the same word
+            if char_to_word[char] != word:
+                return False
+        else:
+            # Check if word is already mapped to a different character
+            if word in word_to_char:
+                # Word is already mapped to a different character
+                return False
+            # Create new mapping
+            char_to_word[char] = word
+            word_to_char[word] = char
+    
+    return True
+
+# Test cases
+print('Example 1:', word_pattern("the daily byte", "abc"))  # True
+print('Example 2:', word_pattern("the daily byte curriculum", "abcc"))  # False
+print('Example 3:', word_pattern("dog cat cat dog", "abba"))  # True
+print('Example 4:', word_pattern("dog cat cat fish", "abba"))  # False
+print('Test 5:', word_pattern("a b", "aa"))  # False
+print('Test 6:', word_pattern("a a", "ab"))  # False`}
+  testCases={[
+    { input: 'word_pattern("the daily byte", "abc")', expected: 'True' },
+    { input: 'word_pattern("the daily byte curriculum", "abcc")', expected: 'False' },
+    { input: 'word_pattern("dog cat cat dog", "abba")', expected: 'True' },
+    { input: 'word_pattern("dog cat cat fish", "abba")', expected: 'False' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Single Map with Index Tracking)
+
+Here's an alternative using a single map with index tracking:
+
+<Tabs>
+<TabItem value="javascript-alt" label="JavaScript Alternative" default>
+
+```javascript
+/**
+ * Alternative: Single map with index tracking
+ */
+function wordPatternAlternative(s, code) {
+  const words = s.split(' ');
+  
+  if (words.length !== code.length) {
+    return false;
+  }
+  
+  const map = new Map();
+  
+  for (let i = 0; i < code.length; i++) {
+    const char = code[i];
+    const word = words[i];
+    
+    // Check if we've seen this character before
+    if (map.has(char)) {
+      if (map.get(char) !== word) {
+        return false;
+      }
+    } else {
+      // Check if this word is already mapped to a different character
+      const existingChar = Array.from(map.entries())
+        .find(([c, w]) => w === word)?.[0];
+      
+      if (existingChar && existingChar !== char) {
+        return false;
+      }
+      
+      map.set(char, word);
+    }
+  }
+  
+  return true;
+}
+```
+
+</TabItem>
+<TabItem value="python-alt" label="Python Alternative">
+
+```python
+def word_pattern_alternative(s: str, code: str) -> bool:
+    """
+    Alternative: Single map with index tracking
+    """
+    words = s.split()
+    
+    if len(words) != len(code):
+        return False
+    
+    mapping = {}
+    
+    for i in range(len(code)):
+        char = code[i]
+        word = words[i]
+        
+        if char in mapping:
+            if mapping[char] != word:
+                return False
+        else:
+            # Check if word is already mapped
+            existing_char = next((c for c, w in mapping.items() if w == word), None)
+            if existing_char and existing_char != char:
+                return False
+            
+            mapping[char] = word
+    
+    return True
+```
+
+</TabItem>
+</Tabs>
+
+## Alternative: Using Sets for Validation
+
+Here's a cleaner approach using sets to validate bijection:
+
+<Tabs>
+<TabItem value="javascript-set" label="JavaScript Set Approach" default>
+
+```javascript
+/**
+ * Using sets to validate bijection
+ */
+function wordPatternSet(s, code) {
+  const words = s.split(' ');
+  
+  if (words.length !== code.length) {
+    return false;
+  }
+  
+  const charToWord = new Map();
+  const seenWords = new Set();
+  
+  for (let i = 0; i < code.length; i++) {
+    const char = code[i];
+    const word = words[i];
+    
+    if (charToWord.has(char)) {
+      // Character already mapped, must match
+      if (charToWord.get(char) !== word) {
+        return false;
+      }
+    } else {
+      // New character, but word might be taken
+      if (seenWords.has(word)) {
+        return false; // Word already mapped to different char
+      }
+      charToWord.set(char, word);
+      seenWords.add(word);
+    }
+  }
+  
+  return true;
+}
+```
+
+</TabItem>
+<TabItem value="python-set" label="Python Set Approach">
+
+```python
+def word_pattern_set(s: str, code: str) -> bool:
+    """
+    Using sets to validate bijection
+    """
+    words = s.split()
+    
+    if len(words) != len(code):
+        return False
+    
+    char_to_word = {}
+    seen_words = set()
+    
+    for i in range(len(code)):
+        char = code[i]
+        word = words[i]
+        
+        if char in char_to_word:
+            if char_to_word[char] != word:
+                return False
+        else:
+            if word in seen_words:
+                return False
+            char_to_word[char] = word
+            seen_words.add(word)
+    
+    return True
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of `code` (or number of words). We iterate through the pattern once.
+- **Space Complexity:** O(n) - For the hash maps storing character-to-word and word-to-character mappings. In the worst case, we store all unique characters and words.
+
+## Approach
+
+The solution uses **two hash maps** to maintain a **bijection** (one-to-one mapping):
+
+1. **Split string**: Convert `s` into an array of words
+2. **Length check**: Ensure number of words equals length of `code`
+3. **Character to word map**: Track which word each character maps to
+4. **Word to character map**: Track which character each word maps to
+5. **Validation**: For each position:
+   - If character is already mapped, it must map to the same word
+   - If word is already mapped, it must map to the same character
+   - If either condition fails, return false
+6. **Success**: If all positions are valid, return true
+
+## Key Insights
+
+- **Bijection required**: Each character maps to exactly one word, and each word maps to exactly one character
+- **Two-way mapping**: Need to check both directions to ensure consistency
+- **Length must match**: Number of words must equal pattern length
+- **Early termination**: Return false as soon as we find an inconsistency
+- **Hash maps**: Efficient O(1) lookup for checking existing mappings
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `s = "the daily byte"`, `code = "abc"`
+
+```
+Step 1: Split string
+  words = ["the", "daily", "byte"]
+  code = "abc"
+  Length check: 3 === 3 ✓
+
+Step 2: Process i=0
+  char = 'a', word = "the"
+  charToWord: {} (empty)
+  wordToChar: {} (empty)
+  Create mapping: 'a' → "the", "the" → 'a'
+  charToWord = {'a': "the"}
+  wordToChar = {"the": 'a'}
+
+Step 3: Process i=1
+  char = 'b', word = "daily"
+  charToWord: {'a': "the"} (no 'b')
+  wordToChar: {"the": 'a'} (no "daily")
+  Create mapping: 'b' → "daily", "daily" → 'b'
+  charToWord = {'a': "the", 'b': "daily"}
+  wordToChar = {"the": 'a', "daily": 'b'}
+
+Step 4: Process i=2
+  char = 'c', word = "byte"
+  charToWord: {'a': "the", 'b': "daily"} (no 'c')
+  wordToChar: {"the": 'a', "daily": 'b'} (no "byte")
+  Create mapping: 'c' → "byte", "byte" → 'c'
+  charToWord = {'a': "the", 'b': "daily", 'c': "byte"}
+  wordToChar = {"the": 'a', "daily": 'b', "byte": 'c'}
+
+Result: true (all mappings are consistent)
+```
+
+Let's trace through Example 2: `s = "the daily byte curriculum"`, `code = "abcc"`
+
+```
+Step 1: Split string
+  words = ["the", "daily", "byte", "curriculum"]
+  code = "abcc"
+  Length check: 4 === 4 ✓
+
+Step 2-4: Process i=0,1,2 (same as Example 1)
+  After i=2:
+    charToWord = {'a': "the", 'b': "daily", 'c': "byte"}
+    wordToChar = {"the": 'a', "daily": 'b', "byte": 'c'}
+
+Step 5: Process i=3
+  char = 'c', word = "curriculum"
+  charToWord: {'a': "the", 'b': "daily", 'c': "byte"}
+  'c' is already mapped to "byte"
+  Check: charToWord.get('c') === "curriculum"? 
+    "byte" !== "curriculum" ✗
+  Return false
+
+Result: false (inconsistent mapping)
+```
+
+## Edge Cases
+
+- **Different lengths**: If `words.length !== code.length`, return false
+- **Empty strings**: Both empty → true (0 === 0)
+- **Single character/word**: Works correctly
+- **All same characters**: `code = "aaa"`, `s = "word word word"` → true
+- **All different characters**: `code = "abc"`, `s = "a b c"` → true
+- **Repeated words with different chars**: `code = "ab"`, `s = "word word"` → false
+
+## Important Notes
+
+- **Bijection**: The mapping must be one-to-one and onto
+- **Case sensitivity**: Typically, the problem is case-sensitive (but can be modified)
+- **Word splitting**: Assumes words are separated by single spaces
+- **Whitespace handling**: Leading/trailing spaces might need trimming
+
+## Related Problems
+
+- **Isomorphic Strings**: Similar bijection problem for characters
+- **Word Pattern II**: More complex pattern matching
+- **Group Anagrams**: Different but uses similar mapping concepts
+- **Valid Anagram**: Character frequency mapping
+
+## Takeaways
+
+- **Bijection requires two maps**: One for each direction of the mapping
+- **Early validation**: Check length first to avoid unnecessary processing
+- **Hash maps are efficient**: O(1) lookup for checking existing mappings
+- **Consistency is key**: Both character→word and word→character must be consistent
+- **Edge cases matter**: Length mismatch, empty strings, etc.
+

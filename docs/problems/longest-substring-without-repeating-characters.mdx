@@ -1,0 +1,416 @@
+---
+id: longest-substring-without-repeating-characters
+title: Longest Substring Without Repeating Characters
+slug: /problems/longest-substring-without-repeating-characters
+difficulty: Medium
+tags: [string, hash-table, sliding-window, two-pointers]
+leetcode: https://leetcode.com/problems/longest-substring-without-repeating-characters/
+---
+
+# Longest Substring Without Repeating Characters
+
+Given a string `s`, return the length of the longest substring that contains only unique characters.
+
+**Note:** A substring is a contiguous sequence of characters within a string. All characters in the substring must be unique (no duplicates).
+
+## Example(s)
+
+**Example 1:**
+```
+Input: s = "ababbc"
+Output: 2
+Explanation:
+Substrings with unique characters:
+- "ab" (length 2)
+- "ba" (length 2)
+- "bc" (length 2)
+The longest has length 2.
+```
+
+**Example 2:**
+```
+Input: s = "abcdssa"
+Output: 5
+Explanation:
+The longest substring with unique characters is "abcds" (length 5).
+Other substrings:
+- "bcdssa" has duplicate 's'
+- "cdssa" has duplicate 's'
+- "abcds" is the longest unique substring
+```
+
+**Example 3:**
+```
+Input: s = "abcabcbb"
+Output: 3
+Explanation:
+The longest substring is "abc" (length 3).
+```
+
+**Example 4:**
+```
+Input: s = "bbbbb"
+Output: 1
+Explanation:
+The longest substring is "b" (length 1).
+```
+
+**Example 5:**
+```
+Input: s = "pwwkew"
+Output: 3
+Explanation:
+The longest substring is "wke" (length 3).
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses the **sliding window technique** with a **hash set**:
+
+1. **Two pointers**: Use `left` and `right` pointers to define the window
+2. **Hash set**: Track characters currently in the window
+3. **Expand window**: Move `right` pointer and add characters to the set
+4. **Shrink window**: If duplicate found, move `left` pointer until duplicate is removed
+5. **Track maximum**: Keep track of the maximum window size seen
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Sliding Window"
+  code={`/**
+ * Find length of longest substring without repeating characters
+ * @param {string} s - Input string
+ * @return {number} - Length of longest unique substring
+ */
+function lengthOfLongestSubstring(s) {
+  if (!s || s.length === 0) return 0;
+  
+  const charSet = new Set();
+  let left = 0;
+  let maxLength = 0;
+  
+  // Expand window with right pointer
+  for (let right = 0; right < s.length; right++) {
+    // If character is already in set, shrink window from left
+    while (charSet.has(s[right])) {
+      charSet.delete(s[left]);
+      left++;
+    }
+    
+    // Add current character to set
+    charSet.add(s[right]);
+    
+    // Update maximum length
+    maxLength = Math.max(maxLength, right - left + 1);
+  }
+  
+  return maxLength;
+}
+
+// Test cases
+console.log('Example 1:', lengthOfLongestSubstring("ababbc")); // 2
+console.log('Example 2:', lengthOfLongestSubstring("abcdssa")); // 5
+console.log('Example 3:', lengthOfLongestSubstring("abcabcbb")); // 3
+console.log('Example 4:', lengthOfLongestSubstring("bbbbb")); // 1
+console.log('Example 5:', lengthOfLongestSubstring("pwwkew")); // 3
+console.log('Test 6:', lengthOfLongestSubstring("")); // 0
+console.log('Test 7:', lengthOfLongestSubstring("dvdf")); // 3`}
+  testCases={[
+    { input: 'lengthOfLongestSubstring("ababbc")', expected: '2' },
+    { input: 'lengthOfLongestSubstring("abcdssa")', expected: '5' },
+    { input: 'lengthOfLongestSubstring("abcabcbb")', expected: '3' },
+    { input: 'lengthOfLongestSubstring("bbbbb")', expected: '1' },
+    { input: 'lengthOfLongestSubstring("pwwkew")', expected: '3' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Sliding Window"
+  code={`def length_of_longest_substring(s: str) -> int:
+    """
+    Find length of longest substring without repeating characters
+    
+    Args:
+        s: Input string
+        
+    Returns:
+        int: Length of longest unique substring
+    """
+    if not s:
+        return 0
+    
+    char_set = set()
+    left = 0
+    max_length = 0
+    
+    # Expand window with right pointer
+    for right in range(len(s)):
+        # If character is already in set, shrink window from left
+        while s[right] in char_set:
+            char_set.remove(s[left])
+            left += 1
+        
+        # Add current character to set
+        char_set.add(s[right])
+        
+        # Update maximum length
+        max_length = max(max_length, right - left + 1)
+    
+    return max_length
+
+# Test cases
+print('Example 1:', length_of_longest_substring("ababbc"))  # 2
+print('Example 2:', length_of_longest_substring("abcdssa"))  # 5
+print('Example 3:', length_of_longest_substring("abcabcbb"))  # 3
+print('Example 4:', length_of_longest_substring("bbbbb"))  # 1
+print('Example 5:', length_of_longest_substring("pwwkew"))  # 3
+print('Test 6:', length_of_longest_substring(""))  # 0
+print('Test 7:', length_of_longest_substring("dvdf"))  # 3`}
+  testCases={[
+    { input: 'length_of_longest_substring("ababbc")', expected: '2' },
+    { input: 'length_of_longest_substring("abcdssa")', expected: '5' },
+    { input: 'length_of_longest_substring("abcabcbb")', expected: '3' },
+    { input: 'length_of_longest_substring("bbbbb")', expected: '1' },
+    { input: 'length_of_longest_substring("pwwkew")', expected: '3' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Hash Map with Index)
+
+Here's an optimized version using a hash map to store the last index of each character:
+
+<Tabs>
+<TabItem value="javascript-map" label="JavaScript Hash Map" default>
+
+```javascript
+/**
+ * Optimized: Use hash map to store last index
+ * This avoids the while loop in some cases
+ */
+function lengthOfLongestSubstringOptimized(s) {
+  if (!s || s.length === 0) return 0;
+  
+  const charMap = new Map(); // character -> last index
+  let left = 0;
+  let maxLength = 0;
+  
+  for (let right = 0; right < s.length; right++) {
+    const char = s[right];
+    
+    // If character seen before and within current window
+    if (charMap.has(char) && charMap.get(char) >= left) {
+      // Move left pointer to after the last occurrence
+      left = charMap.get(char) + 1;
+    }
+    
+    // Update character's last index
+    charMap.set(char, right);
+    
+    // Update maximum length
+    maxLength = Math.max(maxLength, right - left + 1);
+  }
+  
+  return maxLength;
+}
+```
+
+</TabItem>
+<TabItem value="python-map" label="Python Hash Map">
+
+```python
+def length_of_longest_substring_optimized(s: str) -> int:
+    """
+    Optimized: Use hash map to store last index
+    """
+    if not s:
+        return 0
+    
+    char_map = {}  # character -> last index
+    left = 0
+    max_length = 0
+    
+    for right in range(len(s)):
+        char = s[right]
+        
+        # If character seen before and within current window
+        if char in char_map and char_map[char] >= left:
+            # Move left pointer to after the last occurrence
+            left = char_map[char] + 1
+        
+        # Update character's last index
+        char_map[char] = right
+        
+        # Update maximum length
+        max_length = max(max_length, right - left + 1)
+    
+    return max_length
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the string. Each character is visited at most twice (once by right pointer, once by left pointer).
+- **Space Complexity:** O(min(n, m)) - Where n is the string length and m is the size of the character set (e.g., 26 for lowercase letters, 128 for ASCII). In the worst case, we store all unique characters.
+
+## Approach
+
+The solution uses the **sliding window technique**:
+
+1. **Two pointers**: 
+   - `left`: Start of the current window
+   - `right`: End of the current window (expanding)
+
+2. **Hash set/map**: 
+   - Track characters currently in the window
+   - Or track the last index of each character
+
+3. **Expand window**: 
+   - Move `right` pointer forward
+   - Add character to the set
+
+4. **Shrink window**: 
+   - If duplicate found, move `left` pointer until duplicate is removed
+   - Remove characters from set as `left` moves
+
+5. **Track maximum**: 
+   - Update maximum window size after each expansion
+
+## Key Insights
+
+- **Sliding window**: Maintain a window of unique characters
+- **Two pointers**: Left and right pointers define the window
+- **Hash set**: Efficient O(1) lookup for checking duplicates
+- **Hash map optimization**: Can jump `left` directly to after last occurrence
+- **O(n) time**: Each character visited at most twice
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `s = "ababbc"`
+
+```
+Initial: left = 0, right = 0, charSet = {}, maxLength = 0
+
+right = 0: s[0] = 'a'
+  charSet.has('a')? No
+  charSet.add('a') → {'a'}
+  maxLength = max(0, 0-0+1) = 1
+
+right = 1: s[1] = 'b'
+  charSet.has('b')? No
+  charSet.add('b') → {'a', 'b'}
+  maxLength = max(1, 1-0+1) = 2
+
+right = 2: s[2] = 'a'
+  charSet.has('a')? Yes
+    while loop: remove s[left] = 'a', left = 1
+    charSet.has('a')? No (removed)
+  charSet.add('a') → {'b', 'a'}
+  maxLength = max(2, 2-1+1) = 2
+
+right = 3: s[3] = 'b'
+  charSet.has('b')? Yes
+    while loop: remove s[left] = 'b', left = 2
+    charSet.has('b')? No (removed)
+  charSet.add('b') → {'a', 'b'}
+  maxLength = max(2, 3-2+1) = 2
+
+right = 4: s[4] = 'b'
+  charSet.has('b')? Yes
+    while loop: remove s[left] = 'a', left = 3
+    charSet.has('b')? Yes
+      remove s[left] = 'b', left = 4
+    charSet.has('b')? No (removed)
+  charSet.add('b') → {'b'}
+  maxLength = max(2, 4-4+1) = 2
+
+right = 5: s[5] = 'c'
+  charSet.has('c')? No
+  charSet.add('c') → {'b', 'c'}
+  maxLength = max(2, 5-4+1) = 2
+
+Final: maxLength = 2
+```
+
+Let's trace through Example 2: `s = "abcdssa"`
+
+```
+Key moments:
+- right = 0-4: "abcds" → length 5, maxLength = 5
+- right = 5: 's' is duplicate
+  - Remove 'a', 'b', 'c', 'd' until 's' removed
+  - Window becomes "s"
+- right = 6: 's' is duplicate again
+  - Remove 's', window becomes "a"
+- Final: maxLength = 5
+```
+
+## Visual Representation
+
+```
+Example 1: s = "ababbc"
+
+Window expansion:
+a          → length 1
+ab         → length 2 ✓
+ ba        → length 2 ✓
+  ab       → length 2 ✓
+   b       → length 1
+    bc     → length 2 ✓
+
+Maximum: 2
+```
+
+## Edge Cases
+
+- **Empty string**: Return 0
+- **Single character**: Return 1
+- **All same character**: Return 1
+- **All unique characters**: Return string length
+- **No duplicates**: Return string length
+- **Repeated pattern**: Find the longest unique segment
+
+## Important Notes
+
+- **Substring vs subsequence**: Substring must be contiguous
+- **Unique characters**: No character can appear twice in the substring
+- **Sliding window**: Efficiently maintains valid window
+- **Hash set/map**: Fast duplicate detection
+- **Two pointers**: Both move forward, never backward
+
+## Comparison of Approaches
+
+| Approach | Time | Space | Notes |
+|----------|------|-------|-------|
+| Hash Set | O(n) | O(min(n,m)) | Simple, clear logic |
+| Hash Map | O(n) | O(min(n,m)) | Can jump left pointer directly |
+
+## Related Problems
+
+- **Longest Substring with At Most K Distinct Characters**: Similar sliding window
+- **Minimum Window Substring**: Different constraint
+- **Longest Repeating Character Replacement**: Allowing replacements
+- **Substring with Concatenation**: More complex pattern
+
+## Takeaways
+
+- **Sliding window** is the key technique for substring problems
+- **Two pointers** efficiently maintain a valid window
+- **Hash set/map** provides fast duplicate detection
+- **O(n) time** is optimal (each character visited at most twice)
+- **Window shrinking** handles duplicates efficiently
+

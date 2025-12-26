@@ -1,0 +1,165 @@
+---
+id: level-order-traversal
+title: Binary Tree Level Order Traversal
+slug: /problems/level-order-traversal
+difficulty: Medium
+tags: [tree, binary-tree, breadth-first-search]
+leetcode: https://leetcode.com/problems/binary-tree-level-order-traversal/
+---
+
+# Binary Tree Level Order Traversal
+
+Given a binary tree, return its level order traversal where the nodes in each level are ordered from left to right.
+
+## Example(s)
+
+**Example 1:**
+```
+Tree:
+    4
+   / \
+  2   7
+Output: [[4], [2,7]]
+```
+
+**Example 2:**
+```
+Tree:
+    2
+   / \
+  10  15
+       \
+        20
+Output: [[2], [10,15], [20]]
+```
+
+**Example 3:**
+```
+Tree:
+    1
+   / \
+  9   32
+ /     \
+3      78
+Output: [[1], [9,32], [3,78]]
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+```javascript
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+
+/**
+ * Perform level order traversal of a binary tree
+ * @param {TreeNode} root - Root of the binary tree
+ * @return {number[][]} - Level order traversal result
+ */
+function levelOrder(root) {
+  if (!root) return [];
+  
+  const result = [];
+  const queue = [root];
+  
+  while (queue.length) {
+    const levelSize = queue.length;
+    const currentLevel = [];
+    
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift();
+      currentLevel.push(node.val);
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+    
+    result.push(currentLevel);
+  }
+  
+  return result;
+}
+```
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+```python
+from typing import Optional, List
+from collections import deque
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def level_order(root: Optional[TreeNode]) -> List[List[int]]:
+    """
+    Perform level order traversal of a binary tree
+    
+    Args:
+        root: Root of the binary tree
+        
+    Returns:
+        List[List[int]]: Level order traversal result
+    """
+    if not root:
+        return []
+    
+    result = []
+    queue = deque([root])
+    
+    while queue:
+        level_size = len(queue)
+        current_level = []
+        
+        for _ in range(level_size):
+            node = queue.popleft()
+            current_level.append(node.val)
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+        
+        result.append(current_level)
+    
+    return result
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the number of nodes in the tree
+- **Space Complexity:** O(w) - Where w is the maximum width of the tree
+
+## Approach
+
+The solution uses a **breadth-first search (BFS)** approach:
+
+1. **Level-by-level traversal** using a queue
+2. **Track level size** to process all nodes at each level
+3. **Collect nodes** at each level in a separate array
+4. **Return array** of arrays representing each level
+
+## Key Insights
+
+- **Breadth-first search** ensures level-by-level traversal
+- **Queue data structure** efficiently processes nodes in order
+- **Level separation** achieved by tracking level size
+- **Edge cases** include empty tree and single-node tree
+- **O(n) time** is optimal as all nodes must be visited
+```

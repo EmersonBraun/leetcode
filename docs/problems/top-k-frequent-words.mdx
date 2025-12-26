@@ -1,0 +1,507 @@
+---
+id: top-k-frequent-words
+title: Top K Frequent Words
+slug: /problems/top-k-frequent-words
+difficulty: Medium
+tags: [hash-table, string, sorting, heap, bucket-sort]
+leetcode: https://leetcode.com/problems/top-k-frequent-words/
+---
+
+# Top K Frequent Words
+
+Given a list of words, return the top k frequently occurring words.
+
+**Note:** If two words occur with the same frequency, then the alphabetically smaller word should come first.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: words = ["the", "daily", "byte", "byte"], k = 1
+Output: ["byte"]
+Explanation:
+- "byte" appears 2 times
+- "the" appears 1 time
+- "daily" appears 1 time
+The most frequent word is "byte".
+```
+
+**Example 2:**
+```
+Input: words = ["coding", "is", "fun", "code", "coding", "fun"], k = 2
+Output: ["coding", "fun"]
+Explanation:
+- "coding" appears 2 times
+- "fun" appears 2 times
+- "is" appears 1 time
+- "code" appears 1 time
+Top 2 are "coding" and "fun". Since they have the same frequency,
+"coding" comes before "fun" alphabetically.
+```
+
+**Example 3:**
+```
+Input: words = ["i", "love", "leetcode", "i", "love", "coding"], k = 2
+Output: ["i", "love"]
+Explanation:
+- "i" appears 2 times
+- "love" appears 2 times
+- "leetcode" appears 1 time
+- "coding" appears 1 time
+Top 2 are "i" and "love" (alphabetically ordered).
+```
+
+**Example 4:**
+```
+Input: words = ["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], k = 4
+Output: ["the", "is", "sunny", "day"]
+Explanation:
+- "the" appears 4 times
+- "is" appears 3 times
+- "sunny" appears 2 times
+- "day" appears 1 time
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **hash map and sorting**:
+
+1. **Count frequencies**: Use a hash map to count occurrences of each word
+2. **Sort words**: Sort by frequency (descending), then alphabetically (ascending) for ties
+3. **Return top k**: Take the first k words from the sorted list
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Hash Map + Sort"
+  code={`/**
+ * Find top k frequent words
+ * @param {string[]} words - Array of words
+ * @param {number} k - Number of top words to return
+ * @return {string[]} - Top k frequent words
+ */
+function topKFrequent(words, k) {
+  // Step 1: Count frequencies
+  const frequency = new Map();
+  for (const word of words) {
+    frequency.set(word, (frequency.get(word) || 0) + 1);
+  }
+  
+  // Step 2: Get all unique words and sort
+  const uniqueWords = Array.from(frequency.keys());
+  
+  uniqueWords.sort((a, b) => {
+    const freqA = frequency.get(a);
+    const freqB = frequency.get(b);
+    
+    // First sort by frequency (descending)
+    if (freqA !== freqB) {
+      return freqB - freqA;
+    }
+    
+    // If frequencies are equal, sort alphabetically (ascending)
+    return a.localeCompare(b);
+  });
+  
+  // Step 3: Return top k words
+  return uniqueWords.slice(0, k);
+}
+
+// Test cases
+console.log('Example 1:', topKFrequent(["the", "daily", "byte", "byte"], 1)); 
+// ["byte"]
+
+console.log('Example 2:', topKFrequent(["coding", "is", "fun", "code", "coding", "fun"], 2)); 
+// ["coding", "fun"]
+
+console.log('Example 3:', topKFrequent(["i", "love", "leetcode", "i", "love", "coding"], 2)); 
+// ["i", "love"]
+
+console.log('Example 4:', topKFrequent(["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], 4)); 
+// ["the", "is", "sunny", "day"]`}
+  testCases={[
+    { input: 'JSON.stringify(topKFrequent(["the", "daily", "byte", "byte"], 1))', expected: '["byte"]' },
+    { input: 'JSON.stringify(topKFrequent(["coding", "is", "fun", "code", "coding", "fun"], 2))', expected: '["coding","fun"]' },
+    { input: 'JSON.stringify(topKFrequent(["i", "love", "leetcode", "i", "love", "coding"], 2))', expected: '["i","love"]' },
+    { input: 'JSON.stringify(topKFrequent(["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], 4))', expected: '["the","is","sunny","day"]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Hash Map + Sort"
+  code={`from typing import List
+from collections import Counter
+
+def top_k_frequent(words: List[str], k: int) -> List[str]:
+    """
+    Find top k frequent words
+    
+    Args:
+        words: List of words
+        k: Number of top words to return
+        
+    Returns:
+        List[str]: Top k frequent words
+    """
+    # Step 1: Count frequencies
+    frequency = Counter(words)
+    
+    # Step 2: Get all unique words and sort
+    unique_words = list(frequency.keys())
+    
+    # Sort by frequency (descending), then alphabetically (ascending)
+    unique_words.sort(key=lambda word: (-frequency[word], word))
+    
+    # Step 3: Return top k words
+    return unique_words[:k]
+
+# Test cases
+print('Example 1:', top_k_frequent(["the", "daily", "byte", "byte"], 1))  
+# ["byte"]
+
+print('Example 2:', top_k_frequent(["coding", "is", "fun", "code", "coding", "fun"], 2))  
+# ["coding", "fun"]
+
+print('Example 3:', top_k_frequent(["i", "love", "leetcode", "i", "love", "coding"], 2))  
+# ["i", "love"]
+
+print('Example 4:', top_k_frequent(["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], 4))  
+# ["the", "is", "sunny", "day"]`}
+  testCases={[
+    { input: 'top_k_frequent(["the", "daily", "byte", "byte"], 1)', expected: "['byte']" },
+    { input: 'top_k_frequent(["coding", "is", "fun", "code", "coding", "fun"], 2)', expected: "['coding', 'fun']" },
+    { input: 'top_k_frequent(["i", "love", "leetcode", "i", "love", "coding"], 2)', expected: "['i', 'love']" },
+    { input: 'top_k_frequent(["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], 4)', expected: "['the', 'is', 'sunny', 'day']" }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Heap-Based)
+
+For better performance when k is much smaller than the total number of unique words, we can use a min-heap:
+
+<Tabs>
+<TabItem value="javascript-heap" label="JavaScript Heap" default>
+
+```javascript
+/**
+ * Heap-based approach (more efficient when k << n)
+ */
+function topKFrequentHeap(words, k) {
+  // Count frequencies
+  const frequency = new Map();
+  for (const word of words) {
+    frequency.set(word, (frequency.get(word) || 0) + 1);
+  }
+  
+  // Use a min-heap of size k
+  const heap = [];
+  
+  for (const [word, freq] of frequency.entries()) {
+    if (heap.length < k) {
+      heap.push({ word, freq });
+      // Maintain heap property
+      heapifyUp(heap, heap.length - 1);
+    } else {
+      const top = heap[0];
+      // Compare: frequency first, then alphabetically
+      if (
+        freq > top.freq ||
+        (freq === top.freq && word < top.word)
+      ) {
+        heap[0] = { word, freq };
+        heapifyDown(heap, 0);
+      }
+    }
+  }
+  
+  // Extract and sort results
+  const result = heap.map(item => item.word);
+  result.sort((a, b) => {
+    const freqA = frequency.get(a);
+    const freqB = frequency.get(b);
+    if (freqA !== freqB) return freqB - freqA;
+    return a.localeCompare(b);
+  });
+  
+  return result;
+}
+
+// Helper functions for min-heap
+function heapifyUp(heap, index) {
+  while (index > 0) {
+    const parent = Math.floor((index - 1) / 2);
+    if (compare(heap[index], heap[parent]) >= 0) break;
+    [heap[index], heap[parent]] = [heap[parent], heap[index]];
+    index = parent;
+  }
+}
+
+function heapifyDown(heap, index) {
+  while (true) {
+    let smallest = index;
+    const left = 2 * index + 1;
+    const right = 2 * index + 2;
+    
+    if (left < heap.length && compare(heap[left], heap[smallest]) < 0) {
+      smallest = left;
+    }
+    if (right < heap.length && compare(heap[right], heap[smallest]) < 0) {
+      smallest = right;
+    }
+    if (smallest === index) break;
+    [heap[index], heap[smallest]] = [heap[smallest], heap[index]];
+    index = smallest;
+  }
+}
+
+function compare(a, b) {
+  if (a.freq !== b.freq) return a.freq - b.freq;
+  return b.word.localeCompare(a.word); // Reverse for min-heap
+}
+```
+
+</TabItem>
+<TabItem value="python-heap" label="Python Heap">
+
+```python
+import heapq
+from collections import Counter
+from typing import List
+
+def top_k_frequent_heap(words: List[str], k: int) -> List[str]:
+    """
+    Heap-based approach (more efficient when k << n)
+    """
+    # Count frequencies
+    frequency = Counter(words)
+    
+    # Use a min-heap of size k
+    # Python's heapq is a min-heap, so we negate frequency for max-heap behavior
+    # For ties, we want lexicographically larger words at top (to keep smaller ones)
+    heap = []
+    
+    for word, freq in frequency.items():
+        if len(heap) < k:
+            heapq.heappush(heap, (freq, word))
+        else:
+            # Compare with smallest element
+            min_freq, min_word = heap[0]
+            if freq > min_freq or (freq == min_freq and word < min_word):
+                heapq.heapreplace(heap, (freq, word))
+    
+    # Extract and sort results
+    result = [word for freq, word in heap]
+    result.sort(key=lambda word: (-frequency[word], word))
+    
+    return result
+```
+
+</TabItem>
+</Tabs>
+
+## Alternative: Bucket Sort Approach
+
+For cases where frequencies are bounded, we can use bucket sort:
+
+<Tabs>
+<TabItem value="javascript-bucket" label="JavaScript Bucket Sort" default>
+
+```javascript
+/**
+ * Bucket sort approach (when max frequency is bounded)
+ */
+function topKFrequentBucket(words, k) {
+  // Count frequencies
+  const frequency = new Map();
+  for (const word of words) {
+    frequency.set(word, (frequency.get(word) || 0) + 1);
+  }
+  
+  // Create buckets: index = frequency, value = array of words
+  const buckets = [];
+  const maxFreq = Math.max(...frequency.values());
+  
+  for (let i = 0; i <= maxFreq; i++) {
+    buckets[i] = [];
+  }
+  
+  // Put words into buckets
+  for (const [word, freq] of frequency.entries()) {
+    buckets[freq].push(word);
+  }
+  
+  // Collect top k words from buckets (from highest to lowest frequency)
+  const result = [];
+  for (let i = maxFreq; i >= 1 && result.length < k; i--) {
+    if (buckets[i].length > 0) {
+      // Sort words in this bucket alphabetically
+      buckets[i].sort();
+      // Add words until we have k
+      for (const word of buckets[i]) {
+        if (result.length < k) {
+          result.push(word);
+        } else {
+          break;
+        }
+      }
+    }
+  }
+  
+  return result;
+}
+```
+
+</TabItem>
+<TabItem value="python-bucket" label="Python Bucket Sort">
+
+```python
+from collections import Counter, defaultdict
+from typing import List
+
+def top_k_frequent_bucket(words: List[str], k: int) -> List[str]:
+    """
+    Bucket sort approach (when max frequency is bounded)
+    """
+    # Count frequencies
+    frequency = Counter(words)
+    
+    # Create buckets: key = frequency, value = list of words
+    buckets = defaultdict(list)
+    max_freq = max(frequency.values()) if frequency else 0
+    
+    # Put words into buckets
+    for word, freq in frequency.items():
+        buckets[freq].append(word)
+    
+    # Collect top k words from buckets (from highest to lowest frequency)
+    result = []
+    for freq in range(max_freq, 0, -1):
+        if freq in buckets:
+            # Sort words in this bucket alphabetically
+            buckets[freq].sort()
+            # Add words until we have k
+            for word in buckets[freq]:
+                if len(result) < k:
+                    result.append(word)
+                else:
+                    break
+            if len(result) >= k:
+                break
+    
+    return result
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** 
+  - **Hash Map + Sort**: O(n log n) - Where n is the number of unique words. Counting is O(m) where m is total words, sorting is O(n log n).
+  - **Heap-based**: O(n log k) - Where n is unique words, k is the result size. More efficient when k << n.
+  - **Bucket Sort**: O(n + m) - Where n is unique words, m is max frequency. Linear time if frequencies are bounded.
+- **Space Complexity:** O(n) - For storing frequencies and unique words.
+
+## Approach
+
+The solution uses **hash map and sorting**:
+
+1. **Count frequencies**: 
+   - Iterate through all words
+   - Use a hash map to count occurrences of each word
+
+2. **Sort words**:
+   - Sort by frequency in descending order
+   - For words with the same frequency, sort alphabetically in ascending order
+
+3. **Return top k**: 
+   - Take the first k words from the sorted list
+
+## Key Insights
+
+- **Hash map for counting**: Efficient O(1) insertion and lookup
+- **Custom comparator**: Sort by frequency first, then alphabetically
+- **Tie-breaking**: Alphabetical order for words with same frequency
+- **Heap optimization**: When k is small, heap-based approach is more efficient
+- **Bucket sort**: Linear time when frequencies are bounded
+
+## Step-by-Step Example
+
+Let's trace through Example 2: `words = ["coding", "is", "fun", "code", "coding", "fun"]`, `k = 2`
+
+```
+Step 1: Count frequencies
+  "coding": 2
+  "is": 1
+  "fun": 2
+  "code": 1
+
+Step 2: Get unique words
+  uniqueWords = ["coding", "is", "fun", "code"]
+
+Step 3: Sort
+  Compare "coding" (freq=2) vs "is" (freq=1): 2 > 1 → "coding" comes first
+  Compare "coding" (freq=2) vs "fun" (freq=2): frequencies equal
+    Compare alphabetically: "coding" < "fun" → "coding" comes first
+  Compare "fun" (freq=2) vs "is" (freq=1): 2 > 1 → "fun" comes before "is"
+  Compare "is" (freq=1) vs "code" (freq=1): frequencies equal
+    Compare alphabetically: "code" < "is" → "code" comes before "is"
+  
+  Sorted: ["coding", "fun", "code", "is"]
+
+Step 4: Return top k = 2
+  Result: ["coding", "fun"]
+```
+
+## Edge Cases
+
+- **k equals number of unique words**: Return all words
+- **k = 1**: Return the most frequent word
+- **All words have same frequency**: Return first k alphabetically
+- **Empty words array**: Return empty array
+- **Single word repeated**: Return that word
+- **All words unique**: Return first k alphabetically
+
+## Important Notes
+
+- **Tie-breaking rule**: When frequencies are equal, sort alphabetically (ascending)
+- **Stable sort**: The sorting algorithm should be stable to maintain alphabetical order
+- **Case sensitivity**: Typically words are compared case-sensitively
+- **Performance**: For large datasets with small k, heap-based approach is better
+
+## Comparison of Approaches
+
+| Approach | Time | Space | Best For |
+|----------|------|-------|----------|
+| Hash Map + Sort | O(n log n) | O(n) | General purpose, simple |
+| Heap-based | O(n log k) | O(k) | When k << n |
+| Bucket Sort | O(n + m) | O(n) | When frequencies are bounded |
+
+## Related Problems
+
+- **Top K Frequent Elements**: Similar but for numbers, no alphabetical ordering
+- **Kth Largest Element**: Find kth largest element
+- **Group Anagrams**: Group words by anagram
+- **Word Frequency**: Count word frequencies
+
+## Takeaways
+
+- **Hash map + sort** is the simplest and most intuitive approach
+- **Custom comparator** handles both frequency and alphabetical ordering
+- **Heap optimization** is better when k is much smaller than n
+- **Bucket sort** provides linear time when applicable
+- **Tie-breaking** is an important detail in the problem
+

@@ -1,0 +1,477 @@
+---
+id: kth-smallest-element-in-bst
+title: Kth Smallest Element in BST
+slug: /problems/kth-smallest-element-in-bst
+difficulty: Medium
+tags: [tree, binary-search-tree, dfs, recursion]
+leetcode: https://leetcode.com/problems/kth-smallest-element-in-a-bst/
+---
+
+# Kth Smallest Element in BST
+
+Given the reference to a binary search tree, return the kth smallest value in the tree.
+
+**Note:** In a BST, in-order traversal visits nodes in sorted order (ascending).
+
+## Example(s)
+
+**Example 1:**
+```
+Input:
+    3
+   / \
+  2   4
+k = 1
+
+Output: 2
+Explanation:
+In-order traversal: 2, 3, 4
+The 1st smallest element is 2.
+```
+
+**Example 2:**
+```
+Input:
+    7
+   / \
+  3   9
+   \
+    5
+k = 3
+
+Output: 7
+Explanation:
+In-order traversal: 3, 5, 7, 9
+The 3rd smallest element is 7.
+```
+
+**Example 3:**
+```
+Input:
+      5
+    /   \
+   3     6
+  / \     \
+ 2   4     7
+k = 3
+
+Output: 4
+Explanation:
+In-order traversal: 2, 3, 4, 5, 6, 7
+The 3rd smallest element is 4.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **in-order traversal**:
+
+1. **In-order traversal**: Visit left subtree → root → right subtree
+2. **Count nodes**: Keep track of how many nodes we've visited
+3. **Return kth**: When we've visited k nodes, return that value
+4. **Early termination**: Can stop once we find the kth element
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - In-Order Traversal"
+  code={`/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+
+/**
+ * Find kth smallest element in BST
+ * @param {TreeNode} root - Root of the BST
+ * @param {number} k - Kth smallest (1-indexed)
+ * @return {number} - Kth smallest value
+ */
+function kthSmallest(root, k) {
+  let count = 0;
+  let result = null;
+  
+  /**
+   * In-order traversal helper
+   * @param {TreeNode} node - Current node
+   */
+  function inOrder(node) {
+    if (!node || result !== null) return; // Early termination
+    
+    // Traverse left subtree
+    inOrder(node.left);
+    
+    // Process current node
+    count++;
+    if (count === k) {
+      result = node.val;
+      return; // Found it, can stop
+    }
+    
+    // Traverse right subtree
+    inOrder(node.right);
+  }
+  
+  inOrder(root);
+  return result;
+}
+
+// Helper function to create a tree node
+function TreeNode(val, left, right) {
+  this.val = (val===undefined ? 0 : val);
+  this.left = (left===undefined ? null : left);
+  this.right = (right===undefined ? null : right);
+}
+
+// Test case 1: [3, 2, 4], k = 1
+const tree1 = new TreeNode(3);
+tree1.left = new TreeNode(2);
+tree1.right = new TreeNode(4);
+console.log('Example 1:', kthSmallest(tree1, 1)); // 2
+
+// Test case 2: [7, 3, 9, null, 5], k = 3
+const tree2 = new TreeNode(7);
+tree2.left = new TreeNode(3);
+tree2.right = new TreeNode(9);
+tree2.left.right = new TreeNode(5);
+console.log('Example 2:', kthSmallest(tree2, 3)); // 7
+
+// Test case 3: [5, 3, 6, 2, 4, null, 7], k = 3
+const tree3 = new TreeNode(5);
+tree3.left = new TreeNode(3);
+tree3.right = new TreeNode(6);
+tree3.left.left = new TreeNode(2);
+tree3.left.right = new TreeNode(4);
+tree3.right.right = new TreeNode(7);
+console.log('Example 3:', kthSmallest(tree3, 3)); // 4`}
+  testCases={[
+    { input: '(() => { const t = new TreeNode(3, new TreeNode(2), new TreeNode(4)); return kthSmallest(t, 1); })()', expected: '2' },
+    { input: '(() => { const t = new TreeNode(7, new TreeNode(3, null, new TreeNode(5)), new TreeNode(9)); return kthSmallest(t, 3); })()', expected: '7' },
+    { input: '(() => { const t = new TreeNode(5, new TreeNode(3, new TreeNode(2), new TreeNode(4)), new TreeNode(6, null, new TreeNode(7))); return kthSmallest(t, 3); })()', expected: '4' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - In-Order Traversal"
+  code={`from typing import Optional
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def kth_smallest(root: Optional[TreeNode], k: int) -> int:
+    """
+    Find kth smallest element in BST
+    
+    Args:
+        root: Root of the BST
+        k: Kth smallest (1-indexed)
+        
+    Returns:
+        int: Kth smallest value
+    """
+    count = [0]  # Use list to allow modification in nested function
+    result = [None]  # Use list to allow modification
+    
+    def in_order(node: Optional[TreeNode]):
+        """
+        In-order traversal helper
+        """
+        if not node or result[0] is not None:
+            return  # Early termination
+        
+        # Traverse left subtree
+        in_order(node.left)
+        
+        # Process current node
+        count[0] += 1
+        if count[0] == k:
+            result[0] = node.val
+            return  # Found it, can stop
+        
+        # Traverse right subtree
+        in_order(node.right)
+    
+    in_order(root)
+    return result[0]
+
+# Test case 1: [3, 2, 4], k = 1
+tree1 = TreeNode(3)
+tree1.left = TreeNode(2)
+tree1.right = TreeNode(4)
+print('Example 1:', kth_smallest(tree1, 1))  # 2
+
+# Test case 2: [7, 3, 9, None, 5], k = 3
+tree2 = TreeNode(7)
+tree2.left = TreeNode(3)
+tree2.right = TreeNode(9)
+tree2.left.right = TreeNode(5)
+print('Example 2:', kth_smallest(tree2, 3))  # 7
+
+# Test case 3: [5, 3, 6, 2, 4, None, 7], k = 3
+tree3 = TreeNode(5)
+tree3.left = TreeNode(3)
+tree3.right = TreeNode(6)
+tree3.left.left = TreeNode(2)
+tree3.left.right = TreeNode(4)
+tree3.right.right = TreeNode(7)
+print('Example 3:', kth_smallest(tree3, 3))  # 4`}
+  testCases={[
+    { input: 'kth_smallest(TreeNode(3, TreeNode(2), TreeNode(4)), 1)', expected: '2' },
+    { input: 'kth_smallest(TreeNode(7, TreeNode(3, None, TreeNode(5)), TreeNode(9)), 3)', expected: '7' },
+    { input: 'kth_smallest(TreeNode(5, TreeNode(3, TreeNode(2), TreeNode(4)), TreeNode(6, None, TreeNode(7))), 3)', expected: '4' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Iterative In-Order)
+
+Here's an iterative version using a stack:
+
+<Tabs>
+<TabItem value="javascript-iter" label="JavaScript Iterative" default>
+
+```javascript
+/**
+ * Iterative in-order traversal using stack
+ */
+function kthSmallestIterative(root, k) {
+  const stack = [];
+  let current = root;
+  let count = 0;
+  
+  while (current || stack.length > 0) {
+    // Go to the leftmost node
+    while (current) {
+      stack.push(current);
+      current = current.left;
+    }
+    
+    // Process current node
+    current = stack.pop();
+    count++;
+    
+    if (count === k) {
+      return current.val;
+    }
+    
+    // Move to right subtree
+    current = current.right;
+  }
+  
+  return -1; // Should not reach here if k is valid
+}
+```
+
+</TabItem>
+<TabItem value="python-iter" label="Python Iterative">
+
+```python
+def kth_smallest_iterative(root: Optional[TreeNode], k: int) -> int:
+    """
+    Iterative in-order traversal using stack
+    """
+    stack = []
+    current = root
+    count = 0
+    
+    while current or stack:
+        # Go to the leftmost node
+        while current:
+            stack.append(current)
+            current = current.left
+        
+        # Process current node
+        current = stack.pop()
+        count += 1
+        
+        if count == k:
+            return current.val
+        
+        # Move to right subtree
+        current = current.right
+    
+    return -1  # Should not reach here if k is valid
+```
+
+</TabItem>
+</Tabs>
+
+## Alternative: Store All Values
+
+For reference, here's a simpler but less efficient approach:
+
+<Tabs>
+<TabItem value="javascript-store" label="JavaScript Store All" default>
+
+```javascript
+/**
+ * Alternative: Store all values in array (less efficient)
+ */
+function kthSmallestStoreAll(root, k) {
+  const values = [];
+  
+  function inOrder(node) {
+    if (!node) return;
+    inOrder(node.left);
+    values.push(node.val);
+    inOrder(node.right);
+  }
+  
+  inOrder(root);
+  return values[k - 1]; // k is 1-indexed
+}
+```
+
+</TabItem>
+<TabItem value="python-store" label="Python Store All">
+
+```python
+def kth_smallest_store_all(root: Optional[TreeNode], k: int) -> int:
+    """
+    Alternative: Store all values in array (less efficient)
+    """
+    values = []
+    
+    def in_order(node: Optional[TreeNode]):
+        if not node:
+            return
+        in_order(node.left)
+        values.append(node.val)
+        in_order(node.right)
+    
+    in_order(root)
+    return values[k - 1]  # k is 1-indexed
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(h + k) - Where h is the height of the tree. In the worst case (skewed tree), h = n, so O(n). With early termination, we only visit k nodes.
+- **Space Complexity:** 
+  - **Recursive**: O(h) - For the recursion stack
+  - **Iterative**: O(h) - For the stack
+  - **Store all**: O(n) - For storing all values
+
+## Approach
+
+The solution uses **in-order traversal**:
+
+1. **In-order traversal**: 
+   - Visit left subtree first
+   - Process current node
+   - Visit right subtree
+   - This gives nodes in sorted order (ascending)
+
+2. **Count nodes**: 
+   - Increment counter for each node visited
+   - When counter reaches k, we've found the kth smallest
+
+3. **Early termination**: 
+   - Once we find the kth element, we can stop
+   - No need to traverse the rest of the tree
+
+4. **Return value**: 
+   - Return the value of the kth node visited
+
+## Key Insights
+
+- **In-order traversal**: BST property ensures in-order gives sorted order
+- **Early termination**: Can stop once we find kth element
+- **1-indexed**: k = 1 means first smallest, k = 2 means second smallest, etc.
+- **Recursive vs iterative**: Both work, iterative uses explicit stack
+- **O(h + k) time**: With early termination, only visit k nodes
+
+## Step-by-Step Example
+
+Let's trace through Example 2: Tree with nodes `[7, 3, 9, null, 5]`, `k = 3`
+
+```
+Tree:
+    7
+   / \
+  3   9
+   \
+    5
+
+In-order traversal: 3 → 5 → 7 → 9
+
+Step 1: Visit node 3 (leftmost)
+  count = 1
+  count === 3? No, continue
+
+Step 2: Visit node 5
+  count = 2
+  count === 3? No, continue
+
+Step 3: Visit node 7
+  count = 3
+  count === 3? Yes!
+  Return 7
+
+Result: 7
+```
+
+## Visual Representation
+
+```
+Tree:          In-order traversal:
+    7          3 → 5 → 7 → 9
+   / \         ↑   ↑   ↑   ↑
+  3   9       1st 2nd 3rd 4th
+   \
+    5
+
+k = 3 → Return 7 (3rd smallest)
+```
+
+## Edge Cases
+
+- **k = 1**: Return the smallest element (leftmost node)
+- **k = n**: Return the largest element (rightmost node)
+- **Single node**: Return that node's value
+- **Skewed tree**: Still works correctly
+- **k out of bounds**: Problem assumes k is valid (1 ≤ k ≤ n)
+
+## Important Notes
+
+- **1-indexed**: k = 1 is the first smallest, not 0-indexed
+- **BST property**: In-order traversal gives sorted order
+- **Early termination**: Can stop once kth element is found
+- **No duplicates**: Problem assumes unique values
+- **In-order is key**: Leverages BST sorted property
+
+## Related Problems
+
+- **Kth Largest Element in BST**: Find kth largest (reverse in-order)
+- **Validate Binary Search Tree**: Check if tree is valid BST
+- **Binary Tree Inorder Traversal**: General in-order traversal
+- **Search in a Binary Search Tree**: Search for a value
+
+## Takeaways
+
+- **In-order traversal** is the key for BST sorted operations
+- **Early termination** optimizes when k is small
+- **BST property** ensures in-order gives sorted order
+- **O(h + k) time** with early termination is efficient
+- **Recursive and iterative** both work well
+

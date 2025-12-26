@@ -1,0 +1,387 @@
+---
+id: word-break
+title: Word Break
+slug: /problems/word-break
+difficulty: Medium
+tags: [dynamic-programming, string, hash-table, trie]
+leetcode: https://leetcode.com/problems/word-break/
+---
+
+# Word Break
+
+This question is asked by Amazon. Given a string s and a list of words representing a dictionary, return whether or not the entirety of s can be segmented into dictionary words.
+
+**Note:** You may assume all characters in s and the dictionary are lowercase.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: s = "thedailybyte", dictionary = ["the", "daily", "byte"]
+Output: true
+Explanation:
+"thedailybyte" can be segmented as:
+  "the" + "daily" + "byte"
+All words are in the dictionary.
+```
+
+**Example 2:**
+```
+Input: s = "pizzaplanet", dictionary = ["plane", "pizza"]
+Output: false
+Explanation:
+Cannot segment "pizzaplanet" into words from the dictionary.
+Possible attempts:
+  "pizza" + "planet" (but "planet" is not in dictionary)
+  "pizza" + "plane" + "t" (but "t" is not in dictionary)
+```
+
+**Example 3:**
+```
+Input: s = "leetcode", dictionary = ["leet", "code"]
+Output: true
+Explanation:
+"leetcode" can be segmented as "leet" + "code"
+```
+
+**Example 4:**
+```
+Input: s = "applepenapple", dictionary = ["apple", "pen"]
+Output: true
+Explanation:
+"applepenapple" can be segmented as "apple" + "pen" + "apple"
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Dynamic Programming**:
+
+1. **DP state**: `dp[i]` = whether substring `s[0...i-1]` can be segmented
+2. **Base case**: `dp[0] = true` (empty string is valid)
+3. **Recurrence**: For each position, check if any dictionary word matches ending at that position
+4. **Result**: `dp[n]` where n is the length of s
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Dynamic Programming"
+  code={`/**
+ * Check if string can be segmented into dictionary words
+ * @param {string} s - Input string
+ * @param {string[]} dictionary - List of dictionary words
+ * @return {boolean} - Whether s can be segmented
+ */
+function wordBreak(s, dictionary) {
+  const n = s.length;
+  const wordSet = new Set(dictionary);
+  
+  // dp[i] = whether substring s[0...i-1] can be segmented
+  const dp = new Array(n + 1).fill(false);
+  dp[0] = true; // Base case: empty string is valid
+  
+  // Fill DP table
+  for (let i = 1; i <= n; i++) {
+    // Check all possible words ending at position i
+    for (let j = 0; j < i; j++) {
+      // If prefix s[0...j-1] is valid and s[j...i-1] is a word
+      if (dp[j] && wordSet.has(s.substring(j, i))) {
+        dp[i] = true;
+        break; // Found a valid segmentation, no need to check further
+      }
+    }
+  }
+  
+  return dp[n];
+}
+
+// Test cases
+console.log('Example 1:', wordBreak("thedailybyte", ["the", "daily", "byte"])); 
+// true
+
+console.log('Example 2:', wordBreak("pizzaplanet", ["plane", "pizza"])); 
+// false
+
+console.log('Example 3:', wordBreak("leetcode", ["leet", "code"])); 
+// true
+
+console.log('Example 4:', wordBreak("applepenapple", ["apple", "pen"])); 
+// true`}
+  testCases={[
+    { input: 'wordBreak("thedailybyte", ["the", "daily", "byte"])', expected: 'true' },
+    { input: 'wordBreak("pizzaplanet", ["plane", "pizza"])', expected: 'false' },
+    { input: 'wordBreak("leetcode", ["leet", "code"])', expected: 'true' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Dynamic Programming"
+  code={`from typing import List
+
+def word_break(s: str, dictionary: List[str]) -> bool:
+    """
+    Check if string can be segmented into dictionary words
+    
+    Args:
+        s: Input string
+        dictionary: List of dictionary words
+        
+    Returns:
+        bool: Whether s can be segmented
+    """
+    n = len(s)
+    word_set = set(dictionary)
+    
+    # dp[i] = whether substring s[0...i-1] can be segmented
+    dp = [False] * (n + 1)
+    dp[0] = True  # Base case: empty string is valid
+    
+    # Fill DP table
+    for i in range(1, n + 1):
+        # Check all possible words ending at position i
+        for j in range(i):
+            # If prefix s[0...j-1] is valid and s[j...i-1] is a word
+            if dp[j] and s[j:i] in word_set:
+                dp[i] = True
+                break  # Found a valid segmentation, no need to check further
+    
+    return dp[n]
+
+# Test cases
+print('Example 1:', word_break("thedailybyte", ["the", "daily", "byte"]))  
+# True
+
+print('Example 2:', word_break("pizzaplanet", ["plane", "pizza"]))  
+# False
+
+print('Example 3:', word_break("leetcode", ["leet", "code"]))  
+# True
+
+print('Example 4:', word_break("applepenapple", ["apple", "pen"]))  
+# True`}
+  testCases={[
+    { input: 'word_break("thedailybyte", ["the", "daily", "byte"])', expected: 'True' },
+    { input: 'word_break("pizzaplanet", ["plane", "pizza"])', expected: 'False' },
+    { input: 'word_break("leetcode", ["leet", "code"])', expected: 'True' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Optimized with Max Word Length)
+
+Here's an optimized version that limits word length checks:
+
+<Tabs>
+<TabItem value="javascript-optimized" label="JavaScript Optimized" default>
+
+```javascript
+/**
+ * Optimized: Only check words up to max word length
+ */
+function wordBreakOptimized(s, dictionary) {
+  const n = s.length;
+  const wordSet = new Set(dictionary);
+  
+  // Find maximum word length
+  const maxLen = dictionary.reduce((max, word) => Math.max(max, word.length), 0);
+  
+  const dp = new Array(n + 1).fill(false);
+  dp[0] = true;
+  
+  for (let i = 1; i <= n; i++) {
+    // Only check substrings up to max word length
+    const start = Math.max(0, i - maxLen);
+    for (let j = start; j < i; j++) {
+      if (dp[j] && wordSet.has(s.substring(j, i))) {
+        dp[i] = true;
+        break;
+      }
+    }
+  }
+  
+  return dp[n];
+}
+```
+
+</TabItem>
+<TabItem value="python-optimized" label="Python Optimized">
+
+```python
+def word_break_optimized(s: str, dictionary: List[str]) -> bool:
+    """
+    Optimized: Only check words up to max word length
+    """
+    n = len(s)
+    word_set = set(dictionary)
+    
+    # Find maximum word length
+    max_len = max(len(word) for word in dictionary) if dictionary else 0
+    
+    dp = [False] * (n + 1)
+    dp[0] = True
+    
+    for i in range(1, n + 1):
+        # Only check substrings up to max word length
+        start = max(0, i - max_len)
+        for j in range(start, i):
+            if dp[j] and s[j:i] in word_set:
+                dp[i] = True
+                break
+    
+    return dp[n]
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n² × m) - Where n is the length of s and m is the average word length. For each position i, we check all positions j < i, and each substring check is O(m). With optimization: O(n × maxLen × m).
+- **Space Complexity:** O(n + k) - Where n is the length of s (for DP array) and k is the number of dictionary words (for the set).
+
+## Approach
+
+The solution uses **Dynamic Programming**:
+
+1. **DP state**: 
+   - `dp[i]` = whether substring `s[0...i-1]` can be segmented into dictionary words
+   - `dp[0] = true` (empty string is always valid)
+
+2. **Recurrence**: 
+   - For each position i, check all positions j < i
+   - If `dp[j]` is true (prefix is valid) and `s[j...i-1]` is in dictionary
+   - Then `dp[i] = true`
+
+3. **Substring check**: 
+   - Use a Set for O(1) dictionary lookup
+   - Check if `s.substring(j, i)` is in the dictionary
+
+4. **Result**: 
+   - `dp[n]` where n is the length of s
+
+## Key Insights
+
+- **Dynamic Programming**: Optimal substructure - if prefix is valid and suffix is a word, whole string is valid
+- **Set lookup**: Use Set for O(1) dictionary word lookup
+- **Prefix validation**: Check if prefix can be segmented, then check if remaining suffix is a word
+- **O(n²) time**: Must check all possible segmentations
+- **Optimization**: Limit checks to max word length
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `s = "thedailybyte"`, `dictionary = ["the", "daily", "byte"]`
+
+```
+s = "thedailybyte"
+dictionary = {"the", "daily", "byte"}
+
+DP table:
+  dp[0] = true (empty string)
+
+  i=1: Check s[0...0] = "t" → not in dict → dp[1] = false
+  i=2: Check s[0...1] = "th" → not in dict → dp[2] = false
+  i=3: Check s[0...2] = "the" → in dict! → dp[3] = true
+  
+  i=4: Check s[0...3] = "thed" → not in dict
+        Check s[3...3] = "" → dp[4] = false
+  i=5: Check s[0...4] = "theda" → not in dict
+        Check s[3...4] = "da" → not in dict → dp[5] = false
+  i=6: Check s[0...5] = "thedai" → not in dict
+        Check s[3...5] = "dai" → not in dict → dp[6] = false
+  i=7: Check s[0...6] = "thedail" → not in dict
+        Check s[3...6] = "dail" → not in dict → dp[7] = false
+  i=8: Check s[0...7] = "thedaily" → not in dict
+        Check s[3...7] = "daily" → in dict! and dp[3] = true → dp[8] = true
+  
+  i=9: Check s[0...8] = "thedailyb" → not in dict
+        Check s[3...8] = "dailyb" → not in dict
+        Check s[8...8] = "" → dp[9] = false
+  i=10: Check s[0...9] = "thedailyby" → not in dict
+         Check s[3...9] = "dailyby" → not in dict
+         Check s[8...9] = "by" → not in dict → dp[10] = false
+  i=11: Check s[0...10] = "thedailybyt" → not in dict
+         Check s[3...10] = "dailybyt" → not in dict
+         Check s[8...10] = "byt" → not in dict → dp[11] = false
+  i=12: Check s[0...11] = "thedailybyte" → not in dict
+         Check s[3...11] = "dailybyte" → not in dict
+         Check s[8...11] = "byte" → in dict! and dp[8] = true → dp[12] = true
+
+Result: dp[12] = true
+
+Segmentation: "the" (0-3) + "daily" (3-8) + "byte" (8-12)
+```
+
+## Visual Representation
+
+```
+Example 1: s = "thedailybyte", dictionary = ["the", "daily", "byte"]
+
+String:  t  h  e  d  a  i  l  y  b  y  t  e
+Index:   0  1  2  3  4  5  6  7  8  9 10 11
+
+DP:      T  F  F  T  F  F  F  F  T  F  F  F  T
+         ↑           ↑              ↑           ↑
+       empty      "the"          "daily"     "byte"
+
+Segmentation:
+  [0-3]:   "the"   ✓
+  [3-8]:   "daily" ✓
+  [8-12]:  "byte"  ✓
+
+Result: true
+```
+
+## Edge Cases
+
+- **Empty string**: Return true (can be segmented with zero words)
+- **Empty dictionary**: Return false (unless s is also empty)
+- **Single character**: Check if it's in dictionary
+- **No valid segmentation**: Return false
+- **Overlapping words**: DP handles this correctly
+
+## Important Notes
+
+- **Set for lookup**: Use Set for O(1) dictionary word lookup
+- **Prefix validation**: Check if prefix can be segmented first
+- **Substring check**: Check if remaining suffix is a word
+- **O(n²) time**: Must check all possible segmentations
+- **Optimization**: Can limit to max word length
+
+## Why Dynamic Programming Works
+
+**Optimal Substructure**: 
+- If string s can be segmented, then there exists a position j such that:
+  - Prefix s[0...j-1] can be segmented
+  - Suffix s[j...n-1] is a word in dictionary
+- This creates the recurrence: `dp[i] = dp[j] && wordSet.has(s[j...i-1])`
+
+**Overlapping Subproblems**: 
+- Multiple segmentations may check the same prefixes
+- DP stores and reuses these results
+
+## Related Problems
+
+- **Word Break II**: Return all possible segmentations
+- **Concatenated Words**: Find words that can be formed by concatenating others
+- **Palindrome Partitioning**: Similar DP structure
+- **Decode Ways**: Similar string segmentation problem
+
+## Takeaways
+
+- **Dynamic Programming** solves this efficiently
+- **Set lookup** for O(1) dictionary checks
+- **Prefix validation** then suffix word check
+- **O(n²) time** to check all segmentations
+- **Classic DP problem** with string manipulation
+

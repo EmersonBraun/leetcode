@@ -1,0 +1,602 @@
+---
+id: max-area-of-island
+title: Max Area of Island
+slug: /problems/max-area-of-island
+difficulty: Medium
+tags: [array, matrix, dfs, bfs, graph]
+leetcode: https://leetcode.com/problems/max-area-of-island/
+---
+
+# Max Area of Island
+
+Given a 2D array `grid`, where zeroes represent water and ones represent land, return the size of the largest island.
+
+**Note:** An island is one or more cells in grid containing a value of one that may be connected vertically or horizontally. Each cell in an island contributes a value of one to the current island's size.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: grid = [
+  [1, 1, 0],
+  [1, 1, 0],
+  [0, 0, 1],
+]
+
+Output: 4
+Explanation:
+There are two islands:
+- Island 1: cells (0,0), (0,1), (1,0), (1,1) → size 4
+- Island 2: cell (2,2) → size 1
+The largest island has size 4.
+```
+
+**Example 2:**
+```
+Input: grid = [
+  [0, 0, 1, 0, 0],
+  [0, 0, 0, 1, 1],
+  [0, 1, 1, 0, 0],
+  [0, 1, 0, 0, 1],
+  [0, 1, 0, 0, 1],
+]
+
+Output: 4
+Explanation:
+The largest island has 4 connected cells.
+```
+
+**Example 3:**
+```
+Input: grid = [
+  [1, 1, 1],
+  [1, 1, 1],
+  [1, 1, 1],
+]
+
+Output: 9
+Explanation:
+All cells form one large island of size 9.
+```
+
+**Example 4:**
+```
+Input: grid = [
+  [0, 0, 0],
+  [0, 0, 0],
+  [0, 0, 0],
+]
+
+Output: 0
+Explanation:
+No islands (all water).
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **DFS (Depth-First Search)** or **BFS (Breadth-First Search)** to explore each island:
+
+1. **Iterate through grid**: For each cell that is land (1) and not visited
+2. **Explore island**: Use DFS/BFS to visit all connected land cells
+3. **Count size**: Count how many cells are in the current island
+4. **Track maximum**: Keep track of the largest island size seen so far
+5. **Mark visited**: Mark cells as visited to avoid counting them twice
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - DFS"
+  code={`/**
+ * Find the size of the largest island
+ * @param {number[][]} grid - 2D array where 1 = land, 0 = water
+ * @return {number} - Size of the largest island
+ */
+function maxAreaOfIsland(grid) {
+  if (!grid || grid.length === 0) return 0;
+  
+  const rows = grid.length;
+  const cols = grid[0].length;
+  let maxArea = 0;
+  
+  /**
+   * DFS to explore an island and count its size
+   * @param {number} row - Current row
+   * @param {number} col - Current column
+   * @return {number} - Size of the island
+   */
+  function dfs(row, col) {
+    // Base cases: out of bounds or water or already visited
+    if (
+      row < 0 || row >= rows ||
+      col < 0 || col >= cols ||
+      grid[row][col] === 0
+    ) {
+      return 0;
+    }
+    
+    // Mark current cell as visited (set to 0)
+    grid[row][col] = 0;
+    
+    // Count current cell and explore neighbors
+    let area = 1;
+    area += dfs(row - 1, col); // up
+    area += dfs(row + 1, col); // down
+    area += dfs(row, col - 1); // left
+    area += dfs(row, col + 1); // right
+    
+    return area;
+  }
+  
+  // Iterate through all cells
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (grid[i][j] === 1) {
+        // Found a new island, explore it
+        const area = dfs(i, j);
+        maxArea = Math.max(maxArea, area);
+      }
+    }
+  }
+  
+  return maxArea;
+}
+
+// Test cases
+const grid1 = [
+  [1, 1, 0],
+  [1, 1, 0],
+  [0, 0, 1],
+];
+console.log('Example 1:', maxAreaOfIsland(grid1)); // 4
+
+const grid2 = [
+  [0, 0, 1, 0, 0],
+  [0, 0, 0, 1, 1],
+  [0, 1, 1, 0, 0],
+  [0, 1, 0, 0, 1],
+  [0, 1, 0, 0, 1],
+];
+console.log('Example 2:', maxAreaOfIsland(grid2)); // 4
+
+const grid3 = [
+  [1, 1, 1],
+  [1, 1, 1],
+  [1, 1, 1],
+];
+console.log('Example 3:', maxAreaOfIsland(grid3)); // 9
+
+const grid4 = [
+  [0, 0, 0],
+  [0, 0, 0],
+  [0, 0, 0],
+];
+console.log('Example 4:', maxAreaOfIsland(grid4)); // 0`}
+  testCases={[
+    { input: 'maxAreaOfIsland([[1,1,0],[1,1,0],[0,0,1]])', expected: '4' },
+    { input: 'maxAreaOfIsland([[1,1,1],[1,1,1],[1,1,1]])', expected: '9' },
+    { input: 'maxAreaOfIsland([[0,0,0],[0,0,0],[0,0,0]])', expected: '0' },
+    { input: 'maxAreaOfIsland([[0,0,1,0,0],[0,0,0,1,1],[0,1,1,0,0],[0,1,0,0,1],[0,1,0,0,1]])', expected: '4' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - DFS"
+  code={`from typing import List
+
+def max_area_of_island(grid: List[List[int]]) -> int:
+    """
+    Find the size of the largest island
+    
+    Args:
+        grid: 2D array where 1 = land, 0 = water
+        
+    Returns:
+        int: Size of the largest island
+    """
+    if not grid or not grid[0]:
+        return 0
+    
+    rows = len(grid)
+    cols = len(grid[0])
+    max_area = 0
+    
+    def dfs(row: int, col: int) -> int:
+        """
+        DFS to explore an island and count its size
+        
+        Returns:
+            int: Size of the island
+        """
+        # Base cases: out of bounds or water or already visited
+        if (
+            row < 0 or row >= rows or
+            col < 0 or col >= cols or
+            grid[row][col] == 0
+        ):
+            return 0
+        
+        # Mark current cell as visited (set to 0)
+        grid[row][col] = 0
+        
+        # Count current cell and explore neighbors
+        area = 1
+        area += dfs(row - 1, col)  # up
+        area += dfs(row + 1, col)  # down
+        area += dfs(row, col - 1)  # left
+        area += dfs(row, col + 1)  # right
+        
+        return area
+    
+    # Iterate through all cells
+    for i in range(rows):
+        for j in range(cols):
+            if grid[i][j] == 1:
+                # Found a new island, explore it
+                area = dfs(i, j)
+                max_area = max(max_area, area)
+    
+    return max_area
+
+# Test cases
+grid1 = [
+    [1, 1, 0],
+    [1, 1, 0],
+    [0, 0, 1],
+]
+print('Example 1:', max_area_of_island(grid1))  # 4
+
+grid2 = [
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 1],
+    [0, 1, 1, 0, 0],
+    [0, 1, 0, 0, 1],
+    [0, 1, 0, 0, 1],
+]
+print('Example 2:', max_area_of_island(grid2))  # 4
+
+grid3 = [
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+]
+print('Example 3:', max_area_of_island(grid3))  # 9
+
+grid4 = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
+]
+print('Example 4:', max_area_of_island(grid4))  # 0`}
+  testCases={[
+    { input: 'max_area_of_island([[1,1,0],[1,1,0],[0,0,1]])', expected: '4' },
+    { input: 'max_area_of_island([[1,1,1],[1,1,1],[1,1,1]])', expected: '9' },
+    { input: 'max_area_of_island([[0,0,0],[0,0,0],[0,0,0]])', expected: '0' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (BFS)
+
+Here's a BFS (Breadth-First Search) approach:
+
+<Tabs>
+<TabItem value="javascript-bfs" label="JavaScript BFS" default>
+
+```javascript
+/**
+ * BFS approach
+ */
+function maxAreaOfIslandBFS(grid) {
+  if (!grid || grid.length === 0) return 0;
+  
+  const rows = grid.length;
+  const cols = grid[0].length;
+  let maxArea = 0;
+  const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; // up, down, left, right
+  
+  function bfs(startRow, startCol) {
+    const queue = [[startRow, startCol]];
+    grid[startRow][startCol] = 0; // Mark as visited
+    let area = 0;
+    
+    while (queue.length > 0) {
+      const [row, col] = queue.shift();
+      area++;
+      
+      // Explore neighbors
+      for (const [dr, dc] of directions) {
+        const newRow = row + dr;
+        const newCol = col + dc;
+        
+        if (
+          newRow >= 0 && newRow < rows &&
+          newCol >= 0 && newCol < cols &&
+          grid[newRow][newCol] === 1
+        ) {
+          grid[newRow][newCol] = 0; // Mark as visited
+          queue.push([newRow, newCol]);
+        }
+      }
+    }
+    
+    return area;
+  }
+  
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (grid[i][j] === 1) {
+        const area = bfs(i, j);
+        maxArea = Math.max(maxArea, area);
+      }
+    }
+  }
+  
+  return maxArea;
+}
+```
+
+</TabItem>
+<TabItem value="python-bfs" label="Python BFS">
+
+```python
+from collections import deque
+
+def max_area_of_island_bfs(grid: List[List[int]]) -> int:
+    """
+    BFS approach
+    """
+    if not grid or not grid[0]:
+        return 0
+    
+    rows = len(grid)
+    cols = len(grid[0])
+    max_area = 0
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # up, down, left, right
+    
+    def bfs(start_row: int, start_col: int) -> int:
+        queue = deque([(start_row, start_col)])
+        grid[start_row][start_col] = 0  # Mark as visited
+        area = 0
+        
+        while queue:
+            row, col = queue.popleft()
+            area += 1
+            
+            # Explore neighbors
+            for dr, dc in directions:
+                new_row = row + dr
+                new_col = col + dc
+                
+                if (
+                    0 <= new_row < rows and
+                    0 <= new_col < cols and
+                    grid[new_row][new_col] == 1
+                ):
+                    grid[new_row][new_col] = 0  # Mark as visited
+                    queue.append((new_row, new_col))
+        
+        return area
+    
+    for i in range(rows):
+        for j in range(cols):
+            if grid[i][j] == 1:
+                area = bfs(i, j)
+                max_area = max(max_area, area)
+    
+    return max_area
+```
+
+</TabItem>
+</Tabs>
+
+## Alternative: Without Modifying Original Grid
+
+If we need to preserve the original grid, we can use a visited set:
+
+<Tabs>
+<TabItem value="javascript-visited" label="JavaScript with Visited Set" default>
+
+```javascript
+/**
+ * Solution that doesn't modify the original grid
+ */
+function maxAreaOfIslandPreserve(grid) {
+  if (!grid || grid.length === 0) return 0;
+  
+  const rows = grid.length;
+  const cols = grid[0].length;
+  const visited = new Set();
+  let maxArea = 0;
+  
+  function dfs(row, col) {
+    const key = `${row},${col}`;
+    
+    if (
+      row < 0 || row >= rows ||
+      col < 0 || col >= cols ||
+      grid[row][col] === 0 ||
+      visited.has(key)
+    ) {
+      return 0;
+    }
+    
+    visited.add(key);
+    let area = 1;
+    area += dfs(row - 1, col);
+    area += dfs(row + 1, col);
+    area += dfs(row, col - 1);
+    area += dfs(row, col + 1);
+    
+    return area;
+  }
+  
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (grid[i][j] === 1 && !visited.has(`${i},${j}`)) {
+        const area = dfs(i, j);
+        maxArea = Math.max(maxArea, area);
+      }
+    }
+  }
+  
+  return maxArea;
+}
+```
+
+</TabItem>
+<TabItem value="python-visited" label="Python with Visited Set">
+
+```python
+def max_area_of_island_preserve(grid: List[List[int]]) -> int:
+    """
+    Solution that doesn't modify the original grid
+    """
+    if not grid or not grid[0]:
+        return 0
+    
+    rows = len(grid)
+    cols = len(grid[0])
+    visited = set()
+    max_area = 0
+    
+    def dfs(row: int, col: int) -> int:
+        if (
+            row < 0 or row >= rows or
+            col < 0 or col >= cols or
+            grid[row][col] == 0 or
+            (row, col) in visited
+        ):
+            return 0
+        
+        visited.add((row, col))
+        area = 1
+        area += dfs(row - 1, col)
+        area += dfs(row + 1, col)
+        area += dfs(row, col - 1)
+        area += dfs(row, col + 1)
+        
+        return area
+    
+    for i in range(rows):
+        for j in range(cols):
+            if grid[i][j] == 1 and (i, j) not in visited:
+                area = dfs(i, j)
+                max_area = max(max_area, area)
+    
+    return max_area
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(m × n) - Where m and n are the dimensions of the grid. We visit each cell at most once.
+- **Space Complexity:** O(m × n) - For DFS recursion stack in worst case (when entire grid is one island). For BFS, it's the queue size. If we use a visited set, it's also O(m × n).
+
+## Approach
+
+The solution uses **graph traversal** (DFS or BFS):
+
+1. **Iterate through grid**: For each cell `(i, j)`
+2. **Check if land**: If `grid[i][j] === 1` and not visited
+3. **Explore island**: Use DFS/BFS to visit all connected land cells
+4. **Count cells**: Count how many cells are in the current island
+5. **Update maximum**: Track the largest island size
+6. **Mark visited**: Mark cells as visited (set to 0 or use visited set)
+
+## Key Insights
+
+- **Connected components**: Islands are connected components in a graph
+- **4-directional**: Cells are connected horizontally and vertically (not diagonally)
+- **DFS vs BFS**: Both work, DFS is simpler to implement recursively
+- **In-place marking**: Setting visited cells to 0 saves space
+- **Single pass**: Each cell is visited at most once
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `grid = [[1,1,0],[1,1,0],[0,0,1]]`
+
+```
+Initial grid:
+[1, 1, 0]
+[1, 1, 0]
+[0, 0, 1]
+
+Step 1: Found land at (0,0)
+  DFS from (0,0):
+    - Visit (0,0) → area = 1
+    - Visit (0,1) → area = 2
+    - Visit (1,0) → area = 3
+    - Visit (1,1) → area = 4
+    - No more neighbors
+  Island size = 4
+  maxArea = 4
+
+Step 2: Found land at (2,2)
+  DFS from (2,2):
+    - Visit (2,2) → area = 1
+    - No neighbors
+  Island size = 1
+  maxArea = max(4, 1) = 4
+
+Final: maxArea = 4
+```
+
+## Visual Representation
+
+```
+Grid:           DFS exploration:
+[1, 1, 0]       [✓, ✓, 0]
+[1, 1, 0]  →    [✓, ✓, 0]
+[0, 0, 1]       [0, 0, ✓]
+
+Island 1: 4 cells (marked with ✓)
+Island 2: 1 cell (marked with ✓)
+Largest: 4
+```
+
+## Edge Cases
+
+- **Empty grid**: Return 0
+- **All water**: Return 0
+- **All land**: Return m × n (entire grid is one island)
+- **Single cell land**: Return 1
+- **Single cell water**: Return 0
+- **No islands**: Return 0
+
+## Optimization Notes
+
+- **Early termination**: Not applicable (need to check all islands)
+- **In-place marking**: More space-efficient than visited set
+- **DFS vs BFS**: DFS is typically preferred for this problem (simpler code)
+- **Direction array**: Can use `[[-1,0],[1,0],[0,-1],[0,1]]` for cleaner code
+
+## Related Problems
+
+- **Number of Islands**: Count total number of islands
+- **Island Perimeter**: Calculate perimeter of islands
+- **Surrounded Regions**: Mark regions surrounded by water
+- **Walls and Gates**: BFS from multiple sources
+- **Flood Fill**: Similar DFS/BFS pattern
+
+## Takeaways
+
+- **DFS/BFS** are essential for grid traversal problems
+- **Connected components** can be found using graph traversal
+- **In-place marking** saves space (set to 0 instead of visited set)
+- **4-directional** means up, down, left, right (not diagonals)
+- **Single pass** through grid is optimal
+

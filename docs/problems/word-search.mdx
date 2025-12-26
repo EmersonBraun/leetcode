@@ -1,0 +1,442 @@
+---
+id: word-search
+title: Word Search
+slug: /problems/word-search
+difficulty: Medium
+tags: [backtracking, dfs, matrix, array]
+leetcode: https://leetcode.com/problems/word-search/
+---
+
+# Word Search
+
+This question is asked by Amazon. Given a 2D board that represents a word search puzzle and a string word, return whether or the given word can be formed in the puzzle by only connecting cells horizontally and vertically.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: 
+board = [
+  ['C','A','T','F'],
+  ['B','G','E','S'],
+  ['I','T','A','E']
+]
+word = "CAT"
+Output: true
+Explanation:
+Start at (0,0): 'C'
+Move right to (0,1): 'A'
+Move right to (0,2): 'T'
+Path: (0,0) → (0,1) → (0,2) = "CAT" ✓
+```
+
+**Example 2:**
+```
+Input: 
+board = [
+  ['C','A','T','F'],
+  ['B','G','E','S'],
+  ['I','T','A','E']
+]
+word = "TEA"
+Output: true
+Explanation:
+Start at (0,2): 'T'
+Move down to (1,2): 'E'
+Move down to (2,2): 'A'
+Path: (0,2) → (1,2) → (2,2) = "TEA" ✓
+```
+
+**Example 3:**
+```
+Input: 
+board = [
+  ['C','A','T','F'],
+  ['B','G','E','S'],
+  ['I','T','A','E']
+]
+word = "SEAT"
+Output: true
+Explanation:
+Start at (1,3): 'S'
+Move left to (1,2): 'E'
+Move down to (2,2): 'A'
+Move down to (2,3): 'T'
+Path: (1,3) → (1,2) → (2,2) → (2,3) = "SEAT" ✓
+```
+
+**Example 4:**
+```
+Input: 
+board = [
+  ['C','A','T','F'],
+  ['B','G','E','S'],
+  ['I','T','A','E']
+]
+word = "BAT"
+Output: false
+Explanation:
+Cannot form "BAT" - 'B' and 'A' are not adjacent in a valid path.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **DFS with Backtracking**:
+
+1. **Try each starting cell**: For each cell matching first character, start DFS
+2. **DFS exploration**: Explore all paths matching the word
+3. **Backtracking**: Mark/unmark visited cells
+4. **Early termination**: Return true as soon as word is found
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - DFS with Backtracking"
+  code={`/**
+ * Check if word can be formed in board
+ * @param {character[][]} board - 2D board
+ * @param {string} word - Word to search
+ * @return {boolean} - Whether word can be formed
+ */
+function exist(board, word) {
+  const rows = board.length;
+  const cols = board[0].length;
+  
+  // Directions: up, down, left, right
+  const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+  
+  /**
+   * DFS function to search for word
+   * @param {number} row - Current row
+   * @param {number} col - Current column
+   * @param {number} index - Current character index in word
+   * @return {boolean} - Whether word can be formed from this position
+   */
+  function dfs(row, col, index) {
+    // Base case: found the entire word
+    if (index === word.length) {
+      return true;
+    }
+    
+    // Check bounds and if current cell matches current character
+    if (row < 0 || row >= rows || col < 0 || col >= cols || 
+        board[row][col] !== word[index]) {
+      return false;
+    }
+    
+    // Mark cell as visited (temporarily change to special character)
+    const temp = board[row][col];
+    board[row][col] = '#';
+    
+    // Explore all four directions
+    for (const [dr, dc] of directions) {
+      const newRow = row + dr;
+      const newCol = col + dc;
+      if (dfs(newRow, newCol, index + 1)) {
+        return true; // Found word, return immediately
+      }
+    }
+    
+    // Backtrack: restore cell value
+    board[row][col] = temp;
+    return false;
+  }
+  
+  // Try starting from each cell
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (board[i][j] === word[0]) {
+        if (dfs(i, j, 0)) {
+          return true;
+        }
+      }
+    }
+  }
+  
+  return false;
+}
+
+// Test cases
+const board = [
+  ['C','A','T','F'],
+  ['B','G','E','S'],
+  ['I','T','A','E']
+];
+
+console.log('Example 1:', exist(board, "CAT")); 
+// true
+
+console.log('Example 2:', exist([...board.map(r => [...r])], "TEA")); 
+// true
+
+console.log('Example 3:', exist([...board.map(r => [...r])], "SEAT")); 
+// true
+
+console.log('Example 4:', exist([...board.map(r => [...r])], "BAT")); 
+// false`}
+  testCases={[
+    { input: 'exist([["C","A","T","F"],["B","G","E","S"],["I","T","A","E"]], "CAT")', expected: 'true' },
+    { input: 'exist([["C","A","T","F"],["B","G","E","S"],["I","T","A","E"]], "BAT")', expected: 'false' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - DFS with Backtracking"
+  code={`from typing import List
+
+def exist(board: List[List[str]], word: str) -> bool:
+    """
+    Check if word can be formed in board
+    
+    Args:
+        board: 2D board
+        word: Word to search
+        
+    Returns:
+        bool: Whether word can be formed
+    """
+    rows = len(board)
+    cols = len(board[0])
+    
+    # Directions: up, down, left, right
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    
+    def dfs(row: int, col: int, index: int) -> bool:
+        """
+        DFS function to search for word
+        
+        Args:
+            row: Current row
+            col: Current column
+            index: Current character index in word
+            
+        Returns:
+            bool: Whether word can be formed from this position
+        """
+        # Base case: found the entire word
+        if index == len(word):
+            return True
+        
+        # Check bounds and if current cell matches current character
+        if (row < 0 or row >= rows or col < 0 or col >= cols or 
+            board[row][col] != word[index]):
+            return False
+        
+        # Mark cell as visited (temporarily change to special character)
+        temp = board[row][col]
+        board[row][col] = '#'
+        
+        # Explore all four directions
+        for dr, dc in directions:
+            new_row = row + dr
+            new_col = col + dc
+            if dfs(new_row, new_col, index + 1):
+                return True  # Found word, return immediately
+        
+        # Backtrack: restore cell value
+        board[row][col] = temp
+        return False
+    
+    # Try starting from each cell
+    for i in range(rows):
+        for j in range(cols):
+            if board[i][j] == word[0]:
+                if dfs(i, j, 0):
+                    return True
+    
+    return False
+
+# Test cases
+board = [
+    ['C','A','T','F'],
+    ['B','G','E','S'],
+    ['I','T','A','E']
+]
+
+print('Example 1:', exist([row[:] for row in board], "CAT"))  
+# True
+
+print('Example 2:', exist([row[:] for row in board], "TEA"))  
+# True
+
+print('Example 3:', exist([row[:] for row in board], "SEAT"))  
+# True
+
+print('Example 4:', exist([row[:] for row in board], "BAT"))  
+# False`}
+  testCases={[
+    { input: 'exist([["C","A","T","F"],["B","G","E","S"],["I","T","A","E"]], "CAT")', expected: 'True' },
+    { input: 'exist([["C","A","T","F"],["B","G","E","S"],["I","T","A","E"]], "BAT")', expected: 'False' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(rows × cols × 4^L) - Where L is the length of the word. For each starting cell, we explore up to 4^L paths in the worst case.
+- **Space Complexity:** O(L) - For the recursion stack, where L is the length of the word.
+
+## Approach
+
+The solution uses **DFS with Backtracking**:
+
+1. **Try each starting cell**: 
+   - For each cell matching the first character of the word, start a DFS
+   - This ensures we check all possible starting positions
+
+2. **DFS function**: 
+   - `dfs(row, col, index)`: Search for word starting from position (row, col)
+   - `index`: Current character index in the word
+
+3. **Base cases**: 
+   - If `index === word.length`: Found the entire word, return true
+   - If out of bounds or cell doesn't match: Return false
+
+4. **Backtracking**: 
+   - Mark cell as visited by changing it to '#' (or any special character)
+   - Explore all four directions
+   - Restore cell value after exploration
+
+5. **Early termination**: 
+   - Return true as soon as word is found
+   - No need to explore further paths
+
+## Key Insights
+
+- **DFS with backtracking**: Explore all paths from each starting cell
+- **Mark/unmark cells**: Temporarily change to special character, then restore
+- **Try all starting positions**: Word might start from any cell
+- **O(4^L) paths**: Exponential but necessary to find word
+- **Early termination**: Return immediately when word is found
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `word = "CAT"`
+
+```
+board = [
+  ['C','A','T','F'],
+  ['B','G','E','S'],
+  ['I','T','A','E']
+]
+word = "CAT"
+
+Try starting from each cell matching 'C':
+
+Start at (0, 0): 'C'
+  dfs(0, 0, 0):
+    index=0, board[0][0]='C' matches word[0]='C' ✓
+    Mark: board[0][0] = '#'
+    Explore neighbors:
+      Up: (-1,0) → out of bounds ✗
+      Down: (1,0)='B' ≠ 'A' ✗
+      Left: (0,-1) → out of bounds ✗
+      Right: (0,1)='A' matches word[1]='A' ✓
+        dfs(0, 1, 1):
+          index=1, board[0][1]='A' matches word[1]='A' ✓
+          Mark: board[0][1] = '#'
+          Explore neighbors:
+            Up: (-1,1) → out of bounds ✗
+            Down: (1,1)='G' ≠ 'T' ✗
+            Left: (0,0)='#' (visited) ✗
+            Right: (0,2)='T' matches word[2]='T' ✓
+              dfs(0, 2, 2):
+                index=2, board[0][2]='T' matches word[2]='T' ✓
+                Mark: board[0][2] = '#'
+                Explore neighbors:
+                  ... (all checked)
+                index=2, word.length=3 → index === word.length ✓
+                Return true
+              Restore: board[0][2] = 'T'
+          Restore: board[0][1] = 'A'
+    Restore: board[0][0] = 'C'
+    Return true
+
+Result: true
+```
+
+## Visual Representation
+
+```
+Example 1: word = "CAT"
+
+board = [
+  ['C','A','T','F'],
+  ['B','G','E','S'],
+  ['I','T','A','E']
+]
+
+Path: (0,0) → (0,1) → (0,2)
+      'C'    'A'    'T'
+      ✓      ✓      ✓
+
+Example 2: word = "TEA"
+
+Path: (0,2) → (1,2) → (2,2)
+      'T'    'E'    'A'
+      ✓      ✓      ✓
+
+Example 3: word = "SEAT"
+
+Path: (1,3) → (1,2) → (2,2) → (2,3)
+      'S'    'E'    'A'    'T'
+      ✓      ✓      ✓      ✓
+```
+
+## Edge Cases
+
+- **Single character word**: Check if character exists in board
+- **Word longer than board**: Return false
+- **Word not in board**: Return false
+- **Multiple occurrences**: Return true if any path works
+- **Empty word**: Return true (empty word can be formed)
+
+## Important Notes
+
+- **Can start anywhere**: Try all cells matching first character
+- **Cannot revisit**: Mark cells as visited during DFS
+- **Horizontal/vertical only**: Can move in 4 directions (not diagonal)
+- **Backtracking**: Restore cell values after exploration
+- **Early termination**: Return true immediately when found
+
+## Why DFS with Backtracking Works
+
+**Key insight**: 
+- We need to explore all possible paths from each starting cell
+- DFS systematically explores all paths
+- Backtracking allows exploring all paths without creating copies
+- Trying all starting positions ensures we find the word if it exists
+
+**Optimal substructure**: 
+- If we can form word[index...] from position (row, col), we can form the entire word
+- But we can't use DP because paths can't revisit cells
+- So we use DFS to explore all unique paths
+
+## Related Problems
+
+- **Word Search II**: Find multiple words
+- **Path with Maximum Gold**: Similar DFS with backtracking
+- **Number of Islands**: Similar matrix DFS
+- **Surrounded Regions**: Different matrix problem
+
+## Takeaways
+
+- **DFS with backtracking** explores all paths
+- **Try all starting positions** matching first character
+- **Mark/unmark cells** for backtracking
+- **O(4^L) time** exponential but necessary
+- **Early termination** when word is found
+- **Classic backtracking problem** with matrix traversal
+

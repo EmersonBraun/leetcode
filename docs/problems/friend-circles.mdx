@@ -1,0 +1,495 @@
+---
+id: friend-circles
+title: Friend Circles
+slug: /problems/friend-circles
+difficulty: Medium
+tags: [array, matrix, dfs, bfs, union-find, graph]
+leetcode: https://leetcode.com/problems/friend-circles/
+---
+
+# Friend Circles
+
+This question is asked by Facebook. You are given a two dimensional matrix, `friends`, that represents relationships between coworkers in an office. If `friends[i][j] = 1` then coworker `i` is friends with coworker `j` and coworker `j` is friends with coworker `i`. Similarly if `friends[i][j] = 0` then coworker `i` is not friends with coworker `j` and coworker `j` is not friend with coworker `i`. Friendships in the office are transitive (i.e., if coworker one is friends with coworker two and coworker two is friends with coworker three, coworker one is also friends with coworker three). Given the friendships in the office defined by `friends`, return the total number of distinct friends groups in the office.
+
+**Note:** Each coworker is friends with themselves (i.e., `matrix[i][j] = 1` for all values where `i = j`).
+
+## Example(s)
+
+**Example 1:**
+```
+Input: friends = [
+    [1, 1, 0],
+    [1, 1, 0],
+    [0, 0, 1]
+]
+
+Output: 2
+Explanation:
+- Coworker 0 and 1 are friends (first friend group)
+- Coworker 2 is friends with themselves (second friend group)
+- Total: 2 distinct friend groups
+```
+
+**Example 2:**
+```
+Input: friends = [
+    [1, 1, 0, 0],
+    [1, 1, 1, 0],
+    [0, 1, 1, 0],
+    [0, 0, 0, 1]
+]
+
+Output: 2
+Explanation:
+- Coworkers 0, 1, 2 are all friends (transitive: 0-1, 1-2 → 0-2)
+- Coworker 3 is friends with themselves
+- Total: 2 distinct friend groups
+```
+
+**Example 3:**
+```
+Input: friends = [
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1]
+]
+
+Output: 3
+Explanation:
+- Each coworker is only friends with themselves
+- Total: 3 distinct friend groups
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **DFS/BFS to find connected components**:
+
+1. **Traverse coworkers**: Visit each coworker
+2. **Find friend groups**: When we find an unvisited coworker, it's a new group
+3. **Mark connected**: Use DFS/BFS to mark all friends (direct and transitive) as visited
+4. **Count groups**: Count the number of times we find a new group
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - DFS"
+  code={`/**
+ * Find number of distinct friend groups
+ * @param {number[][]} friends - Adjacency matrix (1=friends, 0=not friends)
+ * @return {number} - Number of distinct friend groups
+ */
+function findCircleNum(friends) {
+  if (!friends || friends.length === 0) return 0;
+  
+  const n = friends.length;
+  const visited = new Array(n).fill(false);
+  let groups = 0;
+  
+  /**
+   * DFS to mark all friends in the same group
+   * @param {number} person - Current person index
+   */
+  function dfs(person) {
+    visited[person] = true;
+    
+    // Check all other people
+    for (let friend = 0; friend < n; friend++) {
+      // If they are friends and not visited
+      if (friends[person][friend] === 1 && !visited[friend]) {
+        dfs(friend); // Recursively visit friend
+      }
+    }
+  }
+  
+  // Traverse all people
+  for (let i = 0; i < n; i++) {
+    if (!visited[i]) {
+      // Found a new friend group
+      groups++;
+      dfs(i); // Mark all friends in this group
+    }
+  }
+  
+  return groups;
+}
+
+// Test cases
+const friends1 = [
+  [1, 1, 0],
+  [1, 1, 0],
+  [0, 0, 1]
+];
+console.log('Example 1:', findCircleNum(friends1)); 
+// 2
+
+const friends2 = [
+  [1, 1, 0, 0],
+  [1, 1, 1, 0],
+  [0, 1, 1, 0],
+  [0, 0, 0, 1]
+];
+console.log('Example 2:', findCircleNum(friends2)); 
+// 2
+
+const friends3 = [
+  [1, 0, 0],
+  [0, 1, 0],
+  [0, 0, 1]
+];
+console.log('Example 3:', findCircleNum(friends3)); 
+// 3`}
+  testCases={[
+    { input: 'findCircleNum([[1,1,0],[1,1,0],[0,0,1]])', expected: '2' },
+    { input: 'findCircleNum([[1,1,0,0],[1,1,1,0],[0,1,1,0],[0,0,0,1]])', expected: '2' },
+    { input: 'findCircleNum([[1,0,0],[0,1,0],[0,0,1]])', expected: '3' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - DFS"
+  code={`from typing import List
+
+def find_circle_num(friends: List[List[int]]) -> int:
+    """
+    Find number of distinct friend groups
+    
+    Args:
+        friends: Adjacency matrix (1=friends, 0=not friends)
+        
+    Returns:
+        int: Number of distinct friend groups
+    """
+    if not friends or not friends[0]:
+        return 0
+    
+    n = len(friends)
+    visited = [False] * n
+    groups = 0
+    
+    def dfs(person: int):
+        """
+        DFS to mark all friends in the same group
+        """
+        visited[person] = True
+        
+        # Check all other people
+        for friend in range(n):
+            # If they are friends and not visited
+            if friends[person][friend] == 1 and not visited[friend]:
+                dfs(friend)  # Recursively visit friend
+    
+    # Traverse all people
+    for i in range(n):
+        if not visited[i]:
+            # Found a new friend group
+            groups += 1
+            dfs(i)  # Mark all friends in this group
+    
+    return groups
+
+# Test cases
+friends1 = [
+    [1, 1, 0],
+    [1, 1, 0],
+    [0, 0, 1]
+]
+print('Example 1:', find_circle_num(friends1))  
+# 2
+
+friends2 = [
+    [1, 1, 0, 0],
+    [1, 1, 1, 0],
+    [0, 1, 1, 0],
+    [0, 0, 0, 1]
+]
+print('Example 2:', find_circle_num(friends2))  
+# 2
+
+friends3 = [
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1]
+]
+print('Example 3:', find_circle_num(friends3))  
+# 3`}
+  testCases={[
+    { input: 'find_circle_num([[1,1,0],[1,1,0],[0,0,1]])', expected: '2' },
+    { input: 'find_circle_num([[1,1,0,0],[1,1,1,0],[0,1,1,0],[0,0,0,1]])', expected: '2' },
+    { input: 'find_circle_num([[1,0,0],[0,1,0],[0,0,1]])', expected: '3' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Union-Find)
+
+Here's a Union-Find (Disjoint Set Union) approach:
+
+<Tabs>
+<TabItem value="javascript-union" label="JavaScript Union-Find" default>
+
+```javascript
+/**
+ * Union-Find approach
+ */
+function findCircleNumUnionFind(friends) {
+  if (!friends || friends.length === 0) return 0;
+  
+  const n = friends.length;
+  const parent = Array.from({ length: n }, (_, i) => i);
+  const rank = new Array(n).fill(0);
+  
+  function find(x) {
+    if (parent[x] !== x) {
+      parent[x] = find(parent[x]); // Path compression
+    }
+    return parent[x];
+  }
+  
+  function union(x, y) {
+    const rootX = find(x);
+    const rootY = find(y);
+    
+    if (rootX === rootY) return;
+    
+    // Union by rank
+    if (rank[rootX] < rank[rootY]) {
+      parent[rootX] = rootY;
+    } else if (rank[rootX] > rank[rootY]) {
+      parent[rootY] = rootX;
+    } else {
+      parent[rootY] = rootX;
+      rank[rootX]++;
+    }
+  }
+  
+  // Union all friends
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      if (friends[i][j] === 1) {
+        union(i, j);
+      }
+    }
+  }
+  
+  // Count distinct roots
+  const roots = new Set();
+  for (let i = 0; i < n; i++) {
+    roots.add(find(i));
+  }
+  
+  return roots.size;
+}
+```
+
+</TabItem>
+<TabItem value="python-union" label="Python Union-Find">
+
+```python
+def find_circle_num_union_find(friends: List[List[int]]) -> int:
+    """
+    Union-Find approach
+    """
+    if not friends or not friends[0]:
+        return 0
+    
+    n = len(friends)
+    parent = list(range(n))
+    rank = [0] * n
+    
+    def find(x: int) -> int:
+        if parent[x] != x:
+            parent[x] = find(parent[x])  # Path compression
+        return parent[x]
+    
+    def union(x: int, y: int):
+        root_x = find(x)
+        root_y = find(y)
+        
+        if root_x == root_y:
+            return
+        
+        # Union by rank
+        if rank[root_x] < rank[root_y]:
+            parent[root_x] = root_y
+        elif rank[root_x] > rank[root_y]:
+            parent[root_y] = root_x
+        else:
+            parent[root_y] = root_x
+            rank[root_x] += 1
+    
+    # Union all friends
+    for i in range(n):
+        for j in range(i + 1, n):
+            if friends[i][j] == 1:
+                union(i, j)
+    
+    # Count distinct roots
+    roots = set()
+    for i in range(n):
+        roots.add(find(i))
+    
+    return len(roots)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n²) - Where n is the number of coworkers. We may need to check all pairs in the adjacency matrix.
+- **Space Complexity:** O(n) - For the visited array and recursion stack (DFS) or queue (BFS).
+
+## Approach
+
+The solution uses **DFS/BFS to find connected components**:
+
+1. **Traverse coworkers**: 
+   - Visit each coworker (person)
+   - When we find an unvisited coworker, it's a new friend group
+
+2. **Mark connected friends**: 
+   - Use DFS/BFS to mark all friends as visited
+   - Transitive friendships are handled automatically by DFS/BFS
+
+3. **Count groups**: 
+   - Each time we find an unvisited coworker, increment group count
+   - This counts the number of connected components
+
+4. **Return count**: 
+   - Return the total number of friend groups
+
+## Key Insights
+
+- **Connected components**: Friend groups are connected components in the graph
+- **Transitive friendships**: DFS/BFS naturally handles transitive relationships
+- **Adjacency matrix**: Matrix representation of the graph
+- **Self-friendship**: Diagonal is always 1 (each person is friends with themselves)
+- **O(n²) time**: May need to check all pairs
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `friends = [[1,1,0],[1,1,0],[0,0,1]]`
+
+```
+Matrix:
+  [1, 1, 0]
+  [1, 1, 0]
+  [0, 0, 1]
+
+Initial: visited = [false, false, false], groups = 0
+
+Person 0:
+  visited[0] = false → new group!
+  groups = 1
+  dfs(0):
+    visited[0] = true
+    Check friends[0][0] = 1, visited[0] = true → skip
+    Check friends[0][1] = 1, visited[1] = false → dfs(1)
+      visited[1] = true
+      Check friends[1][0] = 1, visited[0] = true → skip
+      Check friends[1][1] = 1, visited[1] = true → skip
+      Check friends[1][2] = 0 → skip
+    Check friends[0][2] = 0 → skip
+  
+  visited = [true, true, false]
+
+Person 1:
+  visited[1] = true → skip
+
+Person 2:
+  visited[2] = false → new group!
+  groups = 2
+  dfs(2):
+    visited[2] = true
+    Check friends[2][0] = 0 → skip
+    Check friends[2][1] = 0 → skip
+    Check friends[2][2] = 1, visited[2] = true → skip
+  
+  visited = [true, true, true]
+
+Result: groups = 2
+```
+
+## Visual Representation
+
+```
+Example 1: friends = [[1,1,0],[1,1,0],[0,0,1]]
+
+Graph representation:
+  0 ---- 1
+  |      |
+  |      |
+  2 (isolated)
+
+Friend groups:
+  Group 1: {0, 1} (connected)
+  Group 2: {2} (isolated)
+  
+Total: 2 groups
+
+Example 2: friends = [[1,1,0,0],[1,1,1,0],[0,1,1,0],[0,0,0,1]]
+
+Graph representation:
+  0 ---- 1 ---- 2
+  |      |
+  |      |
+  3 (isolated)
+
+Friend groups:
+  Group 1: {0, 1, 2} (all connected transitively)
+  Group 2: {3} (isolated)
+  
+Total: 2 groups
+```
+
+## Edge Cases
+
+- **Empty matrix**: Return 0
+- **Single person**: Return 1
+- **All friends**: Return 1 (one large group)
+- **No friendships**: Return n (each person is their own group)
+- **Symmetric matrix**: Matrix is symmetric (friends[i][j] = friends[j][i])
+
+## Important Notes
+
+- **Transitive friendships**: If A-B and B-C are friends, then A-C are friends
+- **Connected components**: Friend groups are connected components
+- **Self-friendship**: Diagonal is always 1 (not relevant for grouping)
+- **Symmetric matrix**: friendships[i][j] = friendships[j][i]
+- **O(n²) time**: Must check adjacency matrix
+
+## Why DFS/BFS Works
+
+**Key insight**: 
+- Friend groups are connected components in the graph
+- Transitive friendships mean if A-B and B-C, then A-C
+- DFS/BFS naturally finds all nodes reachable from a starting node
+- This identifies all friends in the same group
+
+## Related Problems
+
+- **Number of Islands**: Similar connected components problem
+- **Number of Provinces**: Same problem (LeetCode 547)
+- **Accounts Merge**: Different but uses similar concept
+- **Redundant Connection**: Different problem
+
+## Takeaways
+
+- **Connected components** = friend groups
+- **DFS/BFS** finds all friends in a group
+- **Transitive friendships** handled automatically
+- **O(n²) time** to process adjacency matrix
+- **O(n) space** for visited array and recursion stack
+

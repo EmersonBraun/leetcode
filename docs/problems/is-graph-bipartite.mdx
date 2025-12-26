@@ -1,0 +1,460 @@
+---
+id: is-graph-bipartite
+title: Is Graph Bipartite
+slug: /problems/is-graph-bipartite
+difficulty: Medium
+tags: [graph, bfs, dfs, union-find]
+leetcode: https://leetcode.com/problems/is-graph-bipartite/
+---
+
+# Is Graph Bipartite
+
+This question is asked by Facebook. Given an undirected graph, determine whether it is bipartite.
+
+**Note:** A bipartite graph, also called a bigraph, is a set of graph vertices decomposed into two disjoint sets such that no two graph vertices within the same set are adjacent. In other words, we can color the graph with two colors such that no two adjacent vertices have the same color.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: graph = [[1, 3], [0, 2], [1, 3], [0, 2]]
+
+Graph representation:
+0----1
+|    |
+|    |
+3----2
+
+Output: true
+Explanation:
+We can partition vertices into two sets:
+- Set A: {0, 2}
+- Set B: {1, 3}
+No two vertices in the same set are adjacent.
+```
+
+**Example 2:**
+```
+Input: graph = [[1, 2], [0, 2, 3], [0, 1, 3], [0, 2]]
+
+Graph representation:
+0----1
+|  / |
+| /  |
+3----2
+
+Output: false
+Explanation:
+There is an odd-length cycle (0-1-2-0), which means
+the graph cannot be bipartite.
+```
+
+**Example 3:**
+```
+Input: graph = [[1, 2, 3], [0, 2], [0, 1, 3], [0, 2]]
+
+Output: false
+Explanation:
+Node 0 is connected to 1, 2, 3
+Node 1 is connected to 0, 2
+Node 2 is connected to 0, 1, 3
+Node 3 is connected to 0, 2
+This forms a triangle (0-1-2-0), which is an odd cycle.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **graph coloring with BFS/DFS**:
+
+1. **Color the graph**: Try to color each node with one of two colors
+2. **Check conflicts**: If two adjacent nodes have the same color, graph is not bipartite
+3. **BFS/DFS traversal**: Visit all nodes and color them
+4. **Key insight**: A graph is bipartite if and only if it has no odd-length cycles
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - BFS Coloring"
+  code={`/**
+ * Check if graph is bipartite
+ * @param {number[][]} graph - Adjacency list representation of graph
+ * @return {boolean} - True if graph is bipartite
+ */
+function isBipartite(graph) {
+  const n = graph.length;
+  const colors = new Array(n).fill(-1); // -1 = uncolored, 0 = color A, 1 = color B
+  
+  // Check each connected component
+  for (let i = 0; i < n; i++) {
+    if (colors[i] === -1) {
+      // Start BFS from uncolored node
+      if (!bfsColor(graph, i, colors)) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
+/**
+ * BFS to color the graph
+ * @param {number[][]} graph - Adjacency list
+ * @param {number} start - Starting node
+ * @param {number[]} colors - Color array
+ * @return {boolean} - True if coloring is valid
+ */
+function bfsColor(graph, start, colors) {
+  const queue = [start];
+  colors[start] = 0; // Color first node with color 0
+  
+  while (queue.length > 0) {
+    const node = queue.shift();
+    const currentColor = colors[node];
+    
+    // Color all neighbors with opposite color
+    for (const neighbor of graph[node]) {
+      if (colors[neighbor] === -1) {
+        // Uncolored neighbor: assign opposite color
+        colors[neighbor] = 1 - currentColor;
+        queue.push(neighbor);
+      } else if (colors[neighbor] === currentColor) {
+        // Neighbor has same color: conflict!
+        return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
+// Test cases
+console.log('Example 1:', isBipartite([[1, 3], [0, 2], [1, 3], [0, 2]])); // true
+console.log('Example 2:', isBipartite([[1, 2], [0, 2, 3], [0, 1, 3], [0, 2]])); // false
+console.log('Example 3:', isBipartite([[1, 2, 3], [0, 2], [0, 1, 3], [0, 2]])); // false
+console.log('Test 4:', isBipartite([[1], [0, 3], [3], [1, 2]])); // true`}
+  testCases={[
+    { input: 'isBipartite([[1, 3], [0, 2], [1, 3], [0, 2]])', expected: 'true' },
+    { input: 'isBipartite([[1, 2], [0, 2, 3], [0, 1, 3], [0, 2]])', expected: 'false' },
+    { input: 'isBipartite([[1, 2, 3], [0, 2], [0, 1, 3], [0, 2]])', expected: 'false' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - BFS Coloring"
+  code={`from typing import List
+from collections import deque
+
+def is_bipartite(graph: List[List[int]]) -> bool:
+    """
+    Check if graph is bipartite
+    
+    Args:
+        graph: Adjacency list representation of graph
+        
+    Returns:
+        bool: True if graph is bipartite
+    """
+    n = len(graph)
+    colors = [-1] * n  # -1 = uncolored, 0 = color A, 1 = color B
+    
+    # Check each connected component
+    for i in range(n):
+        if colors[i] == -1:
+            # Start BFS from uncolored node
+            if not bfs_color(graph, i, colors):
+                return False
+    
+    return True
+
+def bfs_color(graph: List[List[int]], start: int, colors: List[int]) -> bool:
+    """
+    BFS to color the graph
+    
+    Returns:
+        bool: True if coloring is valid
+    """
+    queue = deque([start])
+    colors[start] = 0  # Color first node with color 0
+    
+    while queue:
+        node = queue.popleft()
+        current_color = colors[node]
+        
+        # Color all neighbors with opposite color
+        for neighbor in graph[node]:
+            if colors[neighbor] == -1:
+                # Uncolored neighbor: assign opposite color
+                colors[neighbor] = 1 - current_color
+                queue.append(neighbor)
+            elif colors[neighbor] == current_color:
+                # Neighbor has same color: conflict!
+                return False
+    
+    return True
+
+# Test cases
+print('Example 1:', is_bipartite([[1, 3], [0, 2], [1, 3], [0, 2]]))  # True
+print('Example 2:', is_bipartite([[1, 2], [0, 2, 3], [0, 1, 3], [0, 2]]))  # False
+print('Example 3:', is_bipartite([[1, 2, 3], [0, 2], [0, 1, 3], [0, 2]]))  # False
+print('Test 4:', is_bipartite([[1], [0, 3], [3], [1, 2]]))  # True`}
+  testCases={[
+    { input: 'is_bipartite([[1, 3], [0, 2], [1, 3], [0, 2]])', expected: 'True' },
+    { input: 'is_bipartite([[1, 2], [0, 2, 3], [0, 1, 3], [0, 2]])', expected: 'False' },
+    { input: 'is_bipartite([[1, 2, 3], [0, 2], [0, 1, 3], [0, 2]])', expected: 'False' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (DFS)
+
+Here's a DFS version:
+
+<Tabs>
+<TabItem value="javascript-dfs" label="JavaScript DFS" default>
+
+```javascript
+/**
+ * DFS version
+ */
+function isBipartiteDFS(graph) {
+  const n = graph.length;
+  const colors = new Array(n).fill(-1);
+  
+  for (let i = 0; i < n; i++) {
+    if (colors[i] === -1) {
+      if (!dfsColor(graph, i, 0, colors)) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
+function dfsColor(graph, node, color, colors) {
+  if (colors[node] !== -1) {
+    // Already colored: check if color matches
+    return colors[node] === color;
+  }
+  
+  // Color current node
+  colors[node] = color;
+  
+  // Color neighbors with opposite color
+  for (const neighbor of graph[node]) {
+    if (!dfsColor(graph, neighbor, 1 - color, colors)) {
+      return false;
+    }
+  }
+  
+  return true;
+}
+```
+
+</TabItem>
+<TabItem value="python-dfs" label="Python DFS">
+
+```python
+def is_bipartite_dfs(graph: List[List[int]]) -> bool:
+    """
+    DFS version
+    """
+    n = len(graph)
+    colors = [-1] * n
+    
+    def dfs_color(node: int, color: int) -> bool:
+        if colors[node] != -1:
+            # Already colored: check if color matches
+            return colors[node] == color
+        
+        # Color current node
+        colors[node] = color
+        
+        # Color neighbors with opposite color
+        for neighbor in graph[node]:
+            if not dfs_color(neighbor, 1 - color):
+                return False
+        
+        return True
+    
+    for i in range(n):
+        if colors[i] == -1:
+            if not dfs_color(i, 0):
+                return False
+    
+    return True
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(V + E) - Where V is the number of vertices and E is the number of edges. We visit each vertex and edge once.
+- **Space Complexity:** O(V) - For the color array and BFS queue (or DFS recursion stack).
+
+## Approach
+
+The solution uses **graph coloring with BFS/DFS**:
+
+1. **Initialize colors**: Create an array to track colors (-1 = uncolored, 0 = color A, 1 = color B)
+
+2. **Process each component**: 
+   - Graph may have multiple connected components
+   - Process each uncolored node
+
+3. **BFS/DFS coloring**:
+   - Start with color 0 for the first node
+   - For each neighbor, assign the opposite color (1 - currentColor)
+   - If a neighbor already has the same color, return false (conflict)
+
+4. **Check conflicts**: 
+   - If we can color all nodes without conflicts, graph is bipartite
+   - If we find adjacent nodes with same color, graph is not bipartite
+
+## Key Insights
+
+- **Two-coloring**: Try to color graph with two colors
+- **No odd cycles**: Graph is bipartite if and only if it has no odd-length cycles
+- **BFS/DFS**: Both work, BFS is level-by-level, DFS is recursive
+- **Connected components**: Must check all components
+- **Conflict detection**: Same color on adjacent nodes means not bipartite
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `graph = [[1, 3], [0, 2], [1, 3], [0, 2]]`
+
+```
+Graph:
+0----1
+|    |
+|    |
+3----2
+
+Initial: colors = [-1, -1, -1, -1]
+
+Start BFS from node 0:
+  colors[0] = 0
+  queue = [0]
+
+Process node 0:
+  Neighbors: [1, 3]
+    colors[1] = -1 → colors[1] = 1, queue = [1]
+    colors[3] = -1 → colors[3] = 1, queue = [1, 3]
+
+Process node 1:
+  Neighbors: [0, 2]
+    colors[0] = 0 (same as current? No, 0 ≠ 1) ✓
+    colors[2] = -1 → colors[2] = 0, queue = [3, 2]
+
+Process node 3:
+  Neighbors: [0, 2]
+    colors[0] = 0 (same as current? No, 0 ≠ 1) ✓
+    colors[2] = 0 (same as current? No, 0 ≠ 1) ✓
+
+Process node 2:
+  Neighbors: [1, 3]
+    colors[1] = 1 (same as current? No, 1 ≠ 0) ✓
+    colors[3] = 1 (same as current? No, 1 ≠ 0) ✓
+
+Final: colors = [0, 1, 0, 1]
+Set A (color 0): {0, 2}
+Set B (color 1): {1, 3}
+No conflicts → bipartite ✓
+```
+
+Let's trace through Example 2: `graph = [[1, 2], [0, 2, 3], [0, 1, 3], [0, 2]]`
+
+```
+Graph:
+0----1
+|  / |
+| /  |
+3----2
+
+Start BFS from node 0:
+  colors[0] = 0
+  colors[1] = 1, colors[2] = 1
+  colors[3] = 1 (from node 0)
+
+Process node 1:
+  Neighbors: [0, 2, 3]
+    colors[0] = 0 ✓
+    colors[2] = 1 (same as current 1?) Yes! → Conflict!
+    Return false
+
+Result: Not bipartite (odd cycle: 0-1-2-0)
+```
+
+## Visual Representation
+
+```
+Example 1 (Bipartite):
+    0 (color 0) ---- 1 (color 1)
+    |                  |
+    |                  |
+    3 (color 1) ---- 2 (color 0)
+
+Sets: A = {0, 2}, B = {1, 3} ✓
+
+Example 2 (Not Bipartite):
+    0 (color 0) ---- 1 (color 1)
+    |              / |
+    |            /   |
+    3 (color 1) ---- 2 (color ?)
+    
+Conflict: 1 and 2 both need color 1 ✗
+```
+
+## Edge Cases
+
+- **Single node**: Return true (trivially bipartite)
+- **No edges**: Return true (all nodes can be in same set)
+- **Disconnected graph**: Check each component separately
+- **Two nodes connected**: Return true (can put in different sets)
+- **Triangle (3-cycle)**: Return false (odd cycle)
+
+## Important Notes
+
+- **Undirected graph**: Edges are bidirectional
+- **Adjacency list**: `graph[i]` contains neighbors of node `i`
+- **Two-coloring**: Try to color with colors 0 and 1
+- **Odd cycles**: Any odd-length cycle makes graph non-bipartite
+- **Connected components**: Must check all components
+
+## Mathematical Property
+
+**Theorem:** A graph is bipartite if and only if it contains no odd-length cycles.
+
+This is why the coloring approach works:
+- If we can two-color without conflicts → no odd cycles → bipartite
+- If we find a conflict → odd cycle exists → not bipartite
+
+## Related Problems
+
+- **Possible Bipartition**: Similar problem with constraints
+- **Course Schedule**: Detect cycles in directed graph
+- **Graph Valid Tree**: Check if graph is a valid tree
+- **Clone Graph**: Graph traversal problem
+
+## Takeaways
+
+- **Graph coloring** is the key technique
+- **BFS/DFS** both work for traversal
+- **Two-coloring** tests bipartiteness
+- **Odd cycles** prevent bipartiteness
+- **O(V + E) time** is optimal (must visit all nodes and edges)
+

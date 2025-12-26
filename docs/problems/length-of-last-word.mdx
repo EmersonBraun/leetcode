@@ -1,0 +1,330 @@
+---
+id: length-of-last-word
+title: Length of Last Word
+slug: /problems/length-of-last-word
+difficulty: Easy
+tags: [string]
+leetcode: https://leetcode.com/problems/length-of-last-word/
+---
+
+# Length of Last Word
+
+Given a string `s`, return the length of the last word.
+
+**Note:** You may not use any sort of `split()` method.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: s = "The Daily Byte"
+Output: 4
+Explanation:
+The last word is "Byte" which has 4 characters.
+```
+
+**Example 2:**
+```
+Input: s = "Hello World"
+Output: 5
+Explanation:
+The last word is "World" which has 5 characters.
+```
+
+**Example 3:**
+```
+Input: s = "   fly me   to   the moon  "
+Output: 4
+Explanation:
+After trimming trailing spaces, the last word is "moon" which has 4 characters.
+```
+
+**Example 4:**
+```
+Input: s = "luffy is still joyboy"
+Output: 6
+Explanation:
+The last word is "joyboy" which has 6 characters.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **reverse traversal**:
+
+1. **Start from the end**: Traverse the string from right to left
+2. **Skip trailing spaces**: Ignore spaces at the end
+3. **Count characters**: Count characters until we hit a space or beginning
+4. **Return length**: Return the count
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Reverse Traversal"
+  code={`/**
+ * Find length of last word
+ * @param {string} s - Input string
+ * @return {number} - Length of last word
+ */
+function lengthOfLastWord(s) {
+  let length = 0;
+  let i = s.length - 1;
+  
+  // Skip trailing spaces
+  while (i >= 0 && s[i] === ' ') {
+    i--;
+  }
+  
+  // Count characters of last word
+  while (i >= 0 && s[i] !== ' ') {
+    length++;
+    i--;
+  }
+  
+  return length;
+}
+
+// Test cases
+console.log('Example 1:', lengthOfLastWord("The Daily Byte")); // 4
+console.log('Example 2:', lengthOfLastWord("Hello World")); // 5
+console.log('Example 3:', lengthOfLastWord("   fly me   to   the moon  ")); // 4
+console.log('Example 4:', lengthOfLastWord("luffy is still joyboy")); // 6
+console.log('Test 5:', lengthOfLastWord("a")); // 1
+console.log('Test 6:', lengthOfLastWord("   ")); // 0`}
+  testCases={[
+    { input: 'lengthOfLastWord("The Daily Byte")', expected: '4' },
+    { input: 'lengthOfLastWord("Hello World")', expected: '5' },
+    { input: 'lengthOfLastWord("   fly me   to   the moon  ")', expected: '4' },
+    { input: 'lengthOfLastWord("luffy is still joyboy")', expected: '6' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Reverse Traversal"
+  code={`def length_of_last_word(s: str) -> int:
+    """
+    Find length of last word
+    
+    Args:
+        s: Input string
+        
+    Returns:
+        int: Length of last word
+    """
+    length = 0
+    i = len(s) - 1
+    
+    # Skip trailing spaces
+    while i >= 0 and s[i] == ' ':
+        i -= 1
+    
+    # Count characters of last word
+    while i >= 0 and s[i] != ' ':
+        length += 1
+        i -= 1
+    
+    return length
+
+# Test cases
+print('Example 1:', length_of_last_word("The Daily Byte"))  # 4
+print('Example 2:', length_of_last_word("Hello World"))  # 5
+print('Example 3:', length_of_last_word("   fly me   to   the moon  "))  # 4
+print('Example 4:', length_of_last_word("luffy is still joyboy"))  # 6
+print('Test 5:', length_of_last_word("a"))  # 1
+print('Test 6:', length_of_last_word("   "))  # 0`}
+  testCases={[
+    { input: 'length_of_last_word("The Daily Byte")', expected: '4' },
+    { input: 'length_of_last_word("Hello World")', expected: '5' },
+    { input: 'length_of_last_word("   fly me   to   the moon  ")', expected: '4' },
+    { input: 'length_of_last_word("luffy is still joyboy")', expected: '6' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (More Explicit)
+
+Here's a more explicit version:
+
+<Tabs>
+<TabItem value="javascript-alt" label="JavaScript Alternative" default>
+
+```javascript
+/**
+ * More explicit version
+ */
+function lengthOfLastWordExplicit(s) {
+  // Trim trailing spaces first
+  let end = s.length - 1;
+  while (end >= 0 && s[end] === ' ') {
+    end--;
+  }
+  
+  // Find start of last word
+  let start = end;
+  while (start >= 0 && s[start] !== ' ') {
+    start--;
+  }
+  
+  // Length is end - start
+  return end - start;
+}
+```
+
+</TabItem>
+<TabItem value="python-alt" label="Python Alternative">
+
+```python
+def length_of_last_word_explicit(s: str) -> int:
+    """
+    More explicit version
+    """
+    # Trim trailing spaces first
+    end = len(s) - 1
+    while end >= 0 and s[end] == ' ':
+        end -= 1
+    
+    # Find start of last word
+    start = end
+    while start >= 0 and s[start] != ' ':
+        start -= 1
+    
+    # Length is end - start
+    return end - start
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the string. In the worst case, we traverse the entire string from right to left.
+- **Space Complexity:** O(1) - We only use a constant amount of extra space.
+
+## Approach
+
+The solution uses **reverse traversal**:
+
+1. **Start from the end**: Begin at the last character of the string
+2. **Skip trailing spaces**: Move left while encountering spaces
+3. **Count characters**: Once we hit a non-space character, count characters until we hit a space or the beginning
+4. **Return count**: Return the length of the last word
+
+## Key Insights
+
+- **Reverse traversal**: Start from the end to find the last word efficiently
+- **Skip trailing spaces**: Handle strings with trailing whitespace
+- **No split needed**: Can solve without splitting the string
+- **O(1) space**: Only uses a few variables
+- **Single pass**: Traverses string once from right to left
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `s = "The Daily Byte"`
+
+```
+String: "The Daily Byte"
+Index:   012345678901234
+         T h e   D a i l y   B y t e
+         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4
+
+Initial: i = 14, length = 0
+
+Step 1: Skip trailing spaces
+  i = 14: s[14] = 'e' (not space) → stop
+  i = 14
+
+Step 2: Count characters
+  i = 14: s[14] = 'e' (not space) → length = 1, i = 13
+  i = 13: s[13] = 't' (not space) → length = 2, i = 12
+  i = 12: s[12] = 'y' (not space) → length = 3, i = 11
+  i = 11: s[11] = 'B' (not space) → length = 4, i = 10
+  i = 10: s[10] = ' ' (space) → stop
+
+Result: length = 4
+```
+
+Let's trace through Example 3: `s = "   fly me   to   the moon  "`
+
+```
+String: "   fly me   to   the moon  "
+Index:   012345678901234567890123456
+         (spaces) f l y   m e   t o   t h e   m o o n  (spaces)
+
+Initial: i = 25, length = 0
+
+Step 1: Skip trailing spaces
+  i = 25: ' ' → i = 24
+  i = 24: ' ' → i = 23
+  i = 23: 'n' (not space) → stop
+  i = 23
+
+Step 2: Count characters
+  i = 23: 'n' → length = 1, i = 22
+  i = 22: 'o' → length = 2, i = 21
+  i = 21: 'o' → length = 3, i = 20
+  i = 20: 'm' → length = 4, i = 19
+  i = 19: ' ' (space) → stop
+
+Result: length = 4
+```
+
+## Visual Representation
+
+```
+Example 1: s = "The Daily Byte"
+           T h e   D a i l y   B y t e
+           0 1 2 3 4 5 6 7 8 9 0 1 2 3 4
+                                    ↑
+                                  Start here
+           Count backwards: e → t → y → B (4 characters)
+
+Example 3: s = "   fly me   to   the moon  "
+           ... m o o n  (trailing spaces)
+           ... ↑
+           Start here (after skipping spaces)
+           Count backwards: n → o → o → m (4 characters)
+```
+
+## Edge Cases
+
+- **Trailing spaces**: Handled by skipping them first
+- **Leading spaces**: Doesn't matter, we start from the end
+- **Single word**: Works correctly
+- **Single character**: Returns 1
+- **All spaces**: Returns 0 (no word found)
+- **No spaces**: Returns length of entire string
+
+## Important Notes
+
+- **No split()**: Problem explicitly forbids using split()
+- **Trailing spaces**: Must handle strings with trailing whitespace
+- **Word definition**: Word is a sequence of non-space characters
+- **Reverse traversal**: More efficient than forward traversal
+- **O(1) space**: Optimal space complexity
+
+## Related Problems
+
+- **Reverse Words in a String**: Different string manipulation
+- **Valid Palindrome**: Check if string is palindrome
+- **Longest Common Prefix**: Find common prefix
+- **String Compression**: Compress string
+
+## Takeaways
+
+- **Reverse traversal** is efficient for finding the last element
+- **Skip trailing spaces** is important for correctness
+- **No split needed** - can solve with simple traversal
+- **O(1) space** is achievable
+- **Single pass** from right to left is optimal
+

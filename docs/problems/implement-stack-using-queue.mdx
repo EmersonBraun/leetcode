@@ -1,0 +1,269 @@
+---
+id: implement-stack-using-queue
+title: Implement Stack Using Queue
+slug: /problems/implement-stack-using-queue
+difficulty: Easy
+tags: [stack, queue, design]
+leetcode: "https://leetcode.com/problems/implement-stack-using-queues/"
+---
+
+# Implement Stack Using Queue
+
+Design a class to implement a stack using only a single queue. Your class, `QueueStack`, should support the following stack methods: `push()` (adding an item), `pop()` (removing an item), `peek()` (returning the top value without removing it), and `empty()` (whether or not the stack is empty).
+
+## Example(s)
+
+**Example 1:**
+```
+QueueStack qs = new QueueStack();
+qs.push(1); // stack: [1]
+qs.push(2); // stack: [1, 2]
+qs.peek();  // returns 2
+qs.pop();   // returns 2, stack: [1]
+qs.empty(); // returns false
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/Tabs';
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+```javascript
+/**
+ * Implement a stack using a single queue
+ */
+class QueueStack {
+  constructor() {
+    this.queue = [];
+  }
+  
+  /**
+   * Push an element onto the stack
+   * @param {number} x - Element to push
+   */
+  push(x) {
+    this.queue.push(x);
+    let size = this.queue.length;
+    // Rotate the queue to bring the new element to the front
+    while (size > 1) {
+      this.queue.push(this.queue.shift());
+      size--;
+    }
+  }
+  
+  /**
+   * Remove and return the top element from the stack
+   * @return {number} - Top element
+   */
+  pop() {
+    return this.queue.shift();
+  }
+  
+  /**
+   * Return the top element without removing it
+   * @return {number} - Top element
+   */
+  peek() {
+    return this.queue[0];
+  }
+  
+  /**
+   * Check if the stack is empty
+   * @return {boolean} - True if empty, false otherwise
+   */
+  empty() {
+    return this.queue.length === 0;
+  }
+}
+```
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+```python
+from collections import deque
+
+class QueueStack:
+    """
+    Implement a stack using a single queue
+    """
+    def __init__(self):
+        self.queue = deque()
+    
+    def push(self, x: int):
+        """
+        Push an element onto the stack
+        
+        Args:
+            x: Element to push
+        """
+        self.queue.append(x)
+        size = len(self.queue)
+        # Rotate the queue to bring the new element to the front
+        while size > 1:
+            self.queue.append(self.queue.popleft())
+            size -= 1
+    
+    def pop(self) -> int:
+        """
+        Remove and return the top element from the stack
+        
+        Returns:
+            int: Top element
+        """
+        return self.queue.popleft()
+    
+    def peek(self) -> int:
+        """
+        Return the top element without removing it
+        
+        Returns:
+            int: Top element
+        """
+        return self.queue[0]
+    
+    def empty(self) -> bool:
+        """
+        Check if the stack is empty
+        
+        Returns:
+            bool: True if empty, false otherwise
+        """
+        return len(self.queue) == 0
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) for push, O(1) for pop, peek, empty - Where n is the current stack size
+- **Space Complexity:** O(n) - Space for the queue
+
+## Interactive Code Runner
+
+import CodeRunner from '@site/src/components/CodeRunner';
+
+### Test the JavaScript Solution
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript QueueStack Implementation"
+  code={`/**
+ * Implement a stack using a single queue
+ */
+class QueueStack {
+  constructor() {
+    this.queue = [];
+  }
+  
+  push(x) {
+    this.queue.push(x);
+    let size = this.queue.length;
+    while (size > 1) {
+      this.queue.push(this.queue.shift());
+      size--;
+    }
+  }
+  
+  pop() {
+    return this.queue.shift();
+  }
+  
+  peek() {
+    return this.queue[0];
+  }
+  
+  empty() {
+    return this.queue.length === 0;
+  }
+}
+
+// Test the implementation
+const qs = new QueueStack();
+console.log("Initial state:", qs.empty()); // true
+
+qs.push(1);
+console.log("After push(1):", qs.peek()); // 1
+
+qs.push(2);
+console.log("After push(2):", qs.peek()); // 2
+
+console.log("Pop:", qs.pop()); // 2
+console.log("After pop, peek:", qs.peek()); // 1
+
+console.log("Is empty:", qs.empty()); // false
+
+qs.pop();
+console.log("After final pop, is empty:", qs.empty()); // true`}
+  testCases={[
+    { input: 'new QueueStack().empty()', expected: 'true' },
+    { input: '(() => { const qs = new QueueStack(); qs.push(1); return qs.peek(); })()', expected: '1' },
+    { input: '(() => { const qs = new QueueStack(); qs.push(1); qs.push(2); return qs.peek(); })()', expected: '2' },
+    { input: '(() => { const qs = new QueueStack(); qs.push(1); qs.push(2); qs.pop(); return qs.peek(); })()', expected: '1' }
+  ]}
+/>
+
+### Test the Python Solution
+
+<CodeRunner
+  language="python"
+  title="Python QueueStack Implementation"
+  code={`from collections import deque
+
+class QueueStack:
+    def __init__(self):
+        self.queue = deque()
+    
+    def push(self, x: int):
+        self.queue.append(x)
+        size = len(self.queue)
+        while size > 1:
+            self.queue.append(self.queue.popleft())
+            size -= 1
+    
+    def pop(self) -> int:
+        return self.queue.popleft()
+    
+    def peek(self) -> int:
+        return self.queue[0]
+    
+    def empty(self) -> bool:
+        return len(self.queue) == 0
+
+# Test the implementation
+qs = QueueStack()
+print("Initial state:", qs.empty())  # True
+
+qs.push(1)
+print("After push(1):", qs.peek())  # 1
+
+qs.push(2)
+print("After push(2):", qs.peek())  # 2
+
+print("Pop:", qs.pop())  # 2
+print("After pop, peek:", qs.peek())  # 1
+
+print("Is empty:", qs.empty())  # False
+
+qs.pop()
+print("After final pop, is empty:", qs.empty())  # True`}
+  testCases={[
+    { input: 'QueueStack().empty()', expected: 'True' },
+    { input: '(() => { qs = QueueStack(); qs.push(1); return qs.peek(); })()', expected: '1' },
+    { input: '(() => { qs = QueueStack(); qs.push(1); qs.push(2); return qs.peek(); })()', expected: '2' },
+    { input: '(() => { qs = QueueStack(); qs.push(1); qs.push(2); qs.pop(); return qs.peek(); })()', expected: '1' }
+  ]}
+/>
+
+## Takeaways
+
+- **Queue rotation** simulates stack behavior by bringing new elements to the front
+- **Trade-off between push and pop efficiency**; here push is O(n), others O(1)
+- **Single queue constraint** requires in-place rotation
+- **Edge cases** include empty stack operations and single element
+- **Efficient queue implementation** (like deque in Python) ensures O(1) enqueue/dequeue
+- **Space-time trade-off** is necessary when constrained to use only one queue

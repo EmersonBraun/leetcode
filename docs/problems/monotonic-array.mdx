@@ -1,0 +1,416 @@
+---
+id: monotonic-array
+title: Monotonic Array
+slug: /problems/monotonic-array
+difficulty: Easy
+tags: [array, math]
+leetcode: https://leetcode.com/problems/monotonic-array/
+---
+
+# Monotonic Array
+
+This question is asked by Facebook. Given an array `nums`, return whether or not its values are monotonically increasing or monotonically decreasing.
+
+**Note:** 
+- An array is **monotonically increasing** if for all values `i <= j`, `nums[i] <= nums[j]`.
+- An array is **monotonically decreasing** if for all values `i <= j`, `nums[i] >= nums[j]`.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: nums = [1, 2, 3, 4, 4, 5]
+Output: true
+Explanation:
+The array is monotonically increasing:
+1 <= 2 <= 3 <= 4 <= 4 <= 5
+```
+
+**Example 2:**
+```
+Input: nums = [7, 6, 3]
+Output: true
+Explanation:
+The array is monotonically decreasing:
+7 >= 6 >= 3
+```
+
+**Example 3:**
+```
+Input: nums = [8, 4, 6]
+Output: false
+Explanation:
+The array is neither increasing nor decreasing:
+8 >= 4 (decreasing), but 4 <= 6 (increasing)
+```
+
+**Example 4:**
+```
+Input: nums = [1, 1, 1, 1]
+Output: true
+Explanation:
+All values are equal, which satisfies both conditions:
+1 <= 1 <= 1 <= 1 (increasing)
+1 >= 1 >= 1 >= 1 (decreasing)
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **two flags**:
+
+1. **Check increasing**: Track if array is non-decreasing
+2. **Check decreasing**: Track if array is non-increasing
+3. **Return result**: Return true if either condition is satisfied
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Two Flags"
+  code={`/**
+ * Check if array is monotonic (increasing or decreasing)
+ * @param {number[]} nums - Input array
+ * @return {boolean} - True if array is monotonic
+ */
+function isMonotonic(nums) {
+  if (nums.length <= 1) return true;
+  
+  let isIncreasing = true;
+  let isDecreasing = true;
+  
+  // Check each pair of adjacent elements
+  for (let i = 1; i < nums.length; i++) {
+    if (nums[i] > nums[i - 1]) {
+      // Found an increase, not decreasing
+      isDecreasing = false;
+    } else if (nums[i] < nums[i - 1]) {
+      // Found a decrease, not increasing
+      isIncreasing = false;
+    }
+    // If nums[i] === nums[i-1], both flags remain unchanged
+  }
+  
+  // Array is monotonic if it's either increasing or decreasing
+  return isIncreasing || isDecreasing;
+}
+
+// Test cases
+console.log('Example 1:', isMonotonic([1, 2, 3, 4, 4, 5])); 
+// true (increasing)
+
+console.log('Example 2:', isMonotonic([7, 6, 3])); 
+// true (decreasing)
+
+console.log('Example 3:', isMonotonic([8, 4, 6])); 
+// false (neither)
+
+console.log('Example 4:', isMonotonic([1, 1, 1, 1])); 
+// true (both)
+
+console.log('Test 5:', isMonotonic([1])); 
+// true`}
+  testCases={[
+    { input: 'isMonotonic([1, 2, 3, 4, 4, 5])', expected: 'true' },
+    { input: 'isMonotonic([7, 6, 3])', expected: 'true' },
+    { input: 'isMonotonic([8, 4, 6])', expected: 'false' },
+    { input: 'isMonotonic([1, 1, 1, 1])', expected: 'true' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Two Flags"
+  code={`from typing import List
+
+def is_monotonic(nums: List[int]) -> bool:
+    """
+    Check if array is monotonic (increasing or decreasing)
+    
+    Args:
+        nums: Input array
+        
+    Returns:
+        bool: True if array is monotonic
+    """
+    if len(nums) <= 1:
+        return True
+    
+    is_increasing = True
+    is_decreasing = True
+    
+    # Check each pair of adjacent elements
+    for i in range(1, len(nums)):
+        if nums[i] > nums[i - 1]:
+            # Found an increase, not decreasing
+            is_decreasing = False
+        elif nums[i] < nums[i - 1]:
+            # Found a decrease, not increasing
+            is_increasing = False
+        # If nums[i] == nums[i-1], both flags remain unchanged
+    
+    # Array is monotonic if it's either increasing or decreasing
+    return is_increasing or is_decreasing
+
+# Test cases
+print('Example 1:', is_monotonic([1, 2, 3, 4, 4, 5]))  
+# True (increasing)
+
+print('Example 2:', is_monotonic([7, 6, 3]))  
+# True (decreasing)
+
+print('Example 3:', is_monotonic([8, 4, 6]))  
+# False (neither)
+
+print('Example 4:', is_monotonic([1, 1, 1, 1]))  
+# True (both)
+
+print('Test 5:', is_monotonic([1]))  
+# True`}
+  testCases={[
+    { input: 'is_monotonic([1, 2, 3, 4, 4, 5])', expected: 'True' },
+    { input: 'is_monotonic([7, 6, 3])', expected: 'True' },
+    { input: 'is_monotonic([8, 4, 6])', expected: 'False' },
+    { input: 'is_monotonic([1, 1, 1, 1])', expected: 'True' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Single Pass with Direction)
+
+Here's a version that determines direction first:
+
+<Tabs>
+<TabItem value="javascript-direction" label="JavaScript Direction" default>
+
+```javascript
+/**
+ * Determine direction first, then verify
+ */
+function isMonotonicDirection(nums) {
+  if (nums.length <= 1) return true;
+  
+  // Find first non-equal pair to determine direction
+  let direction = 0; // 0 = unknown, 1 = increasing, -1 = decreasing
+  
+  for (let i = 1; i < nums.length; i++) {
+    if (nums[i] !== nums[i - 1]) {
+      direction = nums[i] > nums[i - 1] ? 1 : -1;
+      break;
+    }
+  }
+  
+  // If all elements are equal, return true
+  if (direction === 0) return true;
+  
+  // Verify all subsequent pairs follow the direction
+  for (let i = 1; i < nums.length; i++) {
+    if (direction === 1 && nums[i] < nums[i - 1]) {
+      return false;
+    }
+    if (direction === -1 && nums[i] > nums[i - 1]) {
+      return false;
+    }
+  }
+  
+  return true;
+}
+```
+
+</TabItem>
+<TabItem value="python-direction" label="Python Direction">
+
+```python
+def is_monotonic_direction(nums: List[int]) -> bool:
+    """
+    Determine direction first, then verify
+    """
+    if len(nums) <= 1:
+        return True
+    
+    # Find first non-equal pair to determine direction
+    direction = 0  # 0 = unknown, 1 = increasing, -1 = decreasing
+    
+    for i in range(1, len(nums)):
+        if nums[i] != nums[i - 1]:
+            direction = 1 if nums[i] > nums[i - 1] else -1
+            break
+    
+    # If all elements are equal, return True
+    if direction == 0:
+        return True
+    
+    # Verify all subsequent pairs follow the direction
+    for i in range(1, len(nums)):
+        if direction == 1 and nums[i] < nums[i - 1]:
+            return False
+        if direction == -1 and nums[i] > nums[i - 1]:
+            return False
+    
+    return True
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the array. We visit each element once.
+- **Space Complexity:** O(1) - Only using a constant amount of extra space.
+
+## Approach
+
+The solution uses **two flags**:
+
+1. **Initialize flags**: 
+   - `isIncreasing = true`: Assume array is increasing
+   - `isDecreasing = true`: Assume array is decreasing
+
+2. **Check adjacent pairs**: 
+   - For each pair `(nums[i-1], nums[i])`:
+     - If `nums[i] > nums[i-1]`: Set `isDecreasing = false`
+     - If `nums[i] < nums[i-1]`: Set `isIncreasing = false`
+     - If `nums[i] === nums[i-1]`: Both flags remain unchanged
+
+3. **Return result**: 
+   - Return `true` if either `isIncreasing` or `isDecreasing` is `true`
+   - This means the array is either non-decreasing or non-increasing
+
+## Key Insights
+
+- **Two flags**: Track both increasing and decreasing possibilities
+- **Single pass**: Check all pairs in one pass
+- **Equal elements**: Don't affect monotonicity (1 <= 1 is true)
+- **Early termination**: Can optimize to return false early if both flags become false
+- **O(n) time**: Must check all pairs
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `nums = [1, 2, 3, 4, 4, 5]`
+
+```
+Initial: isIncreasing = true, isDecreasing = true
+
+i = 1: nums[1] = 2, nums[0] = 1
+  2 > 1 → isDecreasing = false
+  isIncreasing = true, isDecreasing = false
+
+i = 2: nums[2] = 3, nums[1] = 2
+  3 > 2 → isDecreasing = false
+  isIncreasing = true, isDecreasing = false
+
+i = 3: nums[3] = 4, nums[2] = 3
+  4 > 3 → isDecreasing = false
+  isIncreasing = true, isDecreasing = false
+
+i = 4: nums[4] = 4, nums[3] = 4
+  4 === 4 → no change
+  isIncreasing = true, isDecreasing = false
+
+i = 5: nums[5] = 5, nums[4] = 4
+  5 > 4 → isDecreasing = false
+  isIncreasing = true, isDecreasing = false
+
+Result: isIncreasing || isDecreasing = true || false = true
+```
+
+## Visual Representation
+
+```
+Example 1: nums = [1, 2, 3, 4, 4, 5]
+
+Values:  1  2  3  4  4  5
+         ↑  ↑  ↑  ↑  ↑  ↑
+         All increasing or equal
+
+Check: 1 <= 2 <= 3 <= 4 <= 4 <= 5 ✓
+Result: true (monotonically increasing)
+
+Example 2: nums = [7, 6, 3]
+
+Values:  7  6  3
+         ↑  ↑  ↑
+         All decreasing
+
+Check: 7 >= 6 >= 3 ✓
+Result: true (monotonically decreasing)
+
+Example 3: nums = [8, 4, 6]
+
+Values:  8  4  6
+         ↑  ↑  ↑
+         Decrease then increase
+
+Check: 8 >= 4 ✓, but 4 <= 6 ✗
+Result: false (neither)
+```
+
+## Edge Cases
+
+- **Empty array**: Return true (vacuously true)
+- **Single element**: Return true
+- **All equal**: Return true (satisfies both conditions)
+- **Two elements**: Check if they're equal or one direction
+- **Strictly increasing**: Works (no equal elements)
+- **Strictly decreasing**: Works (no equal elements)
+
+## Important Notes
+
+- **Non-strict**: Allows equal elements (1 <= 1 is true)
+- **Either direction**: Can be increasing OR decreasing
+- **Single pass**: Efficient O(n) solution
+- **Two flags**: Track both possibilities simultaneously
+- **O(1) space**: Only need two boolean flags
+
+## Optimization: Early Return
+
+We can optimize to return early if both flags become false:
+
+```javascript
+function isMonotonicOptimized(nums) {
+  if (nums.length <= 1) return true;
+  
+  let isIncreasing = true;
+  let isDecreasing = true;
+  
+  for (let i = 1; i < nums.length; i++) {
+    if (nums[i] > nums[i - 1]) {
+      isDecreasing = false;
+    } else if (nums[i] < nums[i - 1]) {
+      isIncreasing = false;
+    }
+    
+    // Early return if both are false
+    if (!isIncreasing && !isDecreasing) {
+      return false;
+    }
+  }
+  
+  return isIncreasing || isDecreasing;
+}
+```
+
+## Related Problems
+
+- **Monotonic Array**: Same problem
+- **Longest Monotonic Subarray**: Different problem
+- **Best Time to Buy and Sell Stock**: Uses monotonic property
+- **Trapping Rain Water**: Different problem
+
+## Takeaways
+
+- **Two flags** track both increasing and decreasing
+- **Single pass** through the array
+- **Non-strict** allows equal adjacent elements
+- **O(n) time** is optimal (must check all pairs)
+- **O(1) space** for the algorithm
+

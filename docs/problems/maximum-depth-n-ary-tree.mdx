@@ -1,0 +1,477 @@
+---
+id: maximum-depth-n-ary-tree
+title: Maximum Depth of N-ary Tree
+slug: /problems/maximum-depth-n-ary-tree
+difficulty: Easy
+tags: [tree, n-ary-tree, dfs, recursion, bfs]
+leetcode: https://leetcode.com/problems/maximum-depth-of-n-ary-tree/
+---
+
+# Maximum Depth of N-ary Tree
+
+This question is asked by Google. Given an N-ary tree, return its maximum depth.
+
+**Note:** An N-ary tree is a tree in which any node may have at most N children.
+
+## Example(s)
+
+**Example 1:**
+```
+Input:
+            4
+          / | \
+         3  9  2
+        /       \
+       7         2
+
+Output: 3
+Explanation:
+The longest path from root to leaf is:
+4 → 3 → 7 (depth 3)
+or
+4 → 2 → 2 (depth 3)
+```
+
+**Example 2:**
+```
+Input:
+        1
+      / | \
+     3  2  4
+    / \
+   5   6
+
+Output: 3
+Explanation:
+The longest path is: 1 → 3 → 5 (depth 3)
+or 1 → 3 → 6 (depth 3)
+```
+
+**Example 3:**
+```
+Input:
+        1
+
+Output: 1
+Explanation:
+Single node tree has depth 1.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **DFS (Depth-First Search)**:
+
+1. **Base case**: If root is null, return 0
+2. **Recurse on children**: For each child, find its maximum depth
+3. **Return maximum**: Return 1 + maximum depth among all children
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - DFS"
+  code={`/**
+ * Definition for a Node.
+ * function Node(val, children) {
+ *    this.val = val;
+ *    this.children = children;
+ * };
+ */
+
+/**
+ * Find maximum depth of N-ary tree
+ * @param {Node} root - Root of the N-ary tree
+ * @return {number} - Maximum depth
+ */
+function maxDepth(root) {
+  // Base case: empty tree
+  if (!root) return 0;
+  
+  // Base case: leaf node (no children)
+  if (!root.children || root.children.length === 0) {
+    return 1;
+  }
+  
+  // Find maximum depth among all children
+  let maxChildDepth = 0;
+  for (const child of root.children) {
+    const childDepth = maxDepth(child);
+    maxChildDepth = Math.max(maxChildDepth, childDepth);
+  }
+  
+  // Current node contributes 1 to depth
+  return 1 + maxChildDepth;
+}
+
+// Helper function to create Node
+function Node(val, children) {
+  this.val = val === undefined ? 0 : val;
+  this.children = children === undefined ? [] : children;
+}
+
+// Test cases
+// Example 1: [4, [3, [7]], 9, [2, [2]]]
+const root1 = new Node(4);
+const node3 = new Node(3);
+node3.children = [new Node(7)];
+const node2 = new Node(2);
+node2.children = [new Node(2)];
+root1.children = [node3, new Node(9), node2];
+console.log('Example 1:', maxDepth(root1)); // 3
+
+// Example 2: [1, [3, [5, 6]], 2, 4]
+const root2 = new Node(1);
+const node3_2 = new Node(3);
+node3_2.children = [new Node(5), new Node(6)];
+root2.children = [node3_2, new Node(2), new Node(4)];
+console.log('Example 2:', maxDepth(root2)); // 3`}
+  testCases={[
+    { input: 'maxDepth(new Node(4, [new Node(3, [new Node(7)]), new Node(9), new Node(2, [new Node(2)])]))', expected: '3' },
+    { input: 'maxDepth(new Node(1, [new Node(3, [new Node(5), new Node(6)]), new Node(2), new Node(4)]))', expected: '3' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - DFS"
+  code={`# Definition for a Node.
+# class Node:
+#     def __init__(self, val=None, children=None):
+#         self.val = val
+#         self.children = children
+
+from typing import Optional
+
+class Node:
+    def __init__(self, val=None, children=None):
+        self.val = val
+        self.children = children if children is not None else []
+
+def max_depth(root: Optional[Node]) -> int:
+    """
+    Find maximum depth of N-ary tree
+    
+    Args:
+        root: Root of the N-ary tree
+        
+    Returns:
+        int: Maximum depth
+    """
+    # Base case: empty tree
+    if not root:
+        return 0
+    
+    # Base case: leaf node (no children)
+    if not root.children:
+        return 1
+    
+    # Find maximum depth among all children
+    max_child_depth = 0
+    for child in root.children:
+        child_depth = max_depth(child)
+        max_child_depth = max(max_child_depth, child_depth)
+    
+    # Current node contributes 1 to depth
+    return 1 + max_child_depth
+
+# Test cases
+# Example 1: [4, [3, [7]], 9, [2, [2]]]
+root1 = Node(4)
+node3 = Node(3)
+node3.children = [Node(7)]
+node2 = Node(2)
+node2.children = [Node(2)]
+root1.children = [node3, Node(9), node2]
+print('Example 1:', max_depth(root1))  # 3
+
+# Example 2: [1, [3, [5, 6]], 2, 4]
+root2 = Node(1)
+node3_2 = Node(3)
+node3_2.children = [Node(5), Node(6)]
+root2.children = [node3_2, Node(2), Node(4)]
+print('Example 2:', max_depth(root2))  # 3`}
+  testCases={[
+    { input: 'max_depth(Node(4, [Node(3, [Node(7)]), Node(9), Node(2, [Node(2)])]))', expected: '3' },
+    { input: 'max_depth(Node(1, [Node(3, [Node(5), Node(6)]), Node(2), Node(4)]))', expected: '3' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (BFS)
+
+Here's a BFS (level-order) approach:
+
+<Tabs>
+<TabItem value="javascript-bfs" label="JavaScript BFS" default>
+
+```javascript
+/**
+ * BFS approach using level-order traversal
+ */
+function maxDepthBFS(root) {
+  if (!root) return 0;
+  
+  const queue = [root];
+  let depth = 0;
+  
+  while (queue.length > 0) {
+    const levelSize = queue.length;
+    depth++;
+    
+    // Process all nodes at current level
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift();
+      
+      // Add all children to queue
+      if (node.children) {
+        for (const child of node.children) {
+          queue.push(child);
+        }
+      }
+    }
+  }
+  
+  return depth;
+}
+```
+
+</TabItem>
+<TabItem value="python-bfs" label="Python BFS">
+
+```python
+from collections import deque
+
+def max_depth_bfs(root: Optional[Node]) -> int:
+    """
+    BFS approach using level-order traversal
+    """
+    if not root:
+        return 0
+    
+    queue = deque([root])
+    depth = 0
+    
+    while queue:
+        level_size = len(queue)
+        depth += 1
+        
+        # Process all nodes at current level
+        for _ in range(level_size):
+            node = queue.popleft()
+            
+            # Add all children to queue
+            if node.children:
+                for child in node.children:
+                    queue.append(child)
+    
+    return depth
+```
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Iterative DFS)
+
+Here's an iterative DFS using a stack:
+
+<Tabs>
+<TabItem value="javascript-iterative" label="JavaScript Iterative" default>
+
+```javascript
+/**
+ * Iterative DFS using stack
+ */
+function maxDepthIterative(root) {
+  if (!root) return 0;
+  
+  const stack = [{ node: root, depth: 1 }];
+  let maxDepth = 0;
+  
+  while (stack.length > 0) {
+    const { node, depth } = stack.pop();
+    maxDepth = Math.max(maxDepth, depth);
+    
+    // Add all children to stack
+    if (node.children) {
+      for (const child of node.children) {
+        stack.push({ node: child, depth: depth + 1 });
+      }
+    }
+  }
+  
+  return maxDepth;
+}
+```
+
+</TabItem>
+<TabItem value="python-iterative" label="Python Iterative">
+
+```python
+def max_depth_iterative(root: Optional[Node]) -> int:
+    """
+    Iterative DFS using stack
+    """
+    if not root:
+        return 0
+    
+    stack = [(root, 1)]
+    max_depth = 0
+    
+    while stack:
+        node, depth = stack.pop()
+        max_depth = max(max_depth, depth)
+        
+        # Add all children to stack
+        if node.children:
+            for child in node.children:
+                stack.append((child, depth + 1))
+    
+    return max_depth
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the number of nodes. We visit each node exactly once.
+- **Space Complexity:** 
+  - **Recursive DFS**: O(h) - Where h is the height of the tree (recursion stack)
+  - **Iterative DFS**: O(n) - Stack can contain all nodes in worst case
+  - **BFS**: O(w) - Where w is the maximum width of the tree (queue size)
+
+## Approach
+
+The solution uses **DFS (Depth-First Search)**:
+
+1. **Base case**: 
+   - If root is null, return 0
+   - If root has no children, return 1
+
+2. **Recurse on children**: 
+   - For each child, recursively find its maximum depth
+   - Track the maximum depth among all children
+
+3. **Return maximum**: 
+   - Return 1 + maximum depth among children
+   - The 1 accounts for the current node
+
+## Key Insights
+
+- **DFS traversal**: Visit all nodes to find maximum depth
+- **Recurse on all children**: Unlike binary tree, check all children
+- **Maximum among children**: Take the maximum depth from all subtrees
+- **Add 1 for current node**: Current node contributes 1 to depth
+- **O(n) time**: Must visit all nodes
+
+## Step-by-Step Example
+
+Let's trace through Example 1:
+
+```
+Tree:
+            4
+          / | \
+         3  9  2
+        /       \
+       7         2
+
+maxDepth(root=4):
+  root has children: [3, 9, 2]
+  
+  Check child 3:
+    maxDepth(node=3):
+      node has children: [7]
+      Check child 7:
+        maxDepth(node=7):
+          node has no children
+          return 1
+      maxChildDepth = 1
+      return 1 + 1 = 2
+  
+  Check child 9:
+    maxDepth(node=9):
+      node has no children
+      return 1
+  
+  Check child 2:
+    maxDepth(node=2):
+      node has children: [2]
+      Check child 2:
+        maxDepth(node=2):
+          node has no children
+          return 1
+      maxChildDepth = 1
+      return 1 + 1 = 2
+  
+  maxChildDepth = max(2, 1, 2) = 2
+  return 1 + 2 = 3
+
+Result: 3
+```
+
+## Visual Representation
+
+```
+Example 1:
+            4 (depth 1)
+          / | \
+    (depth 2) 3  9  2
+        /       \
+  (depth 3) 7    2
+
+Path: 4 → 3 → 7 (depth 3)
+or:   4 → 2 → 2 (depth 3)
+
+Maximum depth: 3
+```
+
+## Edge Cases
+
+- **Empty tree**: Return 0
+- **Single node**: Return 1
+- **All nodes have one child**: Linear tree, depth = number of nodes
+- **Balanced tree**: Depth is log(n) for balanced tree
+- **Unbalanced tree**: Depth can be n for linear tree
+
+## Important Notes
+
+- **N-ary tree**: Can have any number of children (0 to N)
+- **Maximum depth**: Longest path from root to leaf
+- **DFS vs BFS**: Both work, DFS is simpler for this problem
+- **Recursive vs Iterative**: Both work, recursive is cleaner
+- **O(n) time**: Must visit all nodes
+
+## Comparison: DFS vs BFS
+
+| Approach | Time | Space | Pros | Cons |
+|----------|------|-------|------|------|
+| Recursive DFS | O(n) | O(h) | Clean, intuitive | Stack overflow risk |
+| Iterative DFS | O(n) | O(n) | No stack overflow | More code |
+| BFS | O(n) | O(w) | Level-by-level | More space for wide trees |
+
+## Related Problems
+
+- **Maximum Depth of Binary Tree**: Similar but for binary tree
+- **Minimum Depth of Binary Tree**: Different problem
+- **N-ary Tree Level Order Traversal**: Different traversal
+- **Serialize and Deserialize N-ary Tree**: Different problem
+
+## Takeaways
+
+- **DFS** naturally finds maximum depth
+- **Recurse on all children** unlike binary tree
+- **Maximum among children** determines subtree depth
+- **Add 1 for current node** to get total depth
+- **O(n) time** is optimal (must visit all nodes)
+

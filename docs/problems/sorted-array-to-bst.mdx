@@ -1,0 +1,141 @@
+---
+id: sorted-array-to-bst
+title: Convert Sorted Array to Binary Search Tree
+slug: /problems/sorted-array-to-bst
+difficulty: Easy
+tags: [tree, binary-search-tree, recursion]
+leetcode: https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
+---
+
+# Convert Sorted Array to Binary Search Tree
+
+Given an array of numbers sorted in ascending order, return a height-balanced binary search tree using every number from the array.
+
+Note: height-balanced meaning that the level of any node’s two subtrees should not differ by more than one.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: nums = [1,2,3]
+Output:
+       2
+      / \
+     1   3
+```
+
+**Example 2:**
+```
+Input: nums = [1,2,3,4,5,6]
+Output:
+        3
+       / \
+      2   5
+     /   / \
+    1   4   6
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+```javascript
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+
+/**
+ * Convert sorted array to height-balanced BST
+ * @param {number[]} nums - Sorted array
+ * @return {TreeNode} - Root of the BST
+ */
+function sortedArrayToBST(nums) {
+  if (!nums.length) return null;
+  
+  function buildBST(left, right) {
+    if (left > right) return null;
+    
+    const mid = Math.floor((left + right) / 2);
+    const node = new TreeNode(nums[mid]);
+    node.left = buildBST(left, mid - 1);
+    node.right = buildBST(mid + 1, right);
+    return node;
+  }
+  
+  return buildBST(0, nums.length - 1);
+}
+```
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+```python
+from typing import List, Optional
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def sorted_array_to_bst(nums: List[int]) -> Optional[TreeNode]:
+    """
+    Convert sorted array to height-balanced BST
+    
+    Args:
+        nums: Sorted array
+        
+    Returns:
+        TreeNode: Root of the BST
+    """
+    if not nums:
+        return None
+    
+    def build_bst(left: int, right: int) -> Optional[TreeNode]:
+        if left > right:
+            return None
+        
+        mid = (left + right) // 2
+        node = TreeNode(nums[mid])
+        node.left = build_bst(left, mid - 1)
+        node.right = build_bst(mid + 1, right)
+        return node
+    
+    return build_bst(0, len(nums) - 1)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the array
+- **Space Complexity:** O(log n) - Due to recursion stack depth
+
+## Approach
+
+The solution uses a **divide-and-conquer** approach:
+
+1. **Find middle element** of the sorted array
+2. **Create root node** with the middle value
+3. **Recursively build** left and right subtrees
+4. **Return the root** of the constructed BST
+
+## Key Insights
+
+- **Middle element as root** ensures height-balanced BST by evenly splitting the array
+- **Recursive divide-and-conquer** leverages sorted order for efficient construction
+- **In-order traversal** validates BST property with ascending order
+- **Edge cases** include empty array and single-element array
+- **Balanced height** guarantees O(log n) height for the resulting tree
+```

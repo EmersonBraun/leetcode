@@ -1,0 +1,375 @@
+---
+id: open-lockers
+title: Open Lockers
+slug: /problems/open-lockers
+difficulty: Medium
+tags: [math, number-theory]
+---
+
+# Open Lockers
+
+This question is asked by Facebook. In a gym hallway there are N lockers. You walk back and forth down the hallway opening and closing lockers. On your first pass you open all the lockers. On your second pass, you close every other locker. On your third pass you open every third locker. After walking the hallway N times opening/closing lockers in the previously described manner, how many lockers are left open?
+
+## Example(s)
+
+**Example 1:**
+```
+Input: N = 1
+Output: 1
+Explanation:
+Pass 1: Open locker 1
+Result: 1 locker open
+```
+
+**Example 2:**
+```
+Input: N = 2
+Output: 1
+Explanation:
+Pass 1: Open all lockers → [open, open]
+Pass 2: Close every 2nd locker → [open, closed]
+Result: 1 locker open (locker 1)
+```
+
+**Example 3:**
+```
+Input: N = 4
+Output: 2
+Explanation:
+Pass 1: Open all → [open, open, open, open]
+Pass 2: Close 2nd, 4th → [open, closed, open, closed]
+Pass 3: Toggle 3rd → [open, closed, closed, closed]
+Pass 4: Toggle 4th → [open, closed, closed, open]
+Result: 2 lockers open (lockers 1 and 4)
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **mathematical insight**:
+
+1. **Key insight**: A locker is toggled once for each divisor it has
+2. **Odd divisors**: A locker ends up open if it has an odd number of divisors
+3. **Perfect squares**: Only perfect squares have an odd number of divisors
+4. **Count perfect squares**: Return the number of perfect squares ≤ N
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Perfect Squares"
+  code={`/**
+ * Count open lockers after N passes
+ * @param {number} N - Number of lockers
+ * @return {number} - Number of lockers left open
+ */
+function numOpenLockers(N) {
+  // Key insight: Only perfect squares have odd number of divisors
+  // A locker ends up open if it's toggled an odd number of times
+  // Count perfect squares from 1 to N
+  
+  let count = 0;
+  let i = 1;
+  
+  // Count perfect squares: 1, 4, 9, 16, 25, ...
+  while (i * i <= N) {
+    count++;
+    i++;
+  }
+  
+  return count;
+}
+
+// Test cases
+console.log('Example 1:', numOpenLockers(1)); 
+// 1
+
+console.log('Example 2:', numOpenLockers(2)); 
+// 1
+
+console.log('Example 3:', numOpenLockers(4)); 
+// 2
+
+console.log('Test 4:', numOpenLockers(9)); 
+// 3
+
+console.log('Test 5:', numOpenLockers(100)); 
+// 10`}
+  testCases={[
+    { input: 'numOpenLockers(1)', expected: '1' },
+    { input: 'numOpenLockers(2)', expected: '1' },
+    { input: 'numOpenLockers(4)', expected: '2' },
+    { input: 'numOpenLockers(9)', expected: '3' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Perfect Squares"
+  code={`import math
+
+def num_open_lockers(N: int) -> int:
+    """
+    Count open lockers after N passes
+    
+    Args:
+        N: Number of lockers
+        
+    Returns:
+        int: Number of lockers left open
+    """
+    # Key insight: Only perfect squares have odd number of divisors
+    # A locker ends up open if it's toggled an odd number of times
+    # Count perfect squares from 1 to N
+    
+    count = 0
+    i = 1
+    
+    # Count perfect squares: 1, 4, 9, 16, 25, ...
+    while i * i <= N:
+        count += 1
+        i += 1
+    
+    return count
+
+# Test cases
+print('Example 1:', num_open_lockers(1))  
+# 1
+
+print('Example 2:', num_open_lockers(2))  
+# 1
+
+print('Example 3:', num_open_lockers(4))  
+# 2
+
+print('Test 4:', num_open_lockers(9))  
+# 3
+
+print('Test 5:', num_open_lockers(100))  
+# 10`}
+  testCases={[
+    { input: 'num_open_lockers(1)', expected: '1' },
+    { input: 'num_open_lockers(2)', expected: '1' },
+    { input: 'num_open_lockers(4)', expected: '2' },
+    { input: 'num_open_lockers(9)', expected: '3' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Simulation)
+
+Here's a simulation approach for understanding:
+
+<Tabs>
+<TabItem value="javascript-simulate" label="JavaScript Simulation" default>
+
+```javascript
+/**
+ * Simulation approach (for understanding, not optimal)
+ */
+function numOpenLockersSimulate(N) {
+  // Array to track locker states (true = open, false = closed)
+  const lockers = new Array(N + 1).fill(false); // Index 0 unused
+  
+  // N passes
+  for (let pass = 1; pass <= N; pass++) {
+    // Toggle every pass-th locker
+    for (let locker = pass; locker <= N; locker += pass) {
+      lockers[locker] = !lockers[locker];
+    }
+  }
+  
+  // Count open lockers
+  let count = 0;
+  for (let i = 1; i <= N; i++) {
+    if (lockers[i]) {
+      count++;
+    }
+  }
+  
+  return count;
+}
+```
+
+</TabItem>
+<TabItem value="python-simulate" label="Python Simulation">
+
+```python
+def num_open_lockers_simulate(N: int) -> int:
+    """
+    Simulation approach (for understanding, not optimal)
+    """
+    # Array to track locker states (True = open, False = closed)
+    lockers = [False] * (N + 1)  # Index 0 unused
+    
+    # N passes
+    for pass_num in range(1, N + 1):
+        # Toggle every pass-th locker
+        for locker in range(pass_num, N + 1, pass_num):
+            lockers[locker] = not lockers[locker]
+    
+    # Count open lockers
+    return sum(lockers[1:])
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** 
+  - **Perfect squares**: O(√N) - Count perfect squares up to N
+  - **Simulation**: O(N log N) - For each pass, toggle multiple lockers
+- **Space Complexity:** 
+  - **Perfect squares**: O(1) - Only using a constant amount of extra space
+  - **Simulation**: O(N) - For the locker state array
+
+## Approach
+
+The solution uses **mathematical insight**:
+
+1. **Key observation**: 
+   - Locker i is toggled on pass d if and only if d divides i
+   - Locker i is toggled once for each divisor it has
+
+2. **Odd divisors**: 
+   - A locker ends up open if it's toggled an odd number of times
+   - This happens when the locker has an odd number of divisors
+
+3. **Perfect squares**: 
+   - Only perfect squares have an odd number of divisors
+   - For example: 4 has divisors 1, 2, 4 (3 divisors, odd)
+   - For example: 6 has divisors 1, 2, 3, 6 (4 divisors, even)
+
+4. **Count perfect squares**: 
+   - Count perfect squares from 1 to N
+   - This equals ⌊√N⌋
+
+## Key Insights
+
+- **Toggle pattern**: Locker i is toggled on passes that are divisors of i
+- **Odd divisors**: Only lockers with odd number of divisors end up open
+- **Perfect squares**: Only perfect squares have odd number of divisors
+- **O(√N) time**: Count perfect squares efficiently
+- **Mathematical solution**: No need to simulate
+
+## Step-by-Step Example
+
+Let's trace through Example 2: `N = 2`
+
+```
+Initial: All lockers closed
+
+Pass 1: Toggle every 1st locker (all)
+  Locker 1: closed → open
+  Locker 2: closed → open
+  State: [open, open]
+
+Pass 2: Toggle every 2nd locker
+  Locker 2: open → closed
+  State: [open, closed]
+
+Result: 1 locker open (locker 1)
+
+Mathematical approach:
+  Perfect squares ≤ 2: 1 (1² = 1)
+  Result: 1
+```
+
+## Visual Representation
+
+```
+Example 2: N = 2
+
+Pass 1: Toggle 1, 2
+  [open, open]
+
+Pass 2: Toggle 2
+  [open, closed]
+
+Result: 1 open (locker 1, which is a perfect square)
+
+Example 3: N = 4
+
+Pass 1: Toggle 1, 2, 3, 4
+  [open, open, open, open]
+
+Pass 2: Toggle 2, 4
+  [open, closed, open, closed]
+
+Pass 3: Toggle 3
+  [open, closed, closed, closed]
+
+Pass 4: Toggle 4
+  [open, closed, closed, open]
+
+Result: 2 open (lockers 1 and 4, both perfect squares)
+
+Perfect squares ≤ 4: 1 (1²), 4 (2²) → 2 lockers
+```
+
+## Why Perfect Squares Have Odd Divisors
+
+**Key insight**: 
+- For a number n, divisors come in pairs (d, n/d)
+- Example: 12 has pairs (1,12), (2,6), (3,4) → 6 divisors (even)
+- For perfect squares, one divisor appears twice (√n, √n)
+- Example: 16 has pairs (1,16), (2,8), (4,4) → 5 divisors (odd)
+
+**Mathematical proof**:
+- If n = k², then divisors are: 1, 2, ..., k-1, k, k+1, ..., 2k, ..., k²
+- The divisor k appears once, making total count odd
+- If n is not a perfect square, all divisors pair up, making count even
+
+## Edge Cases
+
+- **N = 1**: Returns 1 (1 is a perfect square)
+- **N = 0**: Returns 0 (no lockers)
+- **Large N**: Works correctly (e.g., N = 100 → 10 perfect squares)
+- **Perfect square N**: Includes N itself
+
+## Important Notes
+
+- **Toggle pattern**: Pass i toggles lockers i, 2i, 3i, ...
+- **Divisor relationship**: Locker j is toggled on pass i if i divides j
+- **Odd toggles**: Locker ends up open if toggled odd number of times
+- **Perfect squares only**: Only perfect squares have odd divisors
+- **O(√N) time**: Count perfect squares efficiently
+
+## Mathematical Formula
+
+**Direct formula**: 
+- Number of perfect squares ≤ N = ⌊√N⌋
+- For example: N = 10 → ⌊√10⌋ = ⌊3.16⌋ = 3 (perfect squares: 1, 4, 9)
+
+**Optimized code**:
+```javascript
+function numOpenLockers(N) {
+  return Math.floor(Math.sqrt(N));
+}
+```
+
+## Related Problems
+
+- **Bulb Switcher**: Same problem (LeetCode 319)
+- **Count Primes**: Different number theory problem
+- **Perfect Squares**: Different problem
+- **Divisor Game**: Different problem
+
+## Takeaways
+
+- **Mathematical insight** solves this efficiently
+- **Perfect squares** have odd number of divisors
+- **O(√N) time** by counting perfect squares
+- **No simulation needed** - direct mathematical solution
+- **Divisor counting** is the key concept
+

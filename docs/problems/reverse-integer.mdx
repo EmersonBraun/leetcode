@@ -1,0 +1,365 @@
+---
+id: reverse-integer
+title: Reverse Integer
+slug: /problems/reverse-integer
+difficulty: Easy
+tags: [math, number-theory]
+leetcode: https://leetcode.com/problems/reverse-integer/
+---
+
+# Reverse Integer
+
+This question is asked by Apple. Given a 32-bit signed integer, reverse it and return the result.
+
+**Note:** You may assume that the reversed integer will always fit within the bounds of the integer data type.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: num = 550
+Output: 55
+Explanation:
+Reverse of 550 is 055, which becomes 55 (leading zeros are dropped).
+```
+
+**Example 2:**
+```
+Input: num = -37
+Output: -73
+Explanation:
+Reverse of -37 is -73 (sign is preserved, digits are reversed).
+```
+
+**Example 3:**
+```
+Input: num = 123
+Output: 321
+Explanation:
+Reverse of 123 is 321.
+```
+
+**Example 4:**
+```
+Input: num = 120
+Output: 21
+Explanation:
+Reverse of 120 is 021, which becomes 21 (leading zeros are dropped).
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **digit extraction and reversal**:
+
+1. **Handle sign**: Store the sign separately
+2. **Extract digits**: Extract digits using modulo and division
+3. **Build reversed**: Build reversed number digit by digit
+4. **Apply sign**: Apply the original sign to the result
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution"
+  code={`/**
+ * Reverse a 32-bit signed integer
+ * @param {number} num - Input integer
+ * @return {number} - Reversed integer
+ */
+function reverse(num) {
+  // Handle sign
+  const isNegative = num < 0;
+  let n = Math.abs(num);
+  
+  let reversed = 0;
+  
+  // Extract digits and build reversed number
+  while (n > 0) {
+    const digit = n % 10;
+    reversed = reversed * 10 + digit;
+    n = Math.floor(n / 10);
+  }
+  
+  // Apply sign
+  return isNegative ? -reversed : reversed;
+}
+
+// Test cases
+console.log('Example 1:', reverse(550)); 
+// 55
+
+console.log('Example 2:', reverse(-37)); 
+// -73
+
+console.log('Example 3:', reverse(123)); 
+// 321
+
+console.log('Example 4:', reverse(120)); 
+// 21
+
+console.log('Test 5:', reverse(0)); 
+// 0`}
+  testCases={[
+    { input: 'reverse(550)', expected: '55' },
+    { input: 'reverse(-37)', expected: '-73' },
+    { input: 'reverse(123)', expected: '321' },
+    { input: 'reverse(120)', expected: '21' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution"
+  code={`def reverse(num: int) -> int:
+    """
+    Reverse a 32-bit signed integer
+    
+    Args:
+        num: Input integer
+        
+    Returns:
+        int: Reversed integer
+    """
+    # Handle sign
+    is_negative = num < 0
+    n = abs(num)
+    
+    reversed_num = 0
+    
+    # Extract digits and build reversed number
+    while n > 0:
+        digit = n % 10
+        reversed_num = reversed_num * 10 + digit
+        n //= 10
+    
+    # Apply sign
+    return -reversed_num if is_negative else reversed_num
+
+# Test cases
+print('Example 1:', reverse(550))  
+# 55
+
+print('Example 2:', reverse(-37))  
+# -73
+
+print('Example 3:', reverse(123))  
+# 321
+
+print('Example 4:', reverse(120))  
+# 21
+
+print('Test 5:', reverse(0))  
+# 0`}
+  testCases={[
+    { input: 'reverse(550)', expected: '55' },
+    { input: 'reverse(-37)', expected: '-73' },
+    { input: 'reverse(123)', expected: '321' },
+    { input: 'reverse(120)', expected: '21' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (String-based)
+
+Here's a version that converts to string:
+
+<Tabs>
+<TabItem value="javascript-string" label="JavaScript String" default>
+
+```javascript
+/**
+ * String-based approach
+ */
+function reverseString(num) {
+  const isNegative = num < 0;
+  const numStr = Math.abs(num).toString();
+  const reversedStr = numStr.split('').reverse().join('');
+  const reversed = parseInt(reversedStr, 10);
+  return isNegative ? -reversed : reversed;
+}
+```
+
+</TabItem>
+<TabItem value="python-string" label="Python String">
+
+```python
+def reverse_string(num: int) -> int:
+    """
+    String-based approach
+    """
+    is_negative = num < 0
+    num_str = str(abs(num))
+    reversed_str = num_str[::-1]
+    reversed_num = int(reversed_str)
+    return -reversed_num if is_negative else reversed_num
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(log₁₀ n) - Where n is the number of digits. We process each digit once.
+- **Space Complexity:** O(1) - Only using a constant amount of extra space.
+
+## Approach
+
+The solution uses **digit extraction and reversal**:
+
+1. **Handle sign**: 
+   - Store whether the number is negative
+   - Work with absolute value
+
+2. **Extract digits**: 
+   - Use modulo 10 to get last digit
+   - Divide by 10 to remove last digit
+   - Repeat until number becomes 0
+
+3. **Build reversed**: 
+   - Multiply current reversed by 10
+   - Add the extracted digit
+   - This builds the reversed number from right to left
+
+4. **Apply sign**: 
+   - Apply the original sign to the result
+
+## Key Insights
+
+- **Digit extraction**: Use modulo and division to extract digits
+- **Build reversed**: Multiply by 10 and add digit to build reversed number
+- **Handle sign**: Store sign separately, work with absolute value
+- **Leading zeros**: Automatically handled (055 becomes 55)
+- **O(log n) time**: Number of digits is log₁₀(n)
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `num = 550`
+
+```
+num = 550
+isNegative = false
+n = 550
+reversed = 0
+
+Iteration 1:
+  digit = 550 % 10 = 0
+  reversed = 0 * 10 + 0 = 0
+  n = 550 / 10 = 55
+
+Iteration 2:
+  digit = 55 % 10 = 5
+  reversed = 0 * 10 + 5 = 5
+  n = 55 / 10 = 5
+
+Iteration 3:
+  digit = 5 % 10 = 5
+  reversed = 5 * 10 + 5 = 55
+  n = 5 / 10 = 0
+
+n = 0, exit loop
+Result: 55
+```
+
+## Visual Representation
+
+```
+Example 1: num = 550
+
+Original:  5  5  0
+           ↑  ↑  ↑
+         hundreds tens ones
+
+Reverse:   0  5  5
+           ↑  ↑  ↑
+         hundreds tens ones
+
+Leading zero dropped: 55
+
+Example 2: num = -37
+
+Original:  -  3  7
+            ↑  ↑  ↑
+          sign tens ones
+
+Reverse:   -  7  3
+            ↑  ↑  ↑
+          sign ones tens
+
+Result: -73
+
+Example 3: num = 120
+
+Original:  1  2  0
+           ↑  ↑  ↑
+         hundreds tens ones
+
+Reverse:   0  2  1
+           ↑  ↑  ↑
+         hundreds tens ones
+
+Leading zero dropped: 21
+```
+
+## Edge Cases
+
+- **Zero**: Returns 0
+- **Negative numbers**: Sign is preserved
+- **Trailing zeros**: Become leading zeros (automatically dropped)
+- **Single digit**: Returns the same digit
+- **Powers of 10**: Returns 1 (e.g., 100 → 1)
+
+## Important Notes
+
+- **32-bit signed integer**: Problem states it fits within bounds
+- **Leading zeros**: Automatically dropped when converting to integer
+- **Sign handling**: Store sign separately, work with absolute value
+- **Digit extraction**: Modulo 10 gets last digit, division removes it
+- **O(log n) time**: Based on number of digits
+
+## Why It Works
+
+**Digit extraction**:
+- `n % 10` gives the last digit
+- `n / 10` removes the last digit
+- Repeat until `n = 0`
+
+**Building reversed**:
+- Start with `reversed = 0`
+- For each digit: `reversed = reversed * 10 + digit`
+- This builds the number from right to left
+
+**Example**:
+```
+n = 123
+reversed = 0
+
+digit = 3: reversed = 0 * 10 + 3 = 3
+digit = 2: reversed = 3 * 10 + 2 = 32
+digit = 1: reversed = 32 * 10 + 1 = 321
+```
+
+## Related Problems
+
+- **Palindrome Number**: Check if reversed equals original
+- **Reverse Bits**: Different problem (bit manipulation)
+- **Add Two Numbers**: Different problem
+- **String to Integer**: Different conversion
+
+## Takeaways
+
+- **Digit extraction** using modulo and division
+- **Build reversed** by multiplying by 10 and adding digit
+- **Handle sign** separately from digit reversal
+- **O(log n) time** based on number of digits
+- **Leading zeros** are automatically dropped
+

@@ -1,0 +1,384 @@
+---
+id: paint-house
+title: Paint House
+slug: /problems/paint-house
+difficulty: Medium
+tags: [dynamic-programming, array, optimization]
+leetcode: https://leetcode.com/problems/paint-house/
+---
+
+# Paint House
+
+This question is asked by Apple. You are tasked with painting a row of houses in your neighborhood such that each house is painted either red, blue, or green. The cost of painting the ith house red, blue or green, is given by `costs[i][0]`, `costs[i][1]`, and `costs[i][2]` respectively. Given that you are required to paint each house and no two adjacent houses may be the same color, return the minimum cost to paint all the houses.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: costs = [[1, 3, 5], [2, 4, 6], [5, 4, 3]]
+Output: 8
+Explanation:
+Paint house 0 red (cost=1)
+Paint house 1 blue (cost=4)
+Paint house 2 green (cost=3)
+Total: 1 + 4 + 3 = 8
+
+Alternative: red(1) + green(6) + blue(4) = 11 (not optimal)
+```
+
+**Example 2:**
+```
+Input: costs = [[17, 2, 17], [16, 16, 5], [14, 3, 19]]
+Output: 10
+Explanation:
+Paint house 0 blue (cost=2)
+Paint house 1 green (cost=5)
+Paint house 2 blue (cost=3)
+Total: 2 + 5 + 3 = 10
+```
+
+**Example 3:**
+```
+Input: costs = [[7, 6, 2]]
+Output: 2
+Explanation:
+Only one house, paint it green (minimum cost)
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Dynamic Programming**:
+
+1. **DP state**: `dp[i][color]` = minimum cost to paint first i+1 houses where house i is painted with `color`
+2. **Recurrence**: For each house and color, choose the minimum cost from previous house with different color
+3. **Constraint**: Adjacent houses cannot have the same color
+4. **Result**: Minimum of `dp[n-1][red]`, `dp[n-1][blue]`, `dp[n-1][green]`
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Dynamic Programming"
+  code={`/**
+ * Find minimum cost to paint houses with no adjacent same color
+ * @param {number[][]} costs - costs[i][0]=red, costs[i][1]=blue, costs[i][2]=green
+ * @return {number} - Minimum cost
+ */
+function minCost(costs) {
+  if (!costs || costs.length === 0) return 0;
+  
+  const n = costs.length;
+  const RED = 0, BLUE = 1, GREEN = 2;
+  
+  // dp[i][color] = minimum cost to paint first i+1 houses where house i is painted with color
+  const dp = Array(n).fill().map(() => Array(3).fill(0));
+  
+  // Base case: first house
+  dp[0][RED] = costs[0][RED];
+  dp[0][BLUE] = costs[0][BLUE];
+  dp[0][GREEN] = costs[0][GREEN];
+  
+  // Fill DP table
+  for (let i = 1; i < n; i++) {
+    // Paint house i red: previous house must be blue or green
+    dp[i][RED] = costs[i][RED] + Math.min(dp[i - 1][BLUE], dp[i - 1][GREEN]);
+    
+    // Paint house i blue: previous house must be red or green
+    dp[i][BLUE] = costs[i][BLUE] + Math.min(dp[i - 1][RED], dp[i - 1][GREEN]);
+    
+    // Paint house i green: previous house must be red or blue
+    dp[i][GREEN] = costs[i][GREEN] + Math.min(dp[i - 1][RED], dp[i - 1][BLUE]);
+  }
+  
+  // Return minimum cost for last house
+  return Math.min(dp[n - 1][RED], dp[n - 1][BLUE], dp[n - 1][GREEN]);
+}
+
+// Test cases
+console.log('Example 1:', minCost([[1, 3, 5], [2, 4, 6], [5, 4, 3]])); 
+// 8
+
+console.log('Example 2:', minCost([[17, 2, 17], [16, 16, 5], [14, 3, 19]])); 
+// 10
+
+console.log('Example 3:', minCost([[7, 6, 2]])); 
+// 2`}
+  testCases={[
+    { input: 'minCost([[1, 3, 5], [2, 4, 6], [5, 4, 3]])', expected: '8' },
+    { input: 'minCost([[17, 2, 17], [16, 16, 5], [14, 3, 19]])', expected: '10' },
+    { input: 'minCost([[7, 6, 2]])', expected: '2' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Dynamic Programming"
+  code={`from typing import List
+
+def min_cost(costs: List[List[int]]) -> int:
+    """
+    Find minimum cost to paint houses with no adjacent same color
+    
+    Args:
+        costs: costs[i][0]=red, costs[i][1]=blue, costs[i][2]=green
+        
+    Returns:
+        int: Minimum cost
+    """
+    if not costs or len(costs) == 0:
+        return 0
+    
+    n = len(costs)
+    RED, BLUE, GREEN = 0, 1, 2
+    
+    # dp[i][color] = minimum cost to paint first i+1 houses where house i is painted with color
+    dp = [[0] * 3 for _ in range(n)]
+    
+    # Base case: first house
+    dp[0][RED] = costs[0][RED]
+    dp[0][BLUE] = costs[0][BLUE]
+    dp[0][GREEN] = costs[0][GREEN]
+    
+    # Fill DP table
+    for i in range(1, n):
+        # Paint house i red: previous house must be blue or green
+        dp[i][RED] = costs[i][RED] + min(dp[i - 1][BLUE], dp[i - 1][GREEN])
+        
+        # Paint house i blue: previous house must be red or green
+        dp[i][BLUE] = costs[i][BLUE] + min(dp[i - 1][RED], dp[i - 1][GREEN])
+        
+        # Paint house i green: previous house must be red or blue
+        dp[i][GREEN] = costs[i][GREEN] + min(dp[i - 1][RED], dp[i - 1][BLUE])
+    
+    # Return minimum cost for last house
+    return min(dp[n - 1][RED], dp[n - 1][BLUE], dp[n - 1][GREEN])
+
+# Test cases
+print('Example 1:', min_cost([[1, 3, 5], [2, 4, 6], [5, 4, 3]]))  
+# 8
+
+print('Example 2:', min_cost([[17, 2, 17], [16, 16, 5], [14, 3, 19]]))  
+# 10
+
+print('Example 3:', min_cost([[7, 6, 2]]))  
+# 2`}
+  testCases={[
+    { input: 'min_cost([[1, 3, 5], [2, 4, 6], [5, 4, 3]])', expected: '8' },
+    { input: 'min_cost([[17, 2, 17], [16, 16, 5], [14, 3, 19]])', expected: '10' },
+    { input: 'min_cost([[7, 6, 2]])', expected: '2' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Space-Optimized)
+
+Here's a space-optimized version using only O(1) space:
+
+<Tabs>
+<TabItem value="javascript-optimized" label="JavaScript Optimized" default>
+
+```javascript
+/**
+ * Space-optimized: O(1) space instead of O(n)
+ */
+function minCostOptimized(costs) {
+  if (!costs || costs.length === 0) return 0;
+  
+  const RED = 0, BLUE = 1, GREEN = 2;
+  let prevRed = costs[0][RED];
+  let prevBlue = costs[0][BLUE];
+  let prevGreen = costs[0][GREEN];
+  
+  for (let i = 1; i < costs.length; i++) {
+    const currRed = costs[i][RED] + Math.min(prevBlue, prevGreen);
+    const currBlue = costs[i][BLUE] + Math.min(prevRed, prevGreen);
+    const currGreen = costs[i][GREEN] + Math.min(prevRed, prevBlue);
+    
+    prevRed = currRed;
+    prevBlue = currBlue;
+    prevGreen = currGreen;
+  }
+  
+  return Math.min(prevRed, prevBlue, prevGreen);
+}
+```
+
+</TabItem>
+<TabItem value="python-optimized" label="Python Optimized">
+
+```python
+def min_cost_optimized(costs: List[List[int]]) -> int:
+    """
+    Space-optimized: O(1) space instead of O(n)
+    """
+    if not costs or len(costs) == 0:
+        return 0
+    
+    RED, BLUE, GREEN = 0, 1, 2
+    prev_red = costs[0][RED]
+    prev_blue = costs[0][BLUE]
+    prev_green = costs[0][GREEN]
+    
+    for i in range(1, len(costs)):
+        curr_red = costs[i][RED] + min(prev_blue, prev_green)
+        curr_blue = costs[i][BLUE] + min(prev_red, prev_green)
+        curr_green = costs[i][GREEN] + min(prev_red, prev_blue)
+        
+        prev_red = curr_red
+        prev_blue = curr_blue
+        prev_green = curr_green
+    
+    return min(prev_red, prev_blue, prev_green)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the number of houses. We iterate through each house once, and for each house we do constant work (3 colors).
+- **Space Complexity:** 
+  - **Standard DP**: O(n) - For the DP table (n × 3)
+  - **Optimized**: O(1) - Using only three variables
+
+## Approach
+
+The solution uses **Dynamic Programming**:
+
+1. **DP state**: 
+   - `dp[i][color]` = minimum cost to paint first i+1 houses where house i is painted with `color`
+   - Colors: 0=red, 1=blue, 2=green
+
+2. **Base case**: 
+   - `dp[0][red] = costs[0][0]`
+   - `dp[0][blue] = costs[0][1]`
+   - `dp[0][green] = costs[0][2]`
+
+3. **Recurrence**: 
+   - For house i painted red: `dp[i][red] = costs[i][0] + min(dp[i-1][blue], dp[i-1][green])`
+   - For house i painted blue: `dp[i][blue] = costs[i][1] + min(dp[i-1][red], dp[i-1][green])`
+   - For house i painted green: `dp[i][green] = costs[i][2] + min(dp[i-1][red], dp[i-1][blue])`
+
+4. **Constraint**: 
+   - Adjacent houses cannot have the same color
+   - When choosing color for house i, exclude the color used for house i-1
+
+5. **Result**: 
+   - `min(dp[n-1][red], dp[n-1][blue], dp[n-1][green])`
+
+## Key Insights
+
+- **Dynamic Programming**: Optimal substructure - optimal solution uses optimal subproblems
+- **Three choices**: Each house has 3 color options
+- **Adjacency constraint**: Previous house color affects current house choices
+- **O(n) time**: Must process each house once
+- **O(1) space**: Can optimize to constant space
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `costs = [[1, 3, 5], [2, 4, 6], [5, 4, 3]]`
+
+```
+House 0: red=1, blue=3, green=5
+House 1: red=2, blue=4, green=6
+House 2: red=5, blue=4, green=3
+
+Base case (house 0):
+  dp[0][red] = 1
+  dp[0][blue] = 3
+  dp[0][green] = 5
+
+House 1:
+  dp[1][red] = costs[1][red] + min(dp[0][blue], dp[0][green])
+            = 2 + min(3, 5) = 2 + 3 = 5
+  
+  dp[1][blue] = costs[1][blue] + min(dp[0][red], dp[0][green])
+             = 4 + min(1, 5) = 4 + 1 = 5
+  
+  dp[1][green] = costs[1][green] + min(dp[0][red], dp[0][blue])
+              = 6 + min(1, 3) = 6 + 1 = 7
+
+House 2:
+  dp[2][red] = costs[2][red] + min(dp[1][blue], dp[1][green])
+            = 5 + min(5, 7) = 5 + 5 = 10
+  
+  dp[2][blue] = costs[2][blue] + min(dp[1][red], dp[1][green])
+             = 4 + min(5, 7) = 4 + 5 = 9
+  
+  dp[2][green] = costs[2][green] + min(dp[1][red], dp[1][blue])
+              = 3 + min(5, 5) = 3 + 5 = 8
+
+Result: min(10, 9, 8) = 8
+
+Optimal path: red(1) → blue(4) → green(3) = 8
+```
+
+## Visual Representation
+
+```
+Example 1: costs = [[1, 3, 5], [2, 4, 6], [5, 4, 3]]
+
+House 0        House 1        House 2
+  R(1)          R(2)          R(5)
+  B(3)          B(4)          B(4)
+  G(5)          G(6)          G(3)
+
+DP table:
+  House 0:  R=1,  B=3,  G=5
+  House 1:  R=5,  B=5,  G=7
+  House 2:  R=10, B=9,  G=8
+
+Optimal path: R(1) → B(4) → G(3) = 8
+```
+
+## Edge Cases
+
+- **Empty array**: Return 0
+- **Single house**: Return minimum of the three costs
+- **All same cost**: Any valid coloring works
+- **One color very cheap**: May choose it for multiple houses (but not adjacent)
+
+## Important Notes
+
+- **Adjacency constraint**: No two adjacent houses can have the same color
+- **Three colors**: Each house has exactly 3 color options
+- **Minimize cost**: Goal is minimum total cost
+- **O(n) time**: Must process each house
+- **O(1) space**: Can optimize to constant space
+
+## Why Dynamic Programming Works
+
+**Optimal Substructure**: 
+- To minimize cost for n houses, we need to minimize cost for n-1 houses
+- The optimal solution for n houses uses the optimal solution for n-1 houses
+- We just need to choose the best color for the last house
+
+**Overlapping Subproblems**: 
+- Multiple paths may lead to the same state (same color for house i)
+- DP stores and reuses these optimal values
+
+## Related Problems
+
+- **Paint House II**: K colors instead of 3
+- **House Robber**: Similar DP structure
+- **Min Cost Climbing Stairs**: Similar optimization problem
+- **Coin Change**: Different DP problem
+
+## Takeaways
+
+- **Dynamic Programming** solves this efficiently
+- **Three choices** per house with adjacency constraint
+- **O(n) time** to process all houses
+- **O(1) space** with optimization
+- **Classic DP problem** with constraint handling
+

@@ -1,0 +1,467 @@
+---
+id: average-of-levels-in-binary-tree
+title: Average of Levels in Binary Tree
+slug: /problems/average-of-levels-in-binary-tree
+difficulty: Easy
+tags: [tree, binary-tree, bfs, dfs]
+leetcode: https://leetcode.com/problems/average-of-levels-in-binary-tree/
+---
+
+# Average of Levels in Binary Tree
+
+This question is asked by Facebook. Given a reference to the root of a binary tree, return a list containing the average value in each level of the tree.
+
+## Example(s)
+
+**Example 1:**
+```
+Input:
+       1
+      / \
+    6    8
+   / \ 
+  1   5
+
+Output: [1.0, 7.0, 3.0]
+Explanation:
+- Level 0: [1] → average = 1.0
+- Level 1: [6, 8] → average = (6 + 8) / 2 = 7.0
+- Level 2: [1, 5] → average = (1 + 5) / 2 = 3.0
+```
+
+**Example 2:**
+```
+Input:
+      3
+     / \
+    9   20
+       /  \
+      15   7
+
+Output: [3.0, 14.5, 11.0]
+Explanation:
+- Level 0: [3] → average = 3.0
+- Level 1: [9, 20] → average = (9 + 20) / 2 = 14.5
+- Level 2: [15, 7] → average = (15 + 7) / 2 = 11.0
+```
+
+**Example 3:**
+```
+Input:
+      5
+
+Output: [5.0]
+Explanation:
+- Level 0: [5] → average = 5.0
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **BFS (level-order traversal)**:
+
+1. **Level-order traversal**: Process nodes level by level
+2. **Sum and count**: For each level, sum values and count nodes
+3. **Calculate average**: Divide sum by count for each level
+4. **Return list**: Return list of averages
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - BFS"
+  code={`/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : null)
+ * }
+ */
+
+/**
+ * Get average value of each level
+ * @param {TreeNode} root - Root of the binary tree
+ * @return {number[]} - List of average values for each level
+ */
+function averageOfLevels(root) {
+  if (!root) return [];
+  
+  const result = [];
+  const queue = [root];
+  
+  while (queue.length > 0) {
+    const levelSize = queue.length;
+    let sum = 0;
+    
+    // Process all nodes at current level
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift();
+      sum += node.val;
+      
+      // Add children to queue for next level
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+    
+    // Calculate average for this level
+    result.push(sum / levelSize);
+  }
+  
+  return result;
+}
+
+// Helper function to create TreeNode
+function TreeNode(val, left, right) {
+  this.val = (val === undefined ? 0 : val);
+  this.left = (left === undefined ? null : left);
+  this.right = (right === undefined ? null : null);
+}
+
+// Test cases
+// Example 1: [1,6,8,1,5]
+const root1 = new TreeNode(1);
+root1.left = new TreeNode(6);
+root1.right = new TreeNode(8);
+root1.left.left = new TreeNode(1);
+root1.left.right = new TreeNode(5);
+console.log('Example 1:', averageOfLevels(root1)); 
+// [1.0, 7.0, 3.0]
+
+// Example 2: [3,9,20,null,null,15,7]
+const root2 = new TreeNode(3);
+root2.left = new TreeNode(9);
+root2.right = new TreeNode(20);
+root2.right.left = new TreeNode(15);
+root2.right.right = new TreeNode(7);
+console.log('Example 2:', averageOfLevels(root2)); 
+// [3.0, 14.5, 11.0]`}
+  testCases={[
+    { input: 'JSON.stringify(averageOfLevels(new TreeNode(1, new TreeNode(6, new TreeNode(1), new TreeNode(5)), new TreeNode(8))))', expected: '[1,7,3]' },
+    { input: 'JSON.stringify(averageOfLevels(new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)))))', expected: '[3,14.5,11]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - BFS"
+  code={`# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+from typing import List, Optional
+from collections import deque
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def average_of_levels(root: Optional[TreeNode]) -> List[float]:
+    """
+    Get average value of each level
+    
+    Args:
+        root: Root of the binary tree
+        
+    Returns:
+        List[float]: List of average values for each level
+    """
+    if not root:
+        return []
+    
+    result = []
+    queue = deque([root])
+    
+    while queue:
+        level_size = len(queue)
+        level_sum = 0
+        
+        # Process all nodes at current level
+        for _ in range(level_size):
+            node = queue.popleft()
+            level_sum += node.val
+            
+            # Add children to queue for next level
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+        
+        # Calculate average for this level
+        result.append(level_sum / level_size)
+    
+    return result
+
+# Test cases
+# Example 1: [1,6,8,1,5]
+root1 = TreeNode(1)
+root1.left = TreeNode(6)
+root1.right = TreeNode(8)
+root1.left.left = TreeNode(1)
+root1.left.right = TreeNode(5)
+print('Example 1:', average_of_levels(root1))  
+# [1.0, 7.0, 3.0]
+
+# Example 2: [3,9,20,None,None,15,7]
+root2 = TreeNode(3)
+root2.left = TreeNode(9)
+root2.right = TreeNode(20)
+root2.right.left = TreeNode(15)
+root2.right.right = TreeNode(7)
+print('Example 2:', average_of_levels(root2))  
+# [3.0, 14.5, 11.0]`}
+  testCases={[
+    { input: 'average_of_levels(TreeNode(1, TreeNode(6, TreeNode(1), TreeNode(5)), TreeNode(8)))', expected: '[1.0, 7.0, 3.0]' },
+    { input: 'average_of_levels(TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7))))', expected: '[3.0, 14.5, 11.0]' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (DFS)
+
+Here's a DFS approach that tracks level information:
+
+<Tabs>
+<TabItem value="javascript-dfs" label="JavaScript DFS" default>
+
+```javascript
+/**
+ * DFS approach using level tracking
+ */
+function averageOfLevelsDFS(root) {
+  if (!root) return [];
+  
+  const levelSums = [];
+  const levelCounts = [];
+  
+  /**
+   * DFS helper
+   * @param {TreeNode} node - Current node
+   * @param {number} level - Current level
+   */
+  function dfs(node, level) {
+    if (!node) return;
+    
+    // Initialize level if first time
+    if (levelSums.length === level) {
+      levelSums.push(0);
+      levelCounts.push(0);
+    }
+    
+    // Add to sum and count
+    levelSums[level] += node.val;
+    levelCounts[level]++;
+    
+    // Recurse on children
+    dfs(node.left, level + 1);
+    dfs(node.right, level + 1);
+  }
+  
+  dfs(root, 0);
+  
+  // Calculate averages
+  const result = [];
+  for (let i = 0; i < levelSums.length; i++) {
+    result.push(levelSums[i] / levelCounts[i]);
+  }
+  
+  return result;
+}
+```
+
+</TabItem>
+<TabItem value="python-dfs" label="Python DFS">
+
+```python
+def average_of_levels_dfs(root: Optional[TreeNode]) -> List[float]:
+    """
+    DFS approach using level tracking
+    """
+    if not root:
+        return []
+    
+    level_sums = []
+    level_counts = []
+    
+    def dfs(node: Optional[TreeNode], level: int):
+        if not node:
+            return
+        
+        # Initialize level if first time
+        if len(level_sums) == level:
+            level_sums.append(0)
+            level_counts.append(0)
+        
+        # Add to sum and count
+        level_sums[level] += node.val
+        level_counts[level] += 1
+        
+        # Recurse on children
+        dfs(node.left, level + 1)
+        dfs(node.right, level + 1)
+    
+    dfs(root, 0)
+    
+    # Calculate averages
+    result = []
+    for i in range(len(level_sums)):
+        result.append(level_sums[i] / level_counts[i])
+    
+    return result
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the number of nodes. We visit each node exactly once.
+- **Space Complexity:** 
+  - **BFS**: O(w) - Where w is the maximum width of the tree (queue size)
+  - **DFS**: O(h) - Where h is the height of the tree (recursion stack + level arrays)
+
+## Approach
+
+The solution uses **BFS (level-order traversal)**:
+
+1. **Level-order traversal**: 
+   - Use a queue to process nodes level by level
+   - Process all nodes at current level before moving to next
+
+2. **Sum and count**: 
+   - For each level, sum all node values
+   - Count the number of nodes at that level
+
+3. **Calculate average**: 
+   - Divide sum by count for each level
+   - Add to result list
+
+4. **Return result**: 
+   - Return list of averages for each level
+
+## Key Insights
+
+- **BFS is natural**: Level-order traversal processes levels sequentially
+- **Sum and count**: Track both sum and count for each level
+- **Process level by level**: Process all nodes at one level before next
+- **Queue size**: Queue size equals width of current level
+- **O(n) time**: Must visit all nodes
+
+## Step-by-Step Example
+
+Let's trace through Example 1:
+
+```
+Tree:
+       1
+      / \
+    6    8
+   / \ 
+  1   5
+
+BFS traversal:
+Level 0:
+  queue = [1]
+  levelSize = 1
+  sum = 0
+  Process node 1: sum = 1
+  Add children: queue = [6, 8]
+  average = 1 / 1 = 1.0
+  result = [1.0]
+
+Level 1:
+  queue = [6, 8]
+  levelSize = 2
+  sum = 0
+  Process node 6: sum = 6
+  Add children: queue = [8, 1, 5]
+  Process node 8: sum = 6 + 8 = 14
+  Add children: queue = [1, 5]
+  average = 14 / 2 = 7.0
+  result = [1.0, 7.0]
+
+Level 2:
+  queue = [1, 5]
+  levelSize = 2
+  sum = 0
+  Process node 1: sum = 1
+  Add children: queue = [5]
+  Process node 5: sum = 1 + 5 = 6
+  Add children: queue = []
+  average = 6 / 2 = 3.0
+  result = [1.0, 7.0, 3.0]
+
+Result: [1.0, 7.0, 3.0]
+```
+
+## Visual Representation
+
+```
+Example 1:
+       1 (level 0: sum=1, count=1, avg=1.0)
+      / \
+    6    8 (level 1: sum=6+8=14, count=2, avg=7.0)
+   / \ 
+  1   5 (level 2: sum=1+5=6, count=2, avg=3.0)
+
+Result: [1.0, 7.0, 3.0]
+```
+
+## Edge Cases
+
+- **Empty tree**: Return empty list
+- **Single node**: Return [node.val]
+- **Unbalanced tree**: Works correctly
+- **All same values**: Returns that value for each level
+- **Large values**: May need to handle overflow (but problem uses standard integers)
+
+## Important Notes
+
+- **Level-order traversal**: BFS processes levels sequentially
+- **Sum and count**: Need both to calculate average
+- **Float result**: Averages may be floating point numbers
+- **Level 0**: Root is at level 0
+- **O(n) time**: Must visit all nodes
+
+## Why BFS is Preferred
+
+**BFS advantages**:
+- Naturally processes level by level
+- Easy to track level boundaries
+- Queue size equals level width
+- More intuitive for level-based problems
+
+**DFS alternative**:
+- Requires tracking level information
+- More complex to implement
+- Still works but less intuitive
+
+## Related Problems
+
+- **Binary Tree Level Order Traversal**: Return nodes at each level
+- **Binary Tree Zigzag Level Order Traversal**: Different traversal order
+- **Maximum Depth of Binary Tree**: Different problem
+- **Minimum Depth of Binary Tree**: Different problem
+
+## Takeaways
+
+- **BFS** is natural for level-based problems
+- **Sum and count** needed to calculate average
+- **Process level by level** using queue size
+- **O(n) time** is optimal (must visit all nodes)
+- **O(w) space** for BFS queue (width of tree)
+

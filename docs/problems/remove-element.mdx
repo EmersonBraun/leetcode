@@ -1,0 +1,347 @@
+---
+id: remove-element
+title: Remove Element
+slug: /problems/remove-element
+difficulty: Easy
+tags: [array, two-pointers]
+leetcode: https://leetcode.com/problems/remove-element/
+---
+
+# Remove Element
+
+Given an integer array `nums` and a value `val`, remove all instances of `val` in-place and return the length of the new array.
+
+**Note:** It does not matter what values you leave in the array beyond the array's new length.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: nums = [1, 2, 3], val = 2
+Output: 2
+Explanation: 
+After removing all instances of 2, the array becomes [1, 3, ...].
+The new length is 2. The values beyond length 2 don't matter.
+```
+
+**Example 2:**
+```
+Input: nums = [0, 1, 2, 2, 3, 0, 4, 2], val = 2
+Output: 5
+Explanation:
+After removing all instances of 2, the array becomes [0, 1, 3, 0, 4, ...].
+The new length is 5.
+```
+
+**Example 3:**
+```
+Input: nums = [3, 2, 2, 3], val = 3
+Output: 2
+Explanation:
+After removing all instances of 3, the array becomes [2, 2, ...].
+The new length is 2.
+```
+
+**Example 4:**
+```
+Input: nums = [1], val = 1
+Output: 0
+Explanation:
+After removing the only element, the array is empty.
+The new length is 0.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses the **two-pointer technique**:
+
+1. **Slow pointer**: Tracks the position where the next valid element should be placed
+2. **Fast pointer**: Iterates through the array to find valid elements
+3. **Copy valid elements**: When we find an element that's not equal to `val`, copy it to the slow pointer position
+4. **Return length**: The slow pointer position represents the new length
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution"
+  code={`/**
+ * Remove all instances of val from array in-place
+ * @param {number[]} nums - Array of integers
+ * @param {number} val - Value to remove
+ * @return {number} - New length of array after removal
+ */
+function removeElement(nums, val) {
+  let writeIndex = 0; // Position to write next valid element
+  
+  // Iterate through the array
+  for (let readIndex = 0; readIndex < nums.length; readIndex++) {
+    // If current element is not the value to remove
+    if (nums[readIndex] !== val) {
+      // Copy it to the write position
+      nums[writeIndex] = nums[readIndex];
+      writeIndex++;
+    }
+  }
+  
+  return writeIndex;
+}
+
+// Test cases
+let nums1 = [1, 2, 3];
+console.log('Example 1:', removeElement(nums1, 2)); // 2
+console.log('Array:', nums1); // [1, 3, 3]
+
+let nums2 = [0, 1, 2, 2, 3, 0, 4, 2];
+console.log('Example 2:', removeElement(nums2, 2)); // 5
+console.log('Array:', nums2); // [0, 1, 3, 0, 4, ...]
+
+let nums3 = [3, 2, 2, 3];
+console.log('Example 3:', removeElement(nums3, 3)); // 2
+console.log('Array:', nums3); // [2, 2, ...]
+
+let nums4 = [1];
+console.log('Example 4:', removeElement(nums4, 1)); // 0
+console.log('Array:', nums4); // [1] (but length is 0)`}
+  testCases={[
+    { input: '(() => { const n = [1, 2, 3]; return removeElement(n, 2); })()', expected: '2' },
+    { input: '(() => { const n = [0, 1, 2, 2, 3, 0, 4, 2]; return removeElement(n, 2); })()', expected: '5' },
+    { input: '(() => { const n = [3, 2, 2, 3]; return removeElement(n, 3); })()', expected: '2' },
+    { input: '(() => { const n = [1]; return removeElement(n, 1); })()', expected: '0' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution"
+  code={`from typing import List
+
+def remove_element(nums: List[int], val: int) -> int:
+    """
+    Remove all instances of val from array in-place
+    
+    Args:
+        nums: List of integers (modified in-place)
+        val: Value to remove
+        
+    Returns:
+        int: New length of array after removal
+    """
+    write_index = 0  # Position to write next valid element
+    
+    # Iterate through the array
+    for read_index in range(len(nums)):
+        # If current element is not the value to remove
+        if nums[read_index] != val:
+            # Copy it to the write position
+            nums[write_index] = nums[read_index]
+            write_index += 1
+    
+    return write_index
+
+# Test cases
+nums1 = [1, 2, 3]
+print('Example 1:', remove_element(nums1, 2))  # 2
+print('Array:', nums1)  # [1, 3, 3]
+
+nums2 = [0, 1, 2, 2, 3, 0, 4, 2]
+print('Example 2:', remove_element(nums2, 2))  # 5
+print('Array:', nums2)  # [0, 1, 3, 0, 4, ...]
+
+nums3 = [3, 2, 2, 3]
+print('Example 3:', remove_element(nums3, 3))  # 2
+print('Array:', nums3)  # [2, 2, ...]
+
+nums4 = [1]
+print('Example 4:', remove_element(nums4, 1))  # 0
+print('Array:', nums4)  # [1] (but length is 0)`}
+  testCases={[
+    { input: '(() => { n = [1, 2, 3]; return remove_element(n, 2); })()', expected: '2' },
+    { input: '(() => { n = [0, 1, 2, 2, 3, 0, 4, 2]; return remove_element(n, 2); })()', expected: '5' },
+    { input: '(() => { n = [3, 2, 2, 3]; return remove_element(n, 3); })()', expected: '2' },
+    { input: '(() => { n = [1]; return remove_element(n, 1); })()', expected: '0' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (When Elements to Remove Are Rare)
+
+If the elements to remove are rare, we can optimize by swapping with elements from the end:
+
+<Tabs>
+<TabItem value="javascript-alt" label="JavaScript Alternative" default>
+
+```javascript
+/**
+ * Alternative: Swap with end elements when val is rare
+ * More efficient when few elements need to be removed
+ */
+function removeElementSwap(nums, val) {
+  let left = 0;
+  let right = nums.length;
+  
+  while (left < right) {
+    if (nums[left] === val) {
+      // Swap with element from end
+      nums[left] = nums[right - 1];
+      right--; // Reduce array size
+    } else {
+      left++; // Keep this element
+    }
+  }
+  
+  return left;
+}
+```
+
+</TabItem>
+<TabItem value="python-alt" label="Python Alternative">
+
+```python
+def remove_element_swap(nums: List[int], val: int) -> int:
+    """
+    Alternative: Swap with end elements when val is rare
+    """
+    left = 0
+    right = len(nums)
+    
+    while left < right:
+        if nums[left] == val:
+            # Swap with element from end
+            nums[left] = nums[right - 1]
+            right -= 1  # Reduce array size
+        else:
+            left += 1  # Keep this element
+    
+    return left
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the array. We iterate through the array once.
+- **Space Complexity:** O(1) - We only use a constant amount of extra space (two pointers).
+
+## Approach
+
+The solution uses the **two-pointer technique**:
+
+1. **Write pointer (slow)**: Tracks where the next valid element should be placed
+   - Starts at index 0
+   - Only increments when we find a valid element
+
+2. **Read pointer (fast)**: Iterates through the entire array
+   - Checks each element
+   - Skips elements equal to `val`
+
+3. **Copy operation**: When we find a valid element (not equal to `val`):
+   - Copy it to `nums[writeIndex]`
+   - Increment `writeIndex`
+
+4. **Result**: `writeIndex` represents the new length
+
+## Key Insights
+
+- **Two-pointer technique**: One pointer reads, one pointer writes
+- **In-place modification**: We overwrite elements we want to keep
+- **Order preservation**: The relative order of remaining elements is preserved
+- **O(1) space**: No additional array needed
+- **Single pass**: We only iterate through the array once
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `nums = [1, 2, 3]`, `val = 2`
+
+```
+Initial: nums = [1, 2, 3]
+         writeIndex = 0
+
+Step 1: readIndex = 0, nums[0] = 1 ≠ 2
+  nums[0] = 1 (already in place)
+  writeIndex = 1
+  Array: [1, 2, 3]
+
+Step 2: readIndex = 1, nums[1] = 2 == 2
+  Skip (don't copy)
+  writeIndex = 1 (unchanged)
+  Array: [1, 2, 3]
+
+Step 3: readIndex = 2, nums[2] = 3 ≠ 2
+  nums[1] = 3 (copy to writeIndex)
+  writeIndex = 2
+  Array: [1, 3, 3]
+
+Final: writeIndex = 2
+Array after modification: [1, 3, 3]
+(Values beyond index 1 don't matter)
+```
+
+## Visual Representation
+
+```
+Initial array: [1, 2, 3], val = 2
+
+Read pointer (→) scans the array
+Write pointer (↓) tracks where to place valid elements
+
+Step 1: [1, 2, 3]
+        ↓  →
+        Write 1 at position 0
+
+Step 2: [1, 2, 3]
+           ↓  →
+           Skip 2
+
+Step 3: [1, 3, 3]
+           ↓     →
+           Write 3 at position 1
+
+Result: Length = 2, Array = [1, 3, ...]
+```
+
+## Edge Cases
+
+- **Empty array**: Return 0
+- **All elements equal to val**: Return 0, array unchanged (but length is 0)
+- **No elements equal to val**: Return original length, array unchanged
+- **Single element equal to val**: Return 0
+- **Single element not equal to val**: Return 1
+
+## Comparison of Approaches
+
+**Standard approach (copy forward):**
+- Always O(n) time
+- Preserves order
+- Good when many elements need to be removed
+
+**Swap approach:**
+- O(n) time, but fewer operations when val is rare
+- Does NOT preserve order
+- Good when few elements need to be removed
+
+## Related Problems
+
+- **Remove Duplicates from Sorted Array**: Similar two-pointer technique
+- **Move Zeroes**: Move all zeros to the end
+- **Remove Duplicates**: Remove duplicates in-place
+
+## Takeaways
+
+- **Two-pointer technique** is efficient for in-place array modifications
+- **Write pointer pattern** is common for filtering arrays
+- **In-place operations** save space
+- **Order preservation** depends on the approach chosen
+- **Single pass** is optimal for this problem
+

@@ -1,0 +1,377 @@
+---
+id: rabbit-holes
+title: Rabbit Holes Distance
+slug: /problems/rabbit-holes
+difficulty: Medium
+tags: [array, matrix, bfs, graph]
+---
+
+# Rabbit Holes Distance
+
+Given a 2D array containing only the following values: `-1`, `0`, `1` where `-1` represents an obstacle, `0` represents a rabbit hole, and `1` represents a rabbit, update every cell containing a rabbit with the distance to its closest rabbit hole.
+
+**Note:** 
+- Multiple rabbits may occupy a single rabbit hole
+- You may assume every rabbit can reach a rabbit hole
+- A rabbit can only move up, down, left, or right in a single move
+
+## Example(s)
+
+**Example 1:**
+```
+Input:
+-1  0  1
+ 1  1 -1
+ 1  1  0
+
+Output:
+-1  0  1
+ 2  1 -1
+ 2  1  0
+
+Explanation:
+- Rabbit holes are at (0,1) and (2,2)
+- Rabbit at (0,2): distance 1 to hole at (0,1)
+- Rabbit at (1,0): distance 2 to hole at (0,1) or (2,2)
+- Rabbit at (1,1): distance 1 to hole at (0,1) or (2,2)
+- Rabbit at (2,0): distance 2 to hole at (2,2)
+- Rabbit at (2,1): distance 1 to hole at (2,2)
+```
+
+**Example 2:**
+```
+Input:
+ 1  1  1
+ 1 -1 -1
+ 1  1  0
+
+Output:
+ 4  5  6
+ 3 -1 -1
+ 2  1  0
+
+Explanation:
+- Rabbit hole is at (2,2)
+- All rabbits are updated with their distance to this hole
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Multi-source BFS**:
+
+1. **Find all rabbit holes**: Collect all positions with value 0
+2. **Multi-source BFS**: Start BFS from all rabbit holes simultaneously
+3. **Update distances**: For each rabbit cell, update with distance from nearest hole
+4. **Preserve obstacles**: Keep -1 values unchanged
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Multi-source BFS"
+  code={`/**
+ * Update rabbit cells with distance to nearest rabbit hole
+ * @param {number[][]} grid - 2D array (-1=obstacle, 0=hole, 1=rabbit)
+ * @return {void} - Modifies grid in-place
+ */
+function updateRabbitDistances(grid) {
+  if (!grid || grid.length === 0) return;
+  
+  const rows = grid.length;
+  const cols = grid[0].length;
+  const queue = [];
+  const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+  
+  // Step 1: Find all rabbit holes (value 0) and add to queue
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (grid[i][j] === 0) {
+        queue.push([i, j, 0]); // [row, col, distance]
+      }
+    }
+  }
+  
+  // Step 2: Multi-source BFS from all rabbit holes
+  while (queue.length > 0) {
+    const [row, col, distance] = queue.shift();
+    
+    // Explore 4 directions
+    for (const [dr, dc] of directions) {
+      const newRow = row + dr;
+      const newCol = col + dc;
+      
+      // Check bounds and if cell is a rabbit (value 1)
+      if (
+        newRow >= 0 && newRow < rows &&
+        newCol >= 0 && newCol < cols &&
+        grid[newRow][newCol] === 1
+      ) {
+        // Update rabbit cell with distance + 1
+        grid[newRow][newCol] = distance + 1;
+        queue.push([newRow, newCol, distance + 1]);
+      }
+    }
+  }
+}
+
+// Test cases
+const grid1 = [
+  [-1, 0, 1],
+  [1, 1, -1],
+  [1, 1, 0]
+];
+updateRabbitDistances(grid1);
+console.log('Example 1:', grid1);
+// [[-1, 0, 1], [2, 1, -1], [2, 1, 0]]
+
+const grid2 = [
+  [1, 1, 1],
+  [1, -1, -1],
+  [1, 1, 0]
+];
+updateRabbitDistances(grid2);
+console.log('Example 2:', grid2);
+// [[4, 5, 6], [3, -1, -1], [2, 1, 0]]`}
+  testCases={[
+    { input: '(grid => { updateRabbitDistances(grid); return JSON.stringify(grid); })([[-1,0,1],[1,1,-1],[1,1,0]])', expected: '[[-1,0,1],[2,1,-1],[2,1,0]]' },
+    { input: '(grid => { updateRabbitDistances(grid); return JSON.stringify(grid); })([[1,1,1],[1,-1,-1],[1,1,0]])', expected: '[[4,5,6],[3,-1,-1],[2,1,0]]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Multi-source BFS"
+  code={`from typing import List
+from collections import deque
+
+def update_rabbit_distances(grid: List[List[int]]) -> None:
+    """
+    Update rabbit cells with distance to nearest rabbit hole
+    
+    Args:
+        grid: 2D array (-1=obstacle, 0=hole, 1=rabbit), modified in-place
+    """
+    if not grid or not grid[0]:
+        return
+    
+    rows = len(grid)
+    cols = len(grid[0])
+    queue = deque()
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    
+    # Step 1: Find all rabbit holes (value 0) and add to queue
+    for i in range(rows):
+        for j in range(cols):
+            if grid[i][j] == 0:
+                queue.append((i, j, 0))  # (row, col, distance)
+    
+    # Step 2: Multi-source BFS from all rabbit holes
+    while queue:
+        row, col, distance = queue.popleft()
+        
+        # Explore 4 directions
+        for dr, dc in directions:
+            new_row = row + dr
+            new_col = col + dc
+            
+            # Check bounds and if cell is a rabbit (value 1)
+            if (
+                0 <= new_row < rows and
+                0 <= new_col < cols and
+                grid[new_row][new_col] == 1
+            ):
+                # Update rabbit cell with distance + 1
+                grid[new_row][new_col] = distance + 1
+                queue.append((new_row, new_col, distance + 1))
+
+# Test cases
+grid1 = [
+    [-1, 0, 1],
+    [1, 1, -1],
+    [1, 1, 0]
+]
+update_rabbit_distances(grid1)
+print('Example 1:', grid1)
+# [[-1, 0, 1], [2, 1, -1], [2, 1, 0]]
+
+grid2 = [
+    [1, 1, 1],
+    [1, -1, -1],
+    [1, 1, 0]
+]
+update_rabbit_distances(grid2)
+print('Example 2:', grid2)
+# [[4, 5, 6], [3, -1, -1], [2, 1, 0]]`}
+  testCases={[
+    { input: '(lambda grid: (update_rabbit_distances(grid), grid)[1])([[-1,0,1],[1,1,-1],[1,1,0]])', expected: '[[-1, 0, 1], [2, 1, -1], [2, 1, 0]]' },
+    { input: '(lambda grid: (update_rabbit_distances(grid), grid)[1])([[1,1,1],[1,-1,-1],[1,1,0]])', expected: '[[4, 5, 6], [3, -1, -1], [2, 1, 0]]' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(m × n) - Where m and n are the dimensions of the grid. We visit each cell at most once.
+- **Space Complexity:** O(m × n) - For the BFS queue in the worst case.
+
+## Approach
+
+The solution uses **Multi-source BFS**:
+
+1. **Find all rabbit holes**: 
+   - Scan the grid to find all cells with value 0 (rabbit holes)
+   - Add them to the BFS queue with distance 0
+
+2. **Multi-source BFS**: 
+   - Start BFS from all rabbit holes simultaneously
+   - This ensures we find the shortest distance from any rabbit to any hole
+
+3. **Update rabbit cells**: 
+   - When we reach a rabbit cell (value 1), update it with the current distance
+   - Add it to the queue to continue BFS
+
+4. **Preserve obstacles**: 
+   - Obstacles (-1) are never processed, so they remain unchanged
+
+## Key Insights
+
+- **Multi-source BFS**: Start from all rabbit holes to find nearest hole for each rabbit
+- **Shortest path**: BFS naturally finds shortest paths
+- **In-place update**: Modify rabbit cells directly in the grid
+- **Obstacles unchanged**: -1 values are never processed
+- **O(m×n) time**: Each cell visited at most once
+
+## Step-by-Step Example
+
+Let's trace through Example 1:
+
+```
+Initial grid:
+-1  0  1
+ 1  1 -1
+ 1  1  0
+
+Step 1: Find rabbit holes
+  Holes at: (0,1) and (2,2)
+  Queue: [(0,1,0), (2,2,0)]
+
+Step 2: BFS from (0,1) with distance 0
+  Check neighbors:
+    (0,0): -1 (obstacle) → skip
+    (0,2): 1 (rabbit) → update to 1, add to queue
+    (1,1): 1 (rabbit) → update to 1, add to queue
+  
+  Grid:
+  -1  0  1
+   1  1 -1
+   1  1  0
+
+Step 3: BFS from (2,2) with distance 0
+  Check neighbors:
+    (2,1): 1 (rabbit) → update to 1, add to queue
+    (1,2): -1 (obstacle) → skip
+
+Step 4: Continue BFS with distance 1
+  From (0,2): Check neighbors
+    (1,2): -1 (obstacle) → skip
+    (0,1): 0 (hole) → skip
+  
+  From (1,1): Check neighbors
+    (1,0): 1 (rabbit) → update to 2, add to queue
+    (0,1): 0 (hole) → skip
+    (1,2): -1 (obstacle) → skip
+    (2,1): 1 (already updated) → skip
+  
+  From (2,1): Check neighbors
+    (2,0): 1 (rabbit) → update to 2, add to queue
+    (1,1): 1 (already updated) → skip
+    (2,2): 0 (hole) → skip
+
+Step 5: Continue BFS with distance 2
+  From (1,0): Check neighbors
+    (0,0): -1 (obstacle) → skip
+    (2,0): 2 (already updated) → skip
+    (1,1): 1 (already updated) → skip
+  
+  From (2,0): Check neighbors
+    (1,0): 2 (already updated) → skip
+    (2,1): 1 (already updated) → skip
+
+Final grid:
+-1  0  1
+ 2  1 -1
+ 2  1  0
+```
+
+## Visual Representation
+
+```
+Example 1:
+Initial:
+-1  0  1
+ 1  1 -1
+ 1  1  0
+
+Rabbit holes (0) at: (0,1), (2,2)
+
+BFS expansion:
+-1  0  1    ← Hole at (0,1)
+ 1  1 -1    ← Rabbits at (1,0), (1,1)
+ 1  1  0    ← Rabbits at (2,0), (2,1), Hole at (2,2)
+
+After BFS:
+-1  0  1    ← (0,2): distance 1 from (0,1)
+ 2  1 -1    ← (1,0): distance 2, (1,1): distance 1
+ 2  1  0    ← (2,0): distance 2, (2,1): distance 1
+```
+
+## Edge Cases
+
+- **Single rabbit hole**: Works correctly
+- **Multiple rabbit holes**: BFS finds nearest one
+- **All rabbits**: All updated with distances
+- **No rabbits**: Grid unchanged
+- **Obstacles block path**: BFS finds alternative paths
+- **Rabbits next to holes**: Updated to distance 1
+
+## Important Notes
+
+- **Multi-source BFS**: Start from all holes simultaneously
+- **Shortest distance**: BFS guarantees shortest path
+- **In-place modification**: Updates grid directly
+- **Obstacles preserved**: -1 values never changed
+- **O(m×n) time**: Each cell visited at most once
+
+## Why Multi-source BFS?
+
+**Key insight**: 
+- If we start BFS from each rabbit individually, it's O(m×n × number of rabbits)
+- If we start from all holes simultaneously, it's O(m×n)
+- BFS from holes naturally finds the nearest hole for each rabbit
+- More efficient and simpler
+
+## Related Problems
+
+- **Rotting Oranges**: Similar multi-source BFS
+- **Walls and Gates**: Similar problem (update rooms with distance to gates)
+- **01 Matrix**: Find distance to nearest 0
+- **Shortest Path in Binary Matrix**: Different BFS problem
+
+## Takeaways
+
+- **Multi-source BFS** efficiently finds nearest sources
+- **Start from targets** (holes) rather than sources (rabbits)
+- **BFS guarantees shortest path** to nearest hole
+- **O(m×n) time** is optimal (must visit all cells)
+- **In-place update** modifies grid directly
+

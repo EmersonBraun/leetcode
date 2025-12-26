@@ -1,0 +1,398 @@
+---
+id: power-of-three
+title: Power of Three
+slug: /problems/power-of-three
+difficulty: Easy
+tags: [math, recursion]
+leetcode: https://leetcode.com/problems/power-of-three/
+---
+
+# Power of Three
+
+Given an integer `n`, return whether or not it is a power of three.
+
+**Note:** An integer is a power of three if there exists an integer `x` such that `n = 3^x`.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: n = 9
+Output: true
+Explanation: 9 = 3², so it is a power of three.
+```
+
+**Example 2:**
+```
+Input: n = 50
+Output: false
+Explanation: 50 is not a power of three.
+```
+
+**Example 3:**
+```
+Input: n = 1
+Output: true
+Explanation: 1 = 3⁰, so it is a power of three.
+```
+
+**Example 4:**
+```
+Input: n = 27
+Output: true
+Explanation: 27 = 3³, so it is a power of three.
+```
+
+**Example 5:**
+```
+Input: n = 0
+Output: false
+Explanation: 0 is not a power of three (3^x > 0 for all x).
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+There are several approaches to solve this problem:
+
+1. **Loop approach**: Keep dividing by 3 until we get 1 or a non-divisible number
+2. **Recursion approach**: Recursively divide by 3
+3. **Math approach**: Use logarithms (with floating-point precision considerations)
+4. **Integer limits approach**: Use the maximum power of 3 that fits in an integer
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Loop Approach"
+  code={`/**
+ * Check if n is a power of three using loop
+ * @param {number} n - Integer to check
+ * @return {boolean} - True if n is a power of three
+ */
+function isPowerOfThree(n) {
+  // Edge cases
+  if (n <= 0) return false;
+  if (n === 1) return true;
+  
+  // Keep dividing by 3
+  while (n > 1) {
+    // If not divisible by 3, it's not a power of three
+    if (n % 3 !== 0) {
+      return false;
+    }
+    n = n / 3;
+  }
+  
+  return n === 1;
+}
+
+// Test cases
+console.log('Example 1:', isPowerOfThree(9)); // true
+console.log('Example 2:', isPowerOfThree(50)); // false
+console.log('Example 3:', isPowerOfThree(1)); // true
+console.log('Example 4:', isPowerOfThree(27)); // true
+console.log('Example 5:', isPowerOfThree(0)); // false
+console.log('Test 6:', isPowerOfThree(81)); // true
+console.log('Test 7:', isPowerOfThree(45)); // false`}
+  testCases={[
+    { input: 'isPowerOfThree(9)', expected: 'true' },
+    { input: 'isPowerOfThree(50)', expected: 'false' },
+    { input: 'isPowerOfThree(1)', expected: 'true' },
+    { input: 'isPowerOfThree(27)', expected: 'true' },
+    { input: 'isPowerOfThree(0)', expected: 'false' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Loop Approach"
+  code={`def is_power_of_three(n: int) -> bool:
+    """
+    Check if n is a power of three using loop
+    
+    Args:
+        n: Integer to check
+        
+    Returns:
+        bool: True if n is a power of three
+    """
+    # Edge cases
+    if n <= 0:
+        return False
+    if n == 1:
+        return True
+    
+    # Keep dividing by 3
+    while n > 1:
+        # If not divisible by 3, it's not a power of three
+        if n % 3 != 0:
+            return False
+        n = n // 3
+    
+    return n == 1
+
+# Test cases
+print('Example 1:', is_power_of_three(9))  # True
+print('Example 2:', is_power_of_three(50))  # False
+print('Example 3:', is_power_of_three(1))  # True
+print('Example 4:', is_power_of_three(27))  # True
+print('Example 5:', is_power_of_three(0))  # False
+print('Test 6:', is_power_of_three(81))  # True
+print('Test 7:', is_power_of_three(45))  # False`}
+  testCases={[
+    { input: 'is_power_of_three(9)', expected: 'True' },
+    { input: 'is_power_of_three(50)', expected: 'False' },
+    { input: 'is_power_of_three(1)', expected: 'True' },
+    { input: 'is_power_of_three(27)', expected: 'True' },
+    { input: 'is_power_of_three(0)', expected: 'False' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solutions
+
+### Recursive Approach
+
+<Tabs>
+<TabItem value="javascript-rec" label="JavaScript Recursive" default>
+
+```javascript
+/**
+ * Recursive approach
+ */
+function isPowerOfThreeRecursive(n) {
+  // Base cases
+  if (n <= 0) return false;
+  if (n === 1) return true;
+  
+  // If not divisible by 3, it's not a power of three
+  if (n % 3 !== 0) return false;
+  
+  // Recursively check n/3
+  return isPowerOfThreeRecursive(n / 3);
+}
+```
+
+</TabItem>
+<TabItem value="python-rec" label="Python Recursive">
+
+```python
+def is_power_of_three_recursive(n: int) -> bool:
+    """
+    Recursive approach
+    """
+    # Base cases
+    if n <= 0:
+        return False
+    if n == 1:
+        return True
+    
+    # If not divisible by 3, it's not a power of three
+    if n % 3 != 0:
+        return False
+    
+    # Recursively check n//3
+    return is_power_of_three_recursive(n // 3)
+```
+
+</TabItem>
+</Tabs>
+
+### Math Approach (Logarithms)
+
+<Tabs>
+<TabItem value="javascript-math" label="JavaScript Math" default>
+
+```javascript
+/**
+ * Math approach using logarithms
+ * Note: May have floating-point precision issues
+ */
+function isPowerOfThreeMath(n) {
+  if (n <= 0) return false;
+  
+  // log₃(n) = log(n) / log(3)
+  const log3 = Math.log(n) / Math.log(3);
+  
+  // Check if log3 is close to an integer
+  // Use epsilon to handle floating-point errors
+  return Math.abs(log3 - Math.round(log3)) < 1e-10;
+}
+```
+
+</TabItem>
+<TabItem value="python-math" label="Python Math">
+
+```python
+import math
+
+def is_power_of_three_math(n: int) -> bool:
+    """
+    Math approach using logarithms
+    """
+    if n <= 0:
+        return False
+    
+    # log₃(n) = log(n) / log(3)
+    log3 = math.log(n) / math.log(3)
+    
+    # Check if log3 is close to an integer
+    return abs(log3 - round(log3)) < 1e-10
+```
+
+</TabItem>
+</Tabs>
+
+### Integer Limits Approach (Optimal for LeetCode constraints)
+
+<Tabs>
+<TabItem value="javascript-opt" label="JavaScript Optimal" default>
+
+```javascript
+/**
+ * Optimal approach using integer limits
+ * For 32-bit integers, max power of 3 is 3^19 = 1162261467
+ */
+function isPowerOfThreeOptimal(n) {
+  if (n <= 0) return false;
+  
+  // Maximum power of 3 that fits in 32-bit signed integer
+  const maxPowerOfThree = 1162261467; // 3^19
+  
+  // If n is a power of 3, it must divide maxPowerOfThree
+  return maxPowerOfThree % n === 0;
+}
+```
+
+</TabItem>
+<TabItem value="python-opt" label="Python Optimal">
+
+```python
+def is_power_of_three_optimal(n: int) -> bool:
+    """
+    Optimal approach using integer limits
+    For 32-bit integers, max power of 3 is 3^19 = 1162261467
+    """
+    if n <= 0:
+        return False
+    
+    # Maximum power of 3 that fits in 32-bit signed integer
+    max_power_of_three = 1162261467  # 3^19
+    
+    # If n is a power of 3, it must divide maxPowerOfThree
+    return max_power_of_three % n == 0
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(log₃(n)) - For loop/recursive approaches, we divide by 3 each time. For the optimal approach, it's O(1).
+- **Space Complexity:** O(1) - For loop approach. O(log₃(n)) for recursive approach (recursion stack). O(1) for optimal approach.
+
+## Approach
+
+### Loop Approach (Recommended)
+1. **Edge cases**: Handle n ≤ 0 (return false) and n = 1 (return true)
+2. **Divide by 3**: While n > 1, check if n is divisible by 3
+3. **Early exit**: If n is not divisible by 3, return false
+4. **Continue**: Divide n by 3 and repeat
+5. **Final check**: If we reach n = 1, return true
+
+### Optimal Approach (For fixed integer size)
+1. **Find maximum**: Calculate the maximum power of 3 that fits in the integer type
+2. **Divisibility check**: If n is a power of 3, it must divide the maximum power of 3
+3. **Edge cases**: Handle n ≤ 0
+
+## Key Insights
+
+- **Division by 3**: Powers of 3 can be reduced to 1 by repeatedly dividing by 3
+- **Divisibility**: At each step, the number must be divisible by 3
+- **Base case**: 1 is a power of 3 (3⁰ = 1)
+- **Integer limits**: For fixed-size integers, we can use the maximum power of 3
+- **Logarithm approach**: Works but has floating-point precision issues
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `n = 9`
+
+```
+Initial: n = 9
+
+Step 1: n > 1, check n % 3
+  n % 3 = 9 % 3 = 0 ✓ (divisible)
+  n = 9 / 3 = 3
+
+Step 2: n > 1, check n % 3
+  n % 3 = 3 % 3 = 0 ✓ (divisible)
+  n = 3 / 3 = 1
+
+Step 3: n === 1
+  Return true
+
+Result: true (9 = 3²)
+```
+
+Let's trace through Example 2: `n = 50`
+
+```
+Initial: n = 50
+
+Step 1: n > 1, check n % 3
+  n % 3 = 50 % 3 = 2 ✗ (not divisible)
+  Return false
+
+Result: false (50 is not a power of 3)
+```
+
+## Edge Cases
+
+- **n = 0**: Not a power of 3 (return false)
+- **n = 1**: Is a power of 3 (3⁰ = 1, return true)
+- **n < 0**: Not a power of 3 (return false)
+- **n = 3**: Is a power of 3 (3¹ = 3, return true)
+- **Very large n**: Loop approach handles it, optimal approach is O(1)
+
+## Mathematical Properties
+
+- **3⁰ = 1**: Base case
+- **3¹ = 3**: First power
+- **3² = 9**: Second power
+- **3³ = 27**: Third power
+- **Pattern**: Each power is 3 times the previous power
+
+## Comparison of Approaches
+
+| Approach | Time | Space | Notes |
+|----------|------|-------|-------|
+| Loop | O(log₃(n)) | O(1) | Simple, easy to understand |
+| Recursive | O(log₃(n)) | O(log₃(n)) | Clean but uses stack space |
+| Math (log) | O(1) | O(1) | Fast but precision issues |
+| Optimal | O(1) | O(1) | Fastest, but only works for fixed integer size |
+
+## Related Problems
+
+- **Power of Two**: Similar problem for base 2
+- **Power of Four**: Similar problem for base 4
+- **Count Primes**: Different but related number theory problem
+- **Factorial Trailing Zeroes**: Another number theory problem
+
+## Takeaways
+
+- **Loop approach** is simple and works for any integer size
+- **Recursive approach** is elegant but uses more space
+- **Optimal approach** is fastest for fixed-size integers
+- **Edge cases** are important (0, 1, negative numbers)
+- **Divisibility check** is the key insight
+

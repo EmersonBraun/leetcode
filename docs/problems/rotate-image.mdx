@@ -1,0 +1,456 @@
+---
+id: rotate-image
+title: Rotate Image
+slug: /problems/rotate-image
+difficulty: Medium
+tags: [array, matrix, math]
+leetcode: https://leetcode.com/problems/rotate-image/
+---
+
+# Rotate Image
+
+Given an image represented as a 2D array of pixels, return the image rotated 90 degrees clockwise.
+
+**Note:** You must rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: image = [
+    [10, 11, 12],
+    [13, 14, 15],
+    [16, 17, 18]
+]
+
+Output: [
+    [16, 13, 10],
+    [17, 14, 11],
+    [18, 15, 12]
+]
+
+Explanation:
+90-degree clockwise rotation transforms:
+- Top row [10, 11, 12] → Right column [12, 15, 18] (reversed)
+- Right column [12, 15, 18] → Bottom row [18, 17, 16] (reversed)
+- Bottom row [16, 17, 18] → Left column [16, 13, 10]
+- Left column [10, 13, 16] → Top row [10, 11, 12] (reversed)
+```
+
+**Example 2:**
+```
+Input: image = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12],
+    [13, 14, 15, 16]
+]
+
+Output: [
+    [13, 9, 5, 1],
+    [14, 10, 6, 2],
+    [15, 11, 7, 3],
+    [16, 12, 8, 4]
+]
+```
+
+**Example 3:**
+```
+Input: image = [
+    [1, 2],
+    [3, 4]
+]
+
+Output: [
+    [3, 1],
+    [4, 2]
+]
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **transpose and reverse**:
+
+1. **Transpose the matrix**: Swap `matrix[i][j]` with `matrix[j][i]`
+2. **Reverse each row**: Reverse each row of the transposed matrix
+
+**Alternative approach**: Rotate in layers (four-way swap).
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Transpose + Reverse"
+  code={`/**
+ * Rotate matrix 90 degrees clockwise (in-place)
+ * @param {number[][]} matrix - 2D matrix to rotate
+ * @return {void} - Modifies matrix in-place
+ */
+function rotate(matrix) {
+  const n = matrix.length;
+  
+  // Step 1: Transpose the matrix (swap rows and columns)
+  for (let i = 0; i < n; i++) {
+    for (let j = i; j < n; j++) {
+      // Swap matrix[i][j] with matrix[j][i]
+      [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]];
+    }
+  }
+  
+  // Step 2: Reverse each row
+  for (let i = 0; i < n; i++) {
+    matrix[i].reverse();
+  }
+}
+
+// Helper function to print matrix
+function printMatrix(matrix) {
+  console.log('[');
+  for (const row of matrix) {
+    console.log('  [' + row.join(', ') + ']');
+  }
+  console.log(']');
+}
+
+// Test cases
+const image1 = [
+  [10, 11, 12],
+  [13, 14, 15],
+  [16, 17, 18]
+];
+rotate(image1);
+console.log('Example 1:');
+printMatrix(image1);
+// [[16, 13, 10], [17, 14, 11], [18, 15, 12]]
+
+const image2 = [
+  [1, 2, 3, 4],
+  [5, 6, 7, 8],
+  [9, 10, 11, 12],
+  [13, 14, 15, 16]
+];
+rotate(image2);
+console.log('Example 2:');
+printMatrix(image2);
+// [[13, 9, 5, 1], [14, 10, 6, 2], [15, 11, 7, 3], [16, 12, 8, 4]]
+
+const image3 = [
+  [1, 2],
+  [3, 4]
+];
+rotate(image3);
+console.log('Example 3:');
+printMatrix(image3);
+// [[3, 1], [4, 2]]`}
+  testCases={[
+    { input: '(() => { const m = [[10,11,12],[13,14,15],[16,17,18]]; rotate(m); return JSON.stringify(m); })()', expected: '[[16,13,10],[17,14,11],[18,15,12]]' },
+    { input: '(() => { const m = [[1,2],[3,4]]; rotate(m); return JSON.stringify(m); })()', expected: '[[3,1],[4,2]]' },
+    { input: '(() => { const m = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]]; rotate(m); return JSON.stringify(m); })()', expected: '[[13,9,5,1],[14,10,6,2],[15,11,7,3],[16,12,8,4]]' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Transpose + Reverse"
+  code={`from typing import List
+
+def rotate(matrix: List[List[int]]) -> None:
+    """
+    Rotate matrix 90 degrees clockwise (in-place)
+    
+    Args:
+        matrix: 2D matrix to rotate (modified in-place)
+    """
+    n = len(matrix)
+    
+    # Step 1: Transpose the matrix (swap rows and columns)
+    for i in range(n):
+        for j in range(i, n):
+            # Swap matrix[i][j] with matrix[j][i]
+            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+    
+    # Step 2: Reverse each row
+    for i in range(n):
+        matrix[i].reverse()
+
+# Test cases
+image1 = [
+    [10, 11, 12],
+    [13, 14, 15],
+    [16, 17, 18]
+]
+rotate(image1)
+print('Example 1:', image1)
+# [[16, 13, 10], [17, 14, 11], [18, 15, 12]]
+
+image2 = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12],
+    [13, 14, 15, 16]
+]
+rotate(image2)
+print('Example 2:', image2)
+# [[13, 9, 5, 1], [14, 10, 6, 2], [15, 11, 7, 3], [16, 12, 8, 4]]
+
+image3 = [
+    [1, 2],
+    [3, 4]
+]
+rotate(image3)
+print('Example 3:', image3)
+# [[3, 1], [4, 2]]`}
+  testCases={[
+    { input: '(() => { m = [[10,11,12],[13,14,15],[16,17,18]]; rotate(m); return str(m); })()', expected: '[[16, 13, 10], [17, 14, 11], [18, 15, 12]]' },
+    { input: '(() => { m = [[1,2],[3,4]]; rotate(m); return str(m); })()', expected: '[[3, 1], [4, 2]]' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Layer-by-Layer Rotation)
+
+Here's an alternative approach that rotates in layers using four-way swaps:
+
+<Tabs>
+<TabItem value="javascript-layer" label="JavaScript Layer-by-Layer" default>
+
+```javascript
+/**
+ * Alternative: Rotate layer by layer using four-way swaps
+ */
+function rotateLayerByLayer(matrix) {
+  const n = matrix.length;
+  
+  // Rotate layer by layer
+  for (let layer = 0; layer < Math.floor(n / 2); layer++) {
+    const first = layer;
+    const last = n - 1 - layer;
+    
+    for (let i = first; i < last; i++) {
+      const offset = i - first;
+      
+      // Save top
+      const top = matrix[first][i];
+      
+      // Move left to top
+      matrix[first][i] = matrix[last - offset][first];
+      
+      // Move bottom to left
+      matrix[last - offset][first] = matrix[last][last - offset];
+      
+      // Move right to bottom
+      matrix[last][last - offset] = matrix[i][last];
+      
+      // Move top to right
+      matrix[i][last] = top;
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="python-layer" label="Python Layer-by-Layer">
+
+```python
+def rotate_layer_by_layer(matrix: List[List[int]]) -> None:
+    """
+    Alternative: Rotate layer by layer using four-way swaps
+    """
+    n = len(matrix)
+    
+    # Rotate layer by layer
+    for layer in range(n // 2):
+        first = layer
+        last = n - 1 - layer
+        
+        for i in range(first, last):
+            offset = i - first
+            
+            # Save top
+            top = matrix[first][i]
+            
+            # Move left to top
+            matrix[first][i] = matrix[last - offset][first]
+            
+            # Move bottom to left
+            matrix[last - offset][first] = matrix[last][last - offset]
+            
+            # Move right to bottom
+            matrix[last][last - offset] = matrix[i][last]
+            
+            # Move top to right
+            matrix[i][last] = top
+```
+
+</TabItem>
+</Tabs>
+
+## Alternative: Direct Formula
+
+For reference, here's the direct formula approach (creates new matrix):
+
+<Tabs>
+<TabItem value="javascript-formula" label="JavaScript Direct Formula" default>
+
+```javascript
+/**
+ * Direct formula (creates new matrix, not in-place)
+ * For 90-degree clockwise: new[i][j] = old[n-1-j][i]
+ */
+function rotateFormula(matrix) {
+  const n = matrix.length;
+  const rotated = Array(n).fill().map(() => Array(n).fill(0));
+  
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      rotated[j][n - 1 - i] = matrix[i][j];
+    }
+  }
+  
+  return rotated;
+}
+```
+
+</TabItem>
+<TabItem value="python-formula" label="Python Direct Formula">
+
+```python
+def rotate_formula(matrix: List[List[int]]) -> List[List[int]]:
+    """
+    Direct formula (creates new matrix, not in-place)
+    For 90-degree clockwise: new[i][j] = old[n-1-j][i]
+    """
+    n = len(matrix)
+    rotated = [[0] * n for _ in range(n)]
+    
+    for i in range(n):
+        for j in range(n):
+            rotated[j][n - 1 - i] = matrix[i][j]
+    
+    return rotated
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n²) - Where n is the dimension of the matrix. We need to process all n² elements.
+- **Space Complexity:** O(1) - For the transpose + reverse approach, we only use constant extra space. The layer-by-layer approach also uses O(1) space.
+
+## Approach
+
+The solution uses **transpose and reverse**:
+
+1. **Transpose**: Swap elements across the main diagonal
+   - `matrix[i][j]` ↔ `matrix[j][i]` for all `i < j`
+   - This converts rows to columns
+
+2. **Reverse each row**: Reverse each row of the transposed matrix
+   - This completes the 90-degree clockwise rotation
+
+**Why this works:**
+- Transpose: Converts rows to columns (but in wrong order)
+- Reverse: Fixes the order to get clockwise rotation
+
+## Key Insights
+
+- **Transpose + reverse**: Simple two-step process
+- **In-place rotation**: Can be done without extra matrix
+- **Layer-by-layer**: Alternative approach using four-way swaps
+- **Symmetric operations**: Only need to swap upper triangle during transpose
+- **O(1) space**: Both approaches use constant extra space
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `image = [[10,11,12],[13,14,15],[16,17,18]]`
+
+```
+Initial matrix:
+[10, 11, 12]
+[13, 14, 15]
+[16, 17, 18]
+
+Step 1: Transpose (swap across main diagonal)
+  Swap (0,1) with (1,0): 11 ↔ 13
+  Swap (0,2) with (2,0): 12 ↔ 16
+  Swap (1,2) with (2,1): 15 ↔ 17
+
+After transpose:
+[10, 13, 16]
+[11, 14, 17]
+[12, 15, 18]
+
+Step 2: Reverse each row
+  Row 0: [10, 13, 16] → [16, 13, 10]
+  Row 1: [11, 14, 17] → [17, 14, 11]
+  Row 2: [12, 15, 18] → [18, 15, 12]
+
+Final result:
+[16, 13, 10]
+[17, 14, 11]
+[18, 15, 12]
+```
+
+## Visual Representation
+
+```
+Original:        Transpose:      Reverse rows:
+[10, 11, 12]    [10, 13, 16]    [16, 13, 10]
+[13, 14, 15] →  [11, 14, 17] →  [17, 14, 11]
+[16, 17, 18]    [12, 15, 18]    [18, 15, 12]
+
+Rotation mapping:
+(0,0) → (0,2)    (0,1) → (1,2)    (0,2) → (2,2)
+(1,0) → (0,1)    (1,1) → (1,1)    (1,2) → (2,1)
+(2,0) → (0,0)    (2,1) → (1,0)    (2,2) → (2,0)
+```
+
+## Edge Cases
+
+- **1×1 matrix**: Stays the same
+- **2×2 matrix**: Works correctly
+- **Square matrices**: Works for any n×n matrix
+- **Odd dimensions**: Works correctly (middle element stays in place)
+- **Even dimensions**: Works correctly
+
+## Important Notes
+
+- **In-place requirement**: Must modify the input matrix directly
+- **Square matrix**: Problem assumes n×n matrix
+- **Clockwise rotation**: 90 degrees clockwise (not counter-clockwise)
+- **Transpose symmetry**: Only need to swap upper triangle (i < j)
+
+## Rotation Formulas
+
+For reference, here are the rotation formulas:
+
+- **90° clockwise**: `new[i][j] = old[n-1-j][i]`
+- **90° counter-clockwise**: `new[i][j] = old[j][n-1-i]`
+- **180°**: `new[i][j] = old[n-1-i][n-1-j]`
+
+## Related Problems
+
+- **Rotate Array**: Rotate 1D array
+- **Spiral Matrix**: Traverse matrix in spiral order
+- **Set Matrix Zeroes**: Modify matrix in-place
+- **Valid Sudoku**: Check 9×9 grid validity
+
+## Takeaways
+
+- **Transpose + reverse** is the simplest approach
+- **In-place rotation** is space-efficient
+- **Layer-by-layer** is an alternative approach
+- **O(n²) time** is optimal (must visit all elements)
+- **O(1) space** is achievable with careful swapping
+

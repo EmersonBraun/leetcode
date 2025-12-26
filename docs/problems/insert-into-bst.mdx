@@ -1,0 +1,443 @@
+---
+id: insert-into-bst
+title: Insert into Binary Search Tree
+slug: /problems/insert-into-bst
+difficulty: Medium
+tags: [tree, binary-search-tree, recursion]
+leetcode: https://leetcode.com/problems/insert-into-a-binary-search-tree/
+---
+
+# Insert into Binary Search Tree
+
+Given the reference to a binary search tree and a value to insert, return a reference to the root of the tree after the value has been inserted in a position that adheres to the invariants of a binary search tree.
+
+**Note:** It is guaranteed that each value in the tree, including the value to be inserted, is unique.
+
+## Example(s)
+
+**Example 1:**
+```
+Input:
+      2
+     / \
+    1   3
+value = 4
+
+Output:
+      2
+     / \
+    1   3
+         \
+          4
+
+Explanation:
+Insert 4 into the right subtree of 3.
+```
+
+**Example 2:**
+```
+Input:
+      4
+     / \
+    2   7
+   / \
+  1   3
+value = 5
+
+Output:
+      4
+     / \
+    2   7
+   / \ /
+  1  3 5
+
+Explanation:
+Insert 5 into the left subtree of 7.
+```
+
+**Example 3:**
+```
+Input:
+      5
+     / \
+    3   8
+   /   / \
+  2   6   9
+value = 1
+
+Output:
+      5
+     / \
+    3   8
+   /   / \
+  2   6   9
+ /
+1
+
+Explanation:
+Insert 1 into the left subtree of 2.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **recursive insertion**:
+
+1. **Base case**: If root is null, create a new node with the value
+2. **Compare values**: 
+   - If value < root.val, insert into left subtree
+   - If value > root.val, insert into right subtree
+3. **Return root**: Return the (possibly modified) root
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Recursive"
+  code={`/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : null)
+ * }
+ */
+
+/**
+ * Insert value into BST
+ * @param {TreeNode} root - Root of the BST
+ * @param {number} val - Value to insert
+ * @return {TreeNode} - Root of the modified BST
+ */
+function insertIntoBST(root, val) {
+  // Base case: create new node if root is null
+  if (!root) {
+    return new TreeNode(val);
+  }
+  
+  // Insert into left subtree if value is smaller
+  if (val < root.val) {
+    root.left = insertIntoBST(root.left, val);
+  } 
+  // Insert into right subtree if value is larger
+  else {
+    root.right = insertIntoBST(root.right, val);
+  }
+  
+  return root;
+}
+
+// Helper function to create TreeNode
+function TreeNode(val, left, right) {
+  this.val = (val === undefined ? 0 : val);
+  this.left = (left === undefined ? null : left);
+  this.right = (right === undefined ? null : null);
+}
+
+// Test cases
+// Example 1: [2,1,3], val = 4
+const root1 = new TreeNode(2);
+root1.left = new TreeNode(1);
+root1.right = new TreeNode(3);
+const result1 = insertIntoBST(root1, 4);
+console.log('Example 1 - Root value:', result1.val); // 2
+console.log('Example 1 - Right right value:', result1.right.right.val); // 4
+
+// Example 2: [4,2,7,1,3], val = 5
+const root2 = new TreeNode(4);
+root2.left = new TreeNode(2);
+root2.right = new TreeNode(7);
+root2.left.left = new TreeNode(1);
+root2.left.right = new TreeNode(3);
+const result2 = insertIntoBST(root2, 5);
+console.log('Example 2 - Root value:', result2.val); // 4
+console.log('Example 2 - Right left value:', result2.right.left.val); // 5`}
+  testCases={[
+    { input: 'insertIntoBST(new TreeNode(2, new TreeNode(1), new TreeNode(3)), 4).right.right.val', expected: '4' },
+    { input: 'insertIntoBST(new TreeNode(4, new TreeNode(2, new TreeNode(1), new TreeNode(3)), new TreeNode(7)), 5).right.left.val', expected: '5' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Recursive"
+  code={`# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+from typing import Optional
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def insert_into_bst(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    """
+    Insert value into BST
+    
+    Args:
+        root: Root of the BST
+        val: Value to insert
+        
+    Returns:
+        TreeNode: Root of the modified BST
+    """
+    # Base case: create new node if root is None
+    if not root:
+        return TreeNode(val)
+    
+    # Insert into left subtree if value is smaller
+    if val < root.val:
+        root.left = insert_into_bst(root.left, val)
+    # Insert into right subtree if value is larger
+    else:
+        root.right = insert_into_bst(root.right, val)
+    
+    return root
+
+# Test cases
+# Example 1: [2,1,3], val = 4
+root1 = TreeNode(2)
+root1.left = TreeNode(1)
+root1.right = TreeNode(3)
+result1 = insert_into_bst(root1, 4)
+print('Example 1 - Root value:', result1.val)  # 2
+print('Example 1 - Right right value:', result1.right.right.val)  # 4
+
+# Example 2: [4,2,7,1,3], val = 5
+root2 = TreeNode(4)
+root2.left = TreeNode(2)
+root2.right = TreeNode(7)
+root2.left.left = TreeNode(1)
+root2.left.right = TreeNode(3)
+result2 = insert_into_bst(root2, 5)
+print('Example 2 - Root value:', result2.val)  # 4
+print('Example 2 - Right left value:', result2.right.left.val)  # 5`}
+  testCases={[
+    { input: 'insert_into_bst(TreeNode(2, TreeNode(1), TreeNode(3)), 4).right.right.val', expected: '4' },
+    { input: 'insert_into_bst(TreeNode(4, TreeNode(2, TreeNode(1), TreeNode(3)), TreeNode(7)), 5).right.left.val', expected: '5' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Iterative)
+
+Here's an iterative version:
+
+<Tabs>
+<TabItem value="javascript-iterative" label="JavaScript Iterative" default>
+
+```javascript
+/**
+ * Iterative approach
+ */
+function insertIntoBSTIterative(root, val) {
+  // If tree is empty, create new root
+  if (!root) {
+    return new TreeNode(val);
+  }
+  
+  let current = root;
+  
+  while (true) {
+    // Insert into left subtree
+    if (val < current.val) {
+      if (!current.left) {
+        current.left = new TreeNode(val);
+        break;
+      }
+      current = current.left;
+    } 
+    // Insert into right subtree
+    else {
+      if (!current.right) {
+        current.right = new TreeNode(val);
+        break;
+      }
+      current = current.right;
+    }
+  }
+  
+  return root;
+}
+```
+
+</TabItem>
+<TabItem value="python-iterative" label="Python Iterative">
+
+```python
+def insert_into_bst_iterative(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    """
+    Iterative approach
+    """
+    # If tree is empty, create new root
+    if not root:
+        return TreeNode(val)
+    
+    current = root
+    
+    while True:
+        # Insert into left subtree
+        if val < current.val:
+            if not current.left:
+                current.left = TreeNode(val)
+                break
+            current = current.left
+        # Insert into right subtree
+        else:
+            if not current.right:
+                current.right = TreeNode(val)
+                break
+            current = current.right
+    
+    return root
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(h) - Where h is the height of the tree. In the worst case (skewed tree), h = n, so O(n). In a balanced tree, h = log n, so O(log n).
+- **Space Complexity:** 
+  - **Recursive**: O(h) - For the recursion stack
+  - **Iterative**: O(1) - Only uses a constant amount of extra space
+
+## Approach
+
+The solution uses **recursive insertion**:
+
+1. **Base case**: 
+   - If root is null, create a new node with the value
+   - This handles empty tree and leaf insertion
+
+2. **Compare and recurse**: 
+   - If value < root.val: insert into left subtree
+   - If value > root.val: insert into right subtree
+   - Recursively call on the appropriate subtree
+
+3. **Return root**: 
+   - Return the (possibly modified) root
+   - The root itself never changes, only subtrees are modified
+
+## Key Insights
+
+- **BST property**: Left subtree < node < right subtree
+- **Recursive structure**: Insertion naturally fits recursion
+- **Base case**: Null node means we found insertion point
+- **No duplicates**: Problem guarantees unique values
+- **Root unchanged**: The root node itself is never replaced
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `root = [2,1,3]`, `val = 4`
+
+```
+Initial tree:
+      2
+     / \
+    1   3
+
+Step 1: insertIntoBST(root=2, val=4)
+  root.val = 2, val = 4
+  4 > 2, so insert into right subtree
+  root.right = insertIntoBST(root.right=3, val=4)
+
+Step 2: insertIntoBST(root=3, val=4)
+  root.val = 3, val = 4
+  4 > 3, so insert into right subtree
+  root.right = insertIntoBST(root.right=null, val=4)
+
+Step 3: insertIntoBST(root=null, val=4)
+  root is null, create new node
+  return new TreeNode(4)
+
+Step 4: Back to Step 2
+  root.right = TreeNode(4)
+  return root (3)
+
+Step 5: Back to Step 1
+  root.right = TreeNode(3) with right child TreeNode(4)
+  return root (2)
+
+Final tree:
+      2
+     / \
+    1   3
+         \
+          4
+```
+
+## Visual Representation
+
+```
+Example 1: Insert 4 into [2,1,3]
+
+Before:
+      2
+     / \
+    1   3
+
+After:
+      2
+     / \
+    1   3
+         \
+          4
+
+Path taken: 2 → 3 → (insert 4 as right child of 3)
+```
+
+## Edge Cases
+
+- **Empty tree**: Create new root node
+- **Single node**: Insert as left or right child
+- **Insert at leaf**: Most common case
+- **Insert in middle**: Creates new leaf node
+- **Large value**: Goes to rightmost path
+- **Small value**: Goes to leftmost path
+
+## Important Notes
+
+- **BST invariants**: Must maintain left < node < right
+- **Unique values**: Problem guarantees no duplicates
+- **Return root**: Always return the original root (may be modified)
+- **In-place**: Modifies the tree structure
+- **Recursive vs iterative**: Both work, recursive is cleaner
+
+## Recursive vs Iterative
+
+| Approach | Time | Space | Pros | Cons |
+|----------|------|-------|------|------|
+| Recursive | O(h) | O(h) | Clean, intuitive | Stack overflow risk for deep trees |
+| Iterative | O(h) | O(1) | No stack overflow | Slightly more code |
+
+## Related Problems
+
+- **Search in BST**: Find a value in BST
+- **Delete Node in BST**: Remove a value from BST
+- **Validate BST**: Check if tree is valid BST
+- **Convert Sorted Array to BST**: Build BST from array
+
+## Takeaways
+
+- **Recursive insertion** naturally follows BST structure
+- **Base case** is when we reach null (insertion point)
+- **Compare and recurse** maintains BST invariants
+- **O(h) time** where h is tree height
+- **Root unchanged** - only subtrees are modified
+

@@ -1,0 +1,516 @@
+---
+id: range-sum-bst
+title: Range Sum of BST
+slug: /problems/range-sum-bst
+difficulty: Easy
+tags: [tree, binary-tree, dfs, recursion]
+leetcode: https://leetcode.com/problems/range-sum-of-bst/
+---
+
+# Range Sum of BST
+
+This question is asked by Facebook. Given the root of a binary tree and two values `low` and `high`, return the sum of all values in the tree that are within `low` and `high` (inclusive).
+
+## Example(s)
+
+**Example 1:**
+```
+Input:
+        1
+       / \
+      7   5
+    /    / \
+   4    3   9
+low = 3, high = 5
+
+Output: 12
+Explanation:
+Values in range [3, 5]:
+- Node with value 3
+- Node with value 4
+- Node with value 5
+Sum: 3 + 4 + 5 = 12
+```
+
+**Example 2:**
+```
+Input:
+      10
+     /  \
+    5   15
+   / \    \
+  3   7   18
+low = 7, high = 15
+
+Output: 32
+Explanation:
+Values in range [7, 15]:
+- Node with value 7
+- Node with value 10
+- Node with value 15
+Sum: 7 + 10 + 15 = 32
+```
+
+**Example 3:**
+```
+Input:
+      5
+     / \
+    3   8
+low = 1, high = 2
+
+Output: 0
+Explanation:
+No values in the tree fall within range [1, 2].
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **DFS traversal**:
+
+1. **Traverse tree**: Visit all nodes using DFS
+2. **Check range**: For each node, check if value is within [low, high]
+3. **Sum values**: Add values that fall within the range
+4. **Return sum**: Return the total sum
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - DFS"
+  code={`/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : null)
+ * }
+ */
+
+/**
+ * Sum all values in tree within range [low, high]
+ * @param {TreeNode} root - Root of the binary tree
+ * @param {number} low - Lower bound (inclusive)
+ * @param {number} high - Upper bound (inclusive)
+ * @return {number} - Sum of values in range
+ */
+function rangeSumBST(root, low, high) {
+  if (!root) return 0;
+  
+  let sum = 0;
+  
+  // Check if current node value is in range
+  if (root.val >= low && root.val <= high) {
+    sum += root.val;
+  }
+  
+  // Recursively check left and right subtrees
+  sum += rangeSumBST(root.left, low, high);
+  sum += rangeSumBST(root.right, low, high);
+  
+  return sum;
+}
+
+// Helper function to create TreeNode
+function TreeNode(val, left, right) {
+  this.val = (val === undefined ? 0 : val);
+  this.left = (left === undefined ? null : left);
+  this.right = (right === undefined ? null : null);
+}
+
+// Test cases
+// Example 1: [1,7,5,4,null,3,9], low=3, high=5
+const root1 = new TreeNode(1);
+root1.left = new TreeNode(7);
+root1.right = new TreeNode(5);
+root1.left.left = new TreeNode(4);
+root1.right.left = new TreeNode(3);
+root1.right.right = new TreeNode(9);
+console.log('Example 1:', rangeSumBST(root1, 3, 5)); // 12
+
+// Example 2: [10,5,15,3,7,null,18], low=7, high=15
+const root2 = new TreeNode(10);
+root2.left = new TreeNode(5);
+root2.right = new TreeNode(15);
+root2.left.left = new TreeNode(3);
+root2.left.right = new TreeNode(7);
+root2.right.right = new TreeNode(18);
+console.log('Example 2:', rangeSumBST(root2, 7, 15)); // 32`}
+  testCases={[
+    { input: 'rangeSumBST(new TreeNode(1, new TreeNode(7, new TreeNode(4)), new TreeNode(5, new TreeNode(3), new TreeNode(9))), 3, 5)', expected: '12' },
+    { input: 'rangeSumBST(new TreeNode(10, new TreeNode(5, new TreeNode(3), new TreeNode(7)), new TreeNode(15, null, new TreeNode(18))), 7, 15)', expected: '32' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - DFS"
+  code={`# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+from typing import Optional
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def range_sum_bst(root: Optional[TreeNode], low: int, high: int) -> int:
+    """
+    Sum all values in tree within range [low, high]
+    
+    Args:
+        root: Root of the binary tree
+        low: Lower bound (inclusive)
+        high: Upper bound (inclusive)
+        
+    Returns:
+        int: Sum of values in range
+    """
+    if not root:
+        return 0
+    
+    total = 0
+    
+    # Check if current node value is in range
+    if low <= root.val <= high:
+        total += root.val
+    
+    # Recursively check left and right subtrees
+    total += range_sum_bst(root.left, low, high)
+    total += range_sum_bst(root.right, low, high)
+    
+    return total
+
+# Test cases
+# Example 1: [1,7,5,4,None,3,9], low=3, high=5
+root1 = TreeNode(1)
+root1.left = TreeNode(7)
+root1.right = TreeNode(5)
+root1.left.left = TreeNode(4)
+root1.right.left = TreeNode(3)
+root1.right.right = TreeNode(9)
+print('Example 1:', range_sum_bst(root1, 3, 5))  # 12
+
+# Example 2: [10,5,15,3,7,None,18], low=7, high=15
+root2 = TreeNode(10)
+root2.left = TreeNode(5)
+root2.right = TreeNode(15)
+root2.left.left = TreeNode(3)
+root2.left.right = TreeNode(7)
+root2.right.right = TreeNode(18)
+print('Example 2:', range_sum_bst(root2, 7, 15))  # 32`}
+  testCases={[
+    { input: 'range_sum_bst(TreeNode(1, TreeNode(7, TreeNode(4)), TreeNode(5, TreeNode(3), TreeNode(9))), 3, 5)', expected: '12' },
+    { input: 'range_sum_bst(TreeNode(10, TreeNode(5, TreeNode(3), TreeNode(7)), TreeNode(15, None, TreeNode(18))), 7, 15)', expected: '32' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Iterative DFS)
+
+Here's an iterative version using a stack:
+
+<Tabs>
+<TabItem value="javascript-iterative" label="JavaScript Iterative" default>
+
+```javascript
+/**
+ * Iterative DFS using stack
+ */
+function rangeSumBSTIterative(root, low, high) {
+  if (!root) return 0;
+  
+  let sum = 0;
+  const stack = [root];
+  
+  while (stack.length > 0) {
+    const node = stack.pop();
+    
+    if (node.val >= low && node.val <= high) {
+      sum += node.val;
+    }
+    
+    if (node.left) stack.push(node.left);
+    if (node.right) stack.push(node.right);
+  }
+  
+  return sum;
+}
+```
+
+</TabItem>
+<TabItem value="python-iterative" label="Python Iterative">
+
+```python
+def range_sum_bst_iterative(root: Optional[TreeNode], low: int, high: int) -> int:
+    """
+    Iterative DFS using stack
+    """
+    if not root:
+        return 0
+    
+    total = 0
+    stack = [root]
+    
+    while stack:
+        node = stack.pop()
+        
+        if low <= node.val <= high:
+            total += node.val
+        
+        if node.left:
+            stack.append(node.left)
+        if node.right:
+            stack.append(node.right)
+    
+    return total
+```
+
+</TabItem>
+</Tabs>
+
+## Optimization for BST
+
+If the tree is a BST, we can optimize by pruning:
+
+<Tabs>
+<TabItem value="javascript-bst" label="JavaScript BST Optimization" default>
+
+```javascript
+/**
+ * Optimized for BST - can prune subtrees
+ */
+function rangeSumBSTOptimized(root, low, high) {
+  if (!root) return 0;
+  
+  let sum = 0;
+  
+  // If current value is in range, add it
+  if (root.val >= low && root.val <= high) {
+    sum += root.val;
+  }
+  
+  // If current value > low, check left subtree
+  // (left subtree may have values in range)
+  if (root.val > low) {
+    sum += rangeSumBSTOptimized(root.left, low, high);
+  }
+  
+  // If current value < high, check right subtree
+  // (right subtree may have values in range)
+  if (root.val < high) {
+    sum += rangeSumBSTOptimized(root.right, low, high);
+  }
+  
+  return sum;
+}
+```
+
+</TabItem>
+<TabItem value="python-bst" label="Python BST Optimization">
+
+```python
+def range_sum_bst_optimized(root: Optional[TreeNode], low: int, high: int) -> int:
+    """
+    Optimized for BST - can prune subtrees
+    """
+    if not root:
+        return 0
+    
+    total = 0
+    
+    # If current value is in range, add it
+    if low <= root.val <= high:
+        total += root.val
+    
+    # If current value > low, check left subtree
+    # (left subtree may have values in range)
+    if root.val > low:
+        total += range_sum_bst_optimized(root.left, low, high)
+    
+    # If current value < high, check right subtree
+    # (right subtree may have values in range)
+    if root.val < high:
+        total += range_sum_bst_optimized(root.right, low, high)
+    
+    return total
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** 
+  - **General tree**: O(n) - Where n is the number of nodes. We visit each node once.
+  - **BST optimized**: O(n) worst case, but can be better with pruning
+- **Space Complexity:** 
+  - **Recursive**: O(h) - Where h is the height of the tree (recursion stack)
+  - **Iterative**: O(n) - For the stack in worst case
+
+## Approach
+
+The solution uses **DFS traversal**:
+
+1. **Base case**: 
+   - If root is null, return 0
+
+2. **Check current node**: 
+   - If `low <= root.val <= high`, add to sum
+
+3. **Recurse on children**: 
+   - Recursively check left and right subtrees
+   - Add their sums to the total
+
+4. **Return sum**: 
+   - Return the total sum of values in range
+
+## Key Insights
+
+- **DFS traversal**: Visit all nodes to check their values
+- **Range check**: `low <= val <= high` (inclusive)
+- **Sum accumulation**: Add values that fall within range
+- **BST optimization**: Can prune subtrees that can't contain values in range
+- **O(n) time**: Must visit all nodes in worst case
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `root = [1,7,5,4,null,3,9]`, `low = 3`, `high = 5`
+
+```
+Tree:
+        1
+       / \
+      7   5
+    /    / \
+   4    3   9
+
+rangeSumBST(root=1, low=3, high=5):
+  root.val = 1
+  1 in [3,5]? No
+  sum = 0
+  
+  left = rangeSumBST(root=7, low=3, high=5):
+    root.val = 7
+    7 in [3,5]? No
+    sum = 0
+    
+    left = rangeSumBST(root=4, low=3, high=5):
+      root.val = 4
+      4 in [3,5]? Yes ✓
+      sum = 4
+      
+      left = rangeSumBST(root=null): return 0
+      right = rangeSumBST(root=null): return 0
+      return 4
+    
+    right = rangeSumBST(root=null): return 0
+    return 4
+  
+  right = rangeSumBST(root=5, low=3, high=5):
+    root.val = 5
+    5 in [3,5]? Yes ✓
+    sum = 5
+    
+    left = rangeSumBST(root=3, low=3, high=5):
+      root.val = 3
+      3 in [3,5]? Yes ✓
+      sum = 3
+      
+      left = rangeSumBST(root=null): return 0
+      right = rangeSumBST(root=null): return 0
+      return 3
+    
+    right = rangeSumBST(root=9, low=3, high=5):
+      root.val = 9
+      9 in [3,5]? No
+      sum = 0
+      
+      left = rangeSumBST(root=null): return 0
+      right = rangeSumBST(root=null): return 0
+      return 0
+    
+    return 5 + 3 + 0 = 8
+  
+  return 0 + 4 + 8 = 12
+
+Result: 12
+```
+
+## Visual Representation
+
+```
+Example 1: low = 3, high = 5
+
+Tree:
+        1 (not in range)
+       / \
+   7 (not)  5 (✓ in range)
+    /      / \
+ 4 (✓)   3 (✓) 9 (not)
+         / \
+      null null
+
+Values in range [3, 5]:
+- Node 3: ✓
+- Node 4: ✓
+- Node 5: ✓
+
+Sum: 3 + 4 + 5 = 12
+```
+
+## Edge Cases
+
+- **Empty tree**: Return 0
+- **No values in range**: Return 0
+- **All values in range**: Sum all nodes
+- **Single node in range**: Return that value
+- **low = high**: Only values equal to that number
+- **Range outside tree values**: Return 0
+
+## Important Notes
+
+- **Inclusive range**: Both low and high are inclusive
+- **All nodes**: Must check all nodes (unless BST optimization)
+- **DFS/BFS**: Both work, DFS is simpler
+- **BST optimization**: Can skip subtrees that can't contain values in range
+- **O(n) time**: Must visit all nodes in worst case
+
+## BST Optimization Explanation
+
+**For BST (Binary Search Tree)**:
+- If `root.val < low`: All values in left subtree are < low, skip it
+- If `root.val > high`: All values in right subtree are > high, skip it
+- This allows pruning and potentially faster execution
+
+## Related Problems
+
+- **Range Sum Query**: Different problem (array-based)
+- **Count Complete Tree Nodes**: Different tree problem
+- **Sum of Left Leaves**: Different sum problem
+- **Binary Tree Maximum Path Sum**: Different problem
+
+## Takeaways
+
+- **DFS traversal** visits all nodes to check values
+- **Range check** is simple: `low <= val <= high`
+- **Sum accumulation** adds values in range
+- **BST optimization** can prune subtrees
+- **O(n) time** is optimal for general trees
+

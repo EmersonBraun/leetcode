@@ -1,0 +1,361 @@
+---
+id: first-bad-version
+title: First Bad Version
+slug: /problems/first-bad-version
+difficulty: Easy
+tags: [binary-search, array]
+leetcode: https://leetcode.com/problems/first-bad-version/
+---
+
+# First Bad Version
+
+This question is asked by Facebook. Releasing software can be tricky and sometimes we release new versions of our software with bugs. When we release a version with a bug it's referred to as a bad release. Your product manager has just informed you that a bug you created was released in one of the past versions and has caused all versions that have been released since to also be bad. Given that your past releases are numbered from zero to N and you have a helper function `isBadRelease(int releaseNumber)` that takes a version number and returns a boolean as to whether or not the given release number is bad, return the release number that your bug was initially shipped in.
+
+**Note:** You should minimize your number of calls made to `isBadRelease()`.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: N = 5, first bad version = 4
+
+isBadRelease(3) // returns false
+isBadRelease(5) // returns true
+isBadRelease(4) // returns true
+
+Output: 4
+Explanation:
+Releases: 0, 1, 2, 3, 4, 5
+States:   [good, good, good, good, bad, bad]
+First bad release is 4.
+```
+
+**Example 2:**
+```
+Input: N = 3, first bad version = 1
+
+isBadRelease(0) // returns false
+isBadRelease(1) // returns true
+isBadRelease(2) // returns true
+isBadRelease(3) // returns true
+
+Output: 1
+Explanation:
+Releases: 0, 1, 2, 3
+States:   [good, bad, bad, bad]
+First bad release is 1.
+```
+
+**Example 3:**
+```
+Input: N = 10, first bad version = 0
+
+isBadRelease(0) // returns true
+isBadRelease(1) // returns true
+
+Output: 0
+Explanation:
+All releases are bad, first bad is 0.
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Binary Search**:
+
+1. **Sorted property**: All releases before first bad are good, all after are bad
+2. **Binary search**: Find the leftmost bad release
+3. **Minimize calls**: Binary search makes O(log N) calls instead of O(N)
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Binary Search"
+  code={`/**
+ * Find first bad version using binary search
+ * @param {number} N - Number of releases (0 to N)
+ * @param {function} isBadRelease - Helper function to check if release is bad
+ * @return {number} - First bad release number
+ */
+function firstBadVersion(N, isBadRelease) {
+  let left = 0;
+  let right = N;
+  let firstBad = N; // Initialize to N (worst case: all are bad)
+  
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    
+    if (isBadRelease(mid)) {
+      // Mid is bad, so first bad is at mid or before
+      firstBad = mid;
+      right = mid - 1; // Search left for earlier bad version
+    } else {
+      // Mid is good, so first bad is after mid
+      left = mid + 1; // Search right
+    }
+  }
+  
+  return firstBad;
+}
+
+// Mock isBadRelease function for testing
+function createIsBadRelease(firstBad) {
+  return (version) => version >= firstBad;
+}
+
+// Test cases
+const isBad1 = createIsBadRelease(4);
+console.log('Example 1:', firstBadVersion(5, isBad1)); 
+// 4
+
+const isBad2 = createIsBadRelease(1);
+console.log('Example 2:', firstBadVersion(3, isBad2)); 
+// 1
+
+const isBad3 = createIsBadRelease(0);
+console.log('Example 3:', firstBadVersion(10, isBad3)); 
+// 0`}
+  testCases={[
+    { input: 'firstBadVersion(5, (v) => v >= 4)', expected: '4' },
+    { input: 'firstBadVersion(3, (v) => v >= 1)', expected: '1' },
+    { input: 'firstBadVersion(10, (v) => v >= 0)', expected: '0' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Binary Search"
+  code={`from typing import Callable
+
+def first_bad_version(N: int, is_bad_release: Callable[[int], bool]) -> int:
+    """
+    Find first bad version using binary search
+    
+    Args:
+        N: Number of releases (0 to N)
+        is_bad_release: Helper function to check if release is bad
+        
+    Returns:
+        int: First bad release number
+    """
+    left = 0
+    right = N
+    first_bad = N  # Initialize to N (worst case: all are bad)
+    
+    while left <= right:
+        mid = (left + right) // 2
+        
+        if is_bad_release(mid):
+            # Mid is bad, so first bad is at mid or before
+            first_bad = mid
+            right = mid - 1  # Search left for earlier bad version
+        else:
+            # Mid is good, so first bad is after mid
+            left = mid + 1  # Search right
+    
+    return first_bad
+
+# Mock is_bad_release function for testing
+def create_is_bad_release(first_bad: int) -> Callable[[int], bool]:
+    return lambda version: version >= first_bad
+
+# Test cases
+is_bad1 = create_is_bad_release(4)
+print('Example 1:', first_bad_version(5, is_bad1))  
+# 4
+
+is_bad2 = create_is_bad_release(1)
+print('Example 2:', first_bad_version(3, is_bad2))  
+# 1
+
+is_bad3 = create_is_bad_release(0)
+print('Example 3:', first_bad_version(10, is_bad3))  
+# 0`}
+  testCases={[
+    { input: 'first_bad_version(5, lambda v: v >= 4)', expected: '4' },
+    { input: 'first_bad_version(3, lambda v: v >= 1)', expected: '1' },
+    { input: 'first_bad_version(10, lambda v: v >= 0)', expected: '0' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Linear Search)
+
+Here's a linear search for comparison (not optimal):
+
+<Tabs>
+<TabItem value="javascript-linear" label="JavaScript Linear" default>
+
+```javascript
+/**
+ * Linear search (not optimal, O(N) calls)
+ */
+function firstBadVersionLinear(N, isBadRelease) {
+  for (let i = 0; i <= N; i++) {
+    if (isBadRelease(i)) {
+      return i;
+    }
+  }
+  return N; // All are good (shouldn't happen per problem)
+}
+```
+
+</TabItem>
+<TabItem value="python-linear" label="Python Linear">
+
+```python
+def first_bad_version_linear(N: int, is_bad_release: Callable[[int], bool]) -> int:
+    """
+    Linear search (not optimal, O(N) calls)
+    """
+    for i in range(N + 1):
+        if is_bad_release(i):
+            return i
+    return N  # All are good (shouldn't happen per problem)
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(log N) - Binary search makes O(log N) calls to `isBadRelease()`.
+- **Space Complexity:** O(1) - Only using a constant amount of extra space.
+
+## Approach
+
+The solution uses **Binary Search**:
+
+1. **Sorted property**: 
+   - All releases before first bad are good (false)
+   - All releases from first bad onwards are bad (true)
+   - This creates a sorted array: [false, false, ..., false, true, true, ..., true]
+
+2. **Binary search**: 
+   - Find the leftmost `true` value
+   - If `isBadRelease(mid)` is true, search left (first bad is at mid or before)
+   - If `isBadRelease(mid)` is false, search right (first bad is after mid)
+
+3. **Minimize calls**: 
+   - Binary search makes O(log N) calls
+   - Linear search would make O(N) calls
+
+## Key Insights
+
+- **Binary search**: Perfect for finding boundary in sorted array
+- **Leftmost true**: Find the first occurrence of `true`
+- **Minimize calls**: Binary search is optimal (O(log N) vs O(N))
+- **Sorted property**: Good releases before, bad releases after
+- **O(log N) time**: Optimal for this problem
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `N = 5`, first bad = 4
+
+```
+Releases: 0, 1, 2, 3, 4, 5
+States:   [good, good, good, good, bad, bad]
+
+Binary search:
+  left = 0, right = 5, firstBad = 5
+  
+  Iteration 1:
+    mid = (0 + 5) / 2 = 2
+    isBadRelease(2)? false (good)
+    left = 3, right = 5
+  
+  Iteration 2:
+    mid = (3 + 5) / 2 = 4
+    isBadRelease(4)? true (bad)
+    firstBad = 4
+    right = 3
+  
+  Iteration 3:
+    left = 3, right = 3
+    mid = (3 + 3) / 2 = 3
+    isBadRelease(3)? false (good)
+    left = 4, right = 3
+  
+  left > right, exit loop
+  
+  Result: firstBad = 4
+```
+
+## Visual Representation
+
+```
+Example 1: N = 5, first bad = 4
+
+Releases:  0    1    2    3    4    5
+States:   good good good good bad  bad
+          ↑              ↑    ↑
+          All good       First bad  All bad after
+
+Binary search:
+  Check mid = 2: good → search right
+  Check mid = 4: bad → search left, firstBad = 4
+  Check mid = 3: good → search right
+  left > right → done
+
+Result: 4
+
+Calls made: 3 (log₂(6) ≈ 2.58, so 3 calls)
+Linear would need: 5 calls (check 0, 1, 2, 3, 4)
+```
+
+## Edge Cases
+
+- **First bad is 0**: All releases are bad
+- **First bad is N**: Only last release is bad
+- **N = 0**: Single release, check if it's bad
+- **N = 1**: Two releases, binary search works
+- **All good**: Shouldn't happen per problem statement
+
+## Important Notes
+
+- **Minimize calls**: Binary search is optimal (O(log N))
+- **Sorted property**: Good before bad creates sorted array
+- **Leftmost true**: Find first occurrence of bad release
+- **Helper function**: `isBadRelease()` is provided
+- **O(log N) calls**: Optimal number of calls
+
+## Why Binary Search Works
+
+**Key insight**: 
+- The array has a sorted property: [good, good, ..., good, bad, bad, ..., bad]
+- Binary search finds the boundary between good and bad
+- This is exactly the "find first occurrence" pattern
+- O(log N) calls is optimal (can't do better)
+
+## Comparison: Binary vs Linear
+
+| Approach | Calls | Time | Best For |
+|----------|-------|------|----------|
+| Binary Search | O(log N) | O(log N) | Large N |
+| Linear Search | O(N) | O(N) | Small N |
+
+## Related Problems
+
+- **Search Insert Position**: Similar binary search
+- **Find First and Last Position**: Different binary search
+- **Search in Rotated Sorted Array**: Different problem
+- **Sqrt(x)**: Different binary search application
+
+## Takeaways
+
+- **Binary search** minimizes calls to `isBadRelease()`
+- **Sorted property** enables binary search
+- **Find leftmost true** is the pattern
+- **O(log N) calls** is optimal
+- **Minimize API calls** is the key requirement
+

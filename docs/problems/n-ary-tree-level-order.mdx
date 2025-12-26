@@ -1,0 +1,154 @@
+---
+id: n-ary-tree-level-order
+title: N-ary Tree Level Order Traversal
+slug: /problems/n-ary-tree-level-order
+difficulty: Medium
+tags: [tree, n-ary-tree, breadth-first-search]
+leetcode: https://leetcode.com/problems/n-ary-tree-level-order-traversal/
+---
+
+# N-ary Tree Level Order Traversal
+
+Given an n-ary tree, return its level order traversal.
+Note: an n-ary tree is a tree in which each node has no more than N children.
+
+## Example(s)
+
+**Example 1:**
+```
+Tree:
+    8
+  / | \
+ 2  3  29
+Output: [[8],[2,3,29]]
+```
+
+**Example 2:**
+```
+Tree:
+     2
+   / | \
+  1  6  9
+ /   |   \
+8    2    2
+   / | \
+ 19 12 90
+Output: [[2],[1,6,9],[8,2,2],[19,12,90]]
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+```javascript
+/**
+ * Definition for a Node.
+ * function Node(val, children) {
+ *    this.val = val === undefined ? 0 : val;
+ *    this.children = children === undefined ? [] : children;
+ * }
+ */
+
+/**
+ * Perform level order traversal of an n-ary tree
+ * @param {Node} root - Root of the n-ary tree
+ * @return {number[][]} - Level order traversal result
+ */
+function levelOrder(root) {
+  if (!root) return [];
+  
+  const result = [];
+  const queue = [root];
+  
+  while (queue.length) {
+    const levelSize = queue.length;
+    const currentLevel = [];
+    
+    for (let i = 0; i < levelSize; i++) {
+      const node = queue.shift();
+      currentLevel.push(node.val);
+      for (const child of node.children) {
+        if (child) queue.push(child);
+      }
+    }
+    
+    result.push(currentLevel);
+  }
+  
+  return result;
+}
+```
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+```python
+from typing import Optional, List
+
+# Definition for a Node.
+class Node:
+    def __init__(self, val=None, children=None):
+        self.val = val
+        self.children = children if children is not None else []
+
+def level_order(root: Optional[Node]) -> List[List[int]]:
+    """
+    Perform level order traversal of an n-ary tree
+    
+    Args:
+        root: Root of the n-ary tree
+        
+    Returns:
+        List[List[int]]: Level order traversal result
+    """
+    if not root:
+        return []
+    
+    result = []
+    queue = [root]
+    
+    while queue:
+        level_size = len(queue)
+        current_level = []
+        
+        for _ in range(level_size):
+            node = queue.pop(0)
+            current_level.append(node.val)
+            for child in node.children:
+                if child:
+                    queue.append(child)
+        
+        result.append(current_level)
+    
+    return result
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the number of nodes in the tree
+- **Space Complexity:** O(w) - Where w is the maximum width of the tree
+
+## Approach
+
+The solution uses a **breadth-first search (BFS)** approach:
+
+1. **Level-by-level traversal** using a queue
+2. **Track level size** to process all nodes at each level
+3. **Process all children** of each node
+4. **Return array** of arrays representing each level
+
+## Key Insights
+
+- **Breadth-first search** ensures level-by-level traversal
+- **Queue data structure** efficiently processes nodes in order
+- **N-ary structure** handled by iterating over all children of each node
+- **Edge cases** include empty tree, single-node tree, and nodes with no children
+- **O(n) time** is optimal as all nodes must be visited
+```

@@ -1,0 +1,364 @@
+---
+id: missing-number
+title: Missing Number
+slug: /problems/missing-number
+difficulty: Easy
+tags: [array, math, bit-manipulation]
+leetcode: https://leetcode.com/problems/missing-number/
+---
+
+# Missing Number
+
+This question is asked by Amazon. Given an array that contains all distinct values from zero through N except one number, return the number that is missing from the array.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: nums = [1, 4, 2, 0]
+Output: 3
+Explanation:
+Array contains: 0, 1, 2, 4
+Missing: 3
+Range: 0 to 4 (N = 4)
+```
+
+**Example 2:**
+```
+Input: nums = [6, 3, 1, 2, 0, 5]
+Output: 4
+Explanation:
+Array contains: 0, 1, 2, 3, 5, 6
+Missing: 4
+Range: 0 to 6 (N = 6)
+```
+
+**Example 3:**
+```
+Input: nums = [0, 1]
+Output: 2
+Explanation:
+Array contains: 0, 1
+Missing: 2
+Range: 0 to 2 (N = 2)
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+There are multiple approaches:
+
+1. **Sum approach**: Sum of 0 to N minus sum of array
+2. **XOR approach**: XOR all numbers from 0 to N with array
+3. **Set approach**: Create set and find missing
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution - Sum" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Sum Approach"
+  code={`/**
+ * Find missing number using sum
+ * @param {number[]} nums - Array with one missing number
+ * @return {number} - Missing number
+ */
+function missingNumber(nums) {
+  const n = nums.length; // N = length (since 0 to N has N+1 numbers, but one is missing)
+  const expectedSum = (n * (n + 1)) / 2; // Sum of 0 to N
+  const actualSum = nums.reduce((sum, num) => sum + num, 0);
+  
+  return expectedSum - actualSum;
+}
+
+// Test cases
+console.log('Example 1:', missingNumber([1, 4, 2, 0])); 
+// 3
+
+console.log('Example 2:', missingNumber([6, 3, 1, 2, 0, 5])); 
+// 4
+
+console.log('Example 3:', missingNumber([0, 1])); 
+// 2`}
+  testCases={[
+    { input: 'missingNumber([1, 4, 2, 0])', expected: '3' },
+    { input: 'missingNumber([6, 3, 1, 2, 0, 5])', expected: '4' },
+    { input: 'missingNumber([0, 1])', expected: '2' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution - Sum">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Sum Approach"
+  code={`from typing import List
+
+def missing_number(nums: List[int]) -> int:
+    """
+    Find missing number using sum
+    
+    Args:
+        nums: Array with one missing number
+        
+    Returns:
+        int: Missing number
+    """
+    n = len(nums)  # N = length (since 0 to N has N+1 numbers, but one is missing)
+    expected_sum = n * (n + 1) // 2  # Sum of 0 to N
+    actual_sum = sum(nums)
+    
+    return expected_sum - actual_sum
+
+# Test cases
+print('Example 1:', missing_number([1, 4, 2, 0]))  
+# 3
+
+print('Example 2:', missing_number([6, 3, 1, 2, 0, 5]))  
+# 4
+
+print('Example 3:', missing_number([0, 1]))  
+# 2`}
+  testCases={[
+    { input: 'missing_number([1, 4, 2, 0])', expected: '3' },
+    { input: 'missing_number([6, 3, 1, 2, 0, 5])', expected: '4' },
+    { input: 'missing_number([0, 1])', expected: '2' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (XOR)
+
+Here's an XOR-based approach:
+
+<Tabs>
+<TabItem value="javascript-xor" label="JavaScript XOR" default>
+
+```javascript
+/**
+ * XOR approach
+ */
+function missingNumberXOR(nums) {
+  const n = nums.length;
+  let missing = n; // Start with N
+  
+  // XOR all numbers from 0 to N with all numbers in array
+  for (let i = 0; i < n; i++) {
+    missing ^= i ^ nums[i];
+  }
+  
+  return missing;
+}
+```
+
+</TabItem>
+<TabItem value="python-xor" label="Python XOR">
+
+```python
+def missing_number_xor(nums: List[int]) -> int:
+    """
+    XOR approach
+    """
+    n = len(nums)
+    missing = n  # Start with N
+    
+    # XOR all numbers from 0 to N with all numbers in array
+    for i in range(n):
+        missing ^= i ^ nums[i]
+    
+    return missing
+```
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Set)
+
+Here's a set-based approach:
+
+<Tabs>
+<TabItem value="javascript-set" label="JavaScript Set" default>
+
+```javascript
+/**
+ * Set approach
+ */
+function missingNumberSet(nums) {
+  const numSet = new Set(nums);
+  const n = nums.length;
+  
+  // Check each number from 0 to N
+  for (let i = 0; i <= n; i++) {
+    if (!numSet.has(i)) {
+      return i;
+    }
+  }
+  
+  return -1; // Should never reach here
+}
+```
+
+</TabItem>
+<TabItem value="python-set" label="Python Set">
+
+```python
+def missing_number_set(nums: List[int]) -> int:
+    """
+    Set approach
+    """
+    num_set = set(nums)
+    n = len(nums)
+    
+    # Check each number from 0 to N
+    for i in range(n + 1):
+        if i not in num_set:
+            return i
+    
+    return -1  # Should never reach here
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** 
+  - **Sum/XOR**: O(n) - Single pass through array
+  - **Set**: O(n) - Create set and check
+- **Space Complexity:** 
+  - **Sum/XOR**: O(1) - Only using a constant amount of extra space
+  - **Set**: O(n) - For the set
+
+## Approach
+
+The solution uses **sum approach**:
+
+1. **Calculate expected sum**: 
+   - Sum of numbers from 0 to N = N × (N + 1) / 2
+   - Since array has N elements and range is 0 to N, N = array.length
+
+2. **Calculate actual sum**: 
+   - Sum all numbers in the array
+
+3. **Find missing**: 
+   - Missing number = Expected sum - Actual sum
+
+## Key Insights
+
+- **Sum formula**: Sum of 0 to N = N × (N + 1) / 2
+- **One missing**: Expected sum - actual sum = missing number
+- **XOR property**: XOR of all numbers from 0 to N with array leaves missing number
+- **O(n) time**: Must process all elements
+- **O(1) space**: Sum/XOR approaches use constant space
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `nums = [1, 4, 2, 0]`
+
+```
+Array: [1, 4, 2, 0]
+n = 4 (length of array)
+Range: 0 to 4 (N = 4)
+
+Expected sum:
+  Sum of 0 to 4 = 0 + 1 + 2 + 3 + 4 = 10
+  Or: 4 × (4 + 1) / 2 = 4 × 5 / 2 = 10
+
+Actual sum:
+  1 + 4 + 2 + 0 = 7
+
+Missing number:
+  10 - 7 = 3
+
+Result: 3
+```
+
+## Visual Representation
+
+```
+Example 1: nums = [1, 4, 2, 0]
+
+Expected numbers: 0, 1, 2, 3, 4
+Array contains:    0, 1, 2,    4
+Missing:                     3
+
+Sum approach:
+  Expected: 0 + 1 + 2 + 3 + 4 = 10
+  Actual:   0 + 1 + 2 + 4 = 7
+  Missing: 10 - 7 = 3
+
+Example 2: nums = [6, 3, 1, 2, 0, 5]
+
+Expected numbers: 0, 1, 2, 3, 4, 5, 6
+Array contains:    0, 1, 2, 3,    5, 6
+Missing:                     4
+
+Sum approach:
+  Expected: 0 + 1 + 2 + 3 + 4 + 5 + 6 = 21
+  Actual:   0 + 1 + 2 + 3 + 5 + 6 = 17
+  Missing: 21 - 17 = 4
+```
+
+## Edge Cases
+
+- **Missing 0**: Works correctly
+- **Missing N**: Works correctly
+- **Single element**: Works correctly (e.g., [0] → missing 1)
+- **Two elements**: Works correctly
+- **Large N**: Works correctly (sum formula handles it)
+
+## Important Notes
+
+- **Range 0 to N**: Array contains N elements, range is 0 to N (N+1 numbers total)
+- **One missing**: Exactly one number is missing
+- **Distinct values**: All numbers are unique
+- **Sum formula**: N × (N + 1) / 2 for sum of 0 to N
+- **O(n) time**: Must process all elements
+
+## Why Sum Approach Works
+
+**Key insight**: 
+- If we have all numbers from 0 to N, their sum is N × (N + 1) / 2
+- If one number is missing, the actual sum is less by that amount
+- Missing number = Expected sum - Actual sum
+
+**Example**:
+```
+Expected: 0 + 1 + 2 + 3 + 4 = 10
+Actual:   0 + 1 + 2 + 4 = 7
+Missing: 10 - 7 = 3
+```
+
+## Why XOR Approach Works
+
+**XOR properties**:
+- a ⊕ a = 0
+- a ⊕ 0 = a
+- XOR is commutative and associative
+
+**Key insight**: 
+- XOR all numbers from 0 to N with all numbers in array
+- All numbers appear twice (once in 0..N, once in array) except the missing one
+- XOR of same numbers cancels out, leaving the missing number
+
+## Related Problems
+
+- **First Missing Positive**: Different problem (positive numbers only)
+- **Find All Numbers Disappeared**: Different problem (find all missing)
+- **Single Number**: Uses XOR differently
+- **Find the Duplicate Number**: Different problem
+
+## Takeaways
+
+- **Sum approach** is simple and intuitive
+- **XOR approach** is elegant and uses O(1) space
+- **Sum formula** N × (N + 1) / 2 for 0 to N
+- **O(n) time** is optimal (must process all elements)
+- **O(1) space** with sum/XOR approaches
+

@@ -1,0 +1,360 @@
+---
+id: contains-duplicate-ii
+title: Contains Duplicate II
+slug: /problems/contains-duplicate-ii
+difficulty: Easy
+tags: [array, hash-table, sliding-window]
+leetcode: https://leetcode.com/problems/contains-duplicate-ii/
+---
+
+# Contains Duplicate II
+
+This question is asked by Google. Given an array, `nums`, and an integer `k`, return whether or not two unique indices exist such that `nums[i] = nums[j]` and the two indices `i` and `j` are at most `k` elements apart.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: nums = [1, 2, 1], k = 1
+Output: false
+Explanation:
+- nums[0] = 1, nums[2] = 1 (same value)
+- Distance: |2 - 0| = 2
+- Since 2 > k (1), they are NOT within k distance
+- Return false
+```
+
+**Example 2:**
+```
+Input: nums = [2, 3, 2], k = 2
+Output: true
+Explanation:
+- nums[0] = 2, nums[2] = 2 (same value)
+- Distance: |2 - 0| = 2
+- Since 2 <= k (2), they are within k distance
+- Return true
+```
+
+**Example 3:**
+```
+Input: nums = [1, 0, 1, 1], k = 1
+Output: true
+Explanation:
+- nums[2] = 1, nums[3] = 1 (same value)
+- Distance: |3 - 2| = 1
+- Since 1 <= k (1), they are within k distance
+- Return true
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses a **sliding window with hash map**:
+
+1. **Sliding window**: Maintain a window of the last k elements
+2. **Hash map**: Track the most recent index of each value
+3. **Check distance**: If we see a duplicate, check if it's within k distance
+4. **Update map**: Keep track of the latest index for each value
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Hash Map"
+  code={`/**
+ * Check if duplicate exists within k distance
+ * @param {number[]} nums - Input array
+ * @param {number} k - Maximum distance allowed
+ * @return {boolean} - True if duplicate within k distance
+ */
+function containsNearbyDuplicate(nums, k) {
+  const indexMap = new Map();
+  
+  for (let i = 0; i < nums.length; i++) {
+    const num = nums[i];
+    
+    // Check if we've seen this number before
+    if (indexMap.has(num)) {
+      const lastIndex = indexMap.get(num);
+      // Check if distance is within k
+      if (i - lastIndex <= k) {
+        return true;
+      }
+    }
+    
+    // Update the most recent index for this number
+    indexMap.set(num, i);
+  }
+  
+  return false;
+}
+
+// Test cases
+console.log('Example 1:', containsNearbyDuplicate([1, 2, 1], 1)); 
+// false
+
+console.log('Example 2:', containsNearbyDuplicate([2, 3, 2], 2)); 
+// true
+
+console.log('Example 3:', containsNearbyDuplicate([1, 0, 1, 1], 1)); 
+// true
+
+console.log('Test 4:', containsNearbyDuplicate([1, 2, 3, 1], 3)); 
+// true`}
+  testCases={[
+    { input: 'containsNearbyDuplicate([1, 2, 1], 1)', expected: 'false' },
+    { input: 'containsNearbyDuplicate([2, 3, 2], 2)', expected: 'true' },
+    { input: 'containsNearbyDuplicate([1, 0, 1, 1], 1)', expected: 'true' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Hash Map"
+  code={`from typing import List
+
+def contains_nearby_duplicate(nums: List[int], k: int) -> bool:
+    """
+    Check if duplicate exists within k distance
+    
+    Args:
+        nums: Input array
+        k: Maximum distance allowed
+        
+    Returns:
+        bool: True if duplicate within k distance
+    """
+    index_map = {}
+    
+    for i, num in enumerate(nums):
+        # Check if we've seen this number before
+        if num in index_map:
+            last_index = index_map[num]
+            # Check if distance is within k
+            if i - last_index <= k:
+                return True
+        
+        # Update the most recent index for this number
+        index_map[num] = i
+    
+    return False
+
+# Test cases
+print('Example 1:', contains_nearby_duplicate([1, 2, 1], 1))  
+# False
+
+print('Example 2:', contains_nearby_duplicate([2, 3, 2], 2))  
+# True
+
+print('Example 3:', contains_nearby_duplicate([1, 0, 1, 1], 1))  
+# True
+
+print('Test 4:', contains_nearby_duplicate([1, 2, 3, 1], 3))  
+# True`}
+  testCases={[
+    { input: 'contains_nearby_duplicate([1, 2, 1], 1)', expected: 'False' },
+    { input: 'contains_nearby_duplicate([2, 3, 2], 2)', expected: 'True' },
+    { input: 'contains_nearby_duplicate([1, 0, 1, 1], 1)', expected: 'True' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Sliding Window with Set)
+
+Here's a version using a set to maintain a sliding window:
+
+<Tabs>
+<TabItem value="javascript-set" label="JavaScript Set" default>
+
+```javascript
+/**
+ * Sliding window with set approach
+ */
+function containsNearbyDuplicateSet(nums, k) {
+  const window = new Set();
+  
+  for (let i = 0; i < nums.length; i++) {
+    // Remove element that's too far away (outside k distance)
+    if (i > k) {
+      window.delete(nums[i - k - 1]);
+    }
+    
+    // If current element is in window, we found a duplicate within k
+    if (window.has(nums[i])) {
+      return true;
+    }
+    
+    // Add current element to window
+    window.add(nums[i]);
+  }
+  
+  return false;
+}
+```
+
+</TabItem>
+<TabItem value="python-set" label="Python Set">
+
+```python
+def contains_nearby_duplicate_set(nums: List[int], k: int) -> bool:
+    """
+    Sliding window with set approach
+    """
+    window = set()
+    
+    for i, num in enumerate(nums):
+        # Remove element that's too far away (outside k distance)
+        if i > k:
+            window.discard(nums[i - k - 1])
+        
+        # If current element is in window, we found a duplicate within k
+        if num in window:
+            return True
+        
+        # Add current element to window
+        window.add(num)
+    
+    return False
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n) - Where n is the length of the array. We visit each element once.
+- **Space Complexity:** O(min(n, k)) - The hash map/set stores at most k+1 elements (sliding window size).
+
+## Approach
+
+The solution uses a **hash map to track indices**:
+
+1. **Track last index**: 
+   - For each value, store its most recent index
+   - When we see a duplicate, check the distance
+
+2. **Check distance**: 
+   - If `nums[i] == nums[j]` and `|i - j| <= k`, return true
+   - We only need to check the most recent occurrence (closest to current)
+
+3. **Update map**: 
+   - Always update the index for the current value
+   - This ensures we always check against the closest duplicate
+
+## Key Insights
+
+- **Hash map**: Efficiently track the last index of each value
+- **Check closest**: Only need to check the most recent occurrence
+- **Distance check**: `i - lastIndex <= k` means within k distance
+- **O(n) time**: Single pass through the array
+- **O(min(n,k)) space**: Sliding window size is bounded by k
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `nums = [1, 2, 1]`, `k = 1`
+
+```
+indexMap = {}
+
+i = 0: num = 1
+  indexMap.has(1)? No
+  indexMap.set(1, 0) → {1: 0}
+
+i = 1: num = 2
+  indexMap.has(2)? No
+  indexMap.set(2, 1) → {1: 0, 2: 1}
+
+i = 2: num = 1
+  indexMap.has(1)? Yes
+  lastIndex = 0
+  distance = 2 - 0 = 2
+  2 <= k (1)? No ✗
+  indexMap.set(1, 2) → {1: 2, 2: 1}
+
+Result: false (distance 2 > k=1)
+```
+
+## Visual Representation
+
+```
+Example 1: nums = [1, 2, 1], k = 1
+
+Indices:  0  1  2
+Values:  [1, 2, 1]
+          ↑     ↑
+        Same value, distance = 2
+
+Distance = |2 - 0| = 2
+k = 1
+2 > 1 → false
+
+Example 2: nums = [2, 3, 2], k = 2
+
+Indices:  0  1  2
+Values:  [2, 3, 2]
+          ↑     ↑
+        Same value, distance = 2
+
+Distance = |2 - 0| = 2
+k = 2
+2 <= 2 → true
+
+Example 3: nums = [1, 0, 1, 1], k = 1
+
+Indices:  0  1  2  3
+Values:  [1, 0, 1, 1]
+          ↑     ↑  ↑
+        Same values
+
+Check (2, 3): distance = |3 - 2| = 1
+1 <= 1 → true
+```
+
+## Edge Cases
+
+- **k = 0**: Only adjacent duplicates count
+- **k >= n**: All duplicates within array are valid
+- **No duplicates**: Return false
+- **All same values**: Return true if k >= 1
+- **Single element**: Return false (need two indices)
+- **k = 1**: Only consecutive duplicates count
+
+## Important Notes
+
+- **Unique indices**: i and j must be different
+- **At most k apart**: Distance <= k (inclusive)
+- **Most recent index**: Only need to check closest duplicate
+- **Update always**: Always update index even if distance > k
+- **O(n) time**: Single pass is optimal
+
+## Why Track Most Recent Index
+
+**Key insight**: If we see a value at index `i`, and we've seen it before at index `j`:
+- If `|i - j| > k`, then any earlier occurrence is even farther
+- So we only need to check the most recent occurrence
+- This allows us to update the index and continue
+
+## Related Problems
+
+- **Contains Duplicate**: Check if any duplicates exist
+- **Contains Duplicate III**: Check duplicates within k distance and value difference
+- **Longest Substring Without Repeating Characters**: Different sliding window
+- **Two Sum**: Different problem
+
+## Takeaways
+
+- **Hash map** efficiently tracks last index of each value
+- **Check closest duplicate** only (most recent occurrence)
+- **O(n) time** with single pass
+- **O(min(n,k)) space** for the hash map
+- **Distance check** is simple: `|i - j| <= k`
+

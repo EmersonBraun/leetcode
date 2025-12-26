@@ -1,0 +1,357 @@
+---
+id: knapsack
+title: 0/1 Knapsack Problem
+slug: /problems/knapsack
+difficulty: Medium
+tags: [dynamic-programming, array, optimization]
+---
+
+# 0/1 Knapsack Problem
+
+You've broken into an art gallery and want to maximize the value of the paintings you steal. All the paintings you steal you place in your bag which can hold at most W pounds. Given that the weight and value of the ith painting is given by `weights[i]` and `values[i]` respectively, return the maximum value you can steal.
+
+## Example(s)
+
+**Example 1:**
+```
+Input: W = 10, weights = [4, 1, 3], values = [4, 2, 7]
+Output: 13
+Explanation:
+Option 1: Take painting 0 (weight=4, value=4) and painting 2 (weight=3, value=7)
+  Total: weight=7, value=11
+Option 2: Take painting 1 (weight=1, value=2) and painting 2 (weight=3, value=7)
+  Total: weight=4, value=9
+Option 3: Take painting 0, 1, 2 (weight=8, value=13) ✓
+Maximum value: 13
+```
+
+**Example 2:**
+```
+Input: W = 5, weights = [2, 4, 3], values = [3, 7, 2]
+Output: 7
+Explanation:
+Option 1: Take painting 0 (weight=2, value=3) and painting 2 (weight=3, value=2)
+  Total: weight=5, value=5
+Option 2: Take painting 1 (weight=4, value=7) ✓
+Maximum value: 7
+```
+
+**Example 3:**
+```
+Input: W = 7, weights = [1, 3, 4], values = [3, 5, 6]
+Output: 11
+Explanation:
+Take painting 0 (weight=1, value=3) and painting 2 (weight=4, value=6)
+Total: weight=5, value=9
+Or take painting 1 (weight=3, value=5) and painting 2 (weight=4, value=6)
+Total: weight=7, value=11 ✓
+```
+
+## Solution
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeRunner from '@site/src/components/CodeRunner';
+
+The solution uses **Dynamic Programming**:
+
+1. **DP table**: `dp[i][w]` = maximum value using first i items with capacity w
+2. **For each item**: Decide to take it or skip it
+3. **Take item**: `dp[i][w] = dp[i-1][w-weights[i-1]] + values[i-1]`
+4. **Skip item**: `dp[i][w] = dp[i-1][w]`
+5. **Choose maximum**: Take the better option
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript Solution" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Solution - Dynamic Programming"
+  code={`/**
+ * Solve 0/1 knapsack problem
+ * @param {number} W - Maximum weight capacity
+ * @param {number[]} weights - Array of weights
+ * @param {number[]} values - Array of values
+ * @return {number} - Maximum value
+ */
+function knapsack(W, weights, values) {
+  const n = weights.length;
+  
+  // dp[i][w] = maximum value using first i items with capacity w
+  const dp = Array(n + 1).fill().map(() => Array(W + 1).fill(0));
+  
+  // Fill DP table
+  for (let i = 1; i <= n; i++) {
+    for (let w = 1; w <= W; w++) {
+      // Option 1: Don't take current item
+      dp[i][w] = dp[i - 1][w];
+      
+      // Option 2: Take current item (if it fits)
+      const currentWeight = weights[i - 1];
+      const currentValue = values[i - 1];
+      
+      if (currentWeight <= w) {
+        dp[i][w] = Math.max(
+          dp[i][w], // Don't take
+          dp[i - 1][w - currentWeight] + currentValue // Take
+        );
+      }
+    }
+  }
+  
+  return dp[n][W];
+}
+
+// Test cases
+console.log('Example 1:', knapsack(10, [4, 1, 3], [4, 2, 7])); 
+// 13
+
+console.log('Example 2:', knapsack(5, [2, 4, 3], [3, 7, 2])); 
+// 7
+
+console.log('Example 3:', knapsack(7, [1, 3, 4], [3, 5, 6])); 
+// 11`}
+  testCases={[
+    { input: 'knapsack(10, [4, 1, 3], [4, 2, 7])', expected: '13' },
+    { input: 'knapsack(5, [2, 4, 3], [3, 7, 2])', expected: '7' },
+    { input: 'knapsack(7, [1, 3, 4], [3, 5, 6])', expected: '11' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python" label="Python Solution">
+
+<CodeRunner
+  language="python"
+  title="Python Solution - Dynamic Programming"
+  code={`from typing import List
+
+def knapsack(W: int, weights: List[int], values: List[int]) -> int:
+    """
+    Solve 0/1 knapsack problem
+    
+    Args:
+        W: Maximum weight capacity
+        weights: Array of weights
+        values: Array of values
+        
+    Returns:
+        int: Maximum value
+    """
+    n = len(weights)
+    
+    # dp[i][w] = maximum value using first i items with capacity w
+    dp = [[0] * (W + 1) for _ in range(n + 1)]
+    
+    # Fill DP table
+    for i in range(1, n + 1):
+        for w in range(1, W + 1):
+            # Option 1: Don't take current item
+            dp[i][w] = dp[i - 1][w]
+            
+            # Option 2: Take current item (if it fits)
+            current_weight = weights[i - 1]
+            current_value = values[i - 1]
+            
+            if current_weight <= w:
+                dp[i][w] = max(
+                    dp[i][w],  # Don't take
+                    dp[i - 1][w - current_weight] + current_value  # Take
+                )
+    
+    return dp[n][W]
+
+# Test cases
+print('Example 1:', knapsack(10, [4, 1, 3], [4, 2, 7]))  
+# 13
+
+print('Example 2:', knapsack(5, [2, 4, 3], [3, 7, 2]))  
+# 7
+
+print('Example 3:', knapsack(7, [1, 3, 4], [3, 5, 6]))  
+# 11`}
+  testCases={[
+    { input: 'knapsack(10, [4, 1, 3], [4, 2, 7])', expected: '13' },
+    { input: 'knapsack(5, [2, 4, 3], [3, 7, 2])', expected: '7' },
+    { input: 'knapsack(7, [1, 3, 4], [3, 5, 6])', expected: '11' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+## Alternative Solution (Space-Optimized)
+
+Here's a space-optimized version using only one row:
+
+<Tabs>
+<TabItem value="javascript-optimized" label="JavaScript Optimized" default>
+
+```javascript
+/**
+ * Space-optimized: O(W) space instead of O(n×W)
+ */
+function knapsackOptimized(W, weights, values) {
+  const n = weights.length;
+  const dp = new Array(W + 1).fill(0);
+  
+  for (let i = 0; i < n; i++) {
+    // Process from right to left to avoid overwriting
+    for (let w = W; w >= weights[i]; w--) {
+      dp[w] = Math.max(
+        dp[w], // Don't take
+        dp[w - weights[i]] + values[i] // Take
+      );
+    }
+  }
+  
+  return dp[W];
+}
+```
+
+</TabItem>
+<TabItem value="python-optimized" label="Python Optimized">
+
+```python
+def knapsack_optimized(W: int, weights: List[int], values: List[int]) -> int:
+    """
+    Space-optimized: O(W) space instead of O(n×W)
+    """
+    n = len(weights)
+    dp = [0] * (W + 1)
+    
+    for i in range(n):
+        # Process from right to left to avoid overwriting
+        for w in range(W, weights[i] - 1, -1):
+            dp[w] = max(
+                dp[w],  # Don't take
+                dp[w - weights[i]] + values[i]  # Take
+            )
+    
+    return dp[W]
+```
+
+</TabItem>
+</Tabs>
+
+## Complexity
+
+- **Time Complexity:** O(n × W) - Where n is the number of items and W is the weight capacity. We fill a table of size n × W.
+- **Space Complexity:** 
+  - **Standard DP**: O(n × W) - For the DP table
+  - **Optimized**: O(W) - Using only one row
+
+## Approach
+
+The solution uses **Dynamic Programming**:
+
+1. **DP state**: 
+   - `dp[i][w]` = maximum value using first i items with capacity w
+
+2. **Base case**: 
+   - `dp[0][w] = 0` (no items, no value)
+   - `dp[i][0] = 0` (no capacity, no value)
+
+3. **Recurrence**: 
+   - For each item, decide: take it or skip it
+   - Skip: `dp[i][w] = dp[i-1][w]`
+   - Take: `dp[i][w] = dp[i-1][w-weights[i-1]] + values[i-1]` (if it fits)
+   - Choose maximum
+
+4. **Result**: 
+   - `dp[n][W]` = maximum value using all items with capacity W
+
+## Key Insights
+
+- **Dynamic Programming**: Optimal substructure - optimal solution uses optimal subproblems
+- **0/1 Knapsack**: Each item can be taken at most once
+- **Two choices**: For each item, take it or skip it
+- **O(n×W) time**: Must consider all items and capacities
+- **Space optimization**: Can reduce to O(W) space
+
+## Step-by-Step Example
+
+Let's trace through Example 1: `W = 10`, `weights = [4, 1, 3]`, `values = [4, 2, 7]`
+
+```
+Items:
+  Item 0: weight=4, value=4
+  Item 1: weight=1, value=2
+  Item 2: weight=3, value=7
+
+DP table (dp[i][w]):
+        w:  0  1  2  3  4  5  6  7  8  9 10
+  i=0:     0  0  0  0  0  0  0  0  0  0  0
+  i=1:     0  0  0  0  4  4  4  4  4  4  4  (item 0)
+  i=2:     0  2  2  2  4  6  6  6  6  6  6  (items 0,1)
+  i=3:     0  2  2  7  9  9  9 11 13 13 13  (items 0,1,2)
+
+Result: dp[3][10] = 13
+
+Explanation:
+  dp[3][10] = max(
+    dp[2][10] = 6 (don't take item 2),
+    dp[2][7] + 7 = 6 + 7 = 13 (take item 2)
+  ) = 13
+```
+
+## Visual Representation
+
+```
+Example 1: W = 10, weights = [4, 1, 3], values = [4, 2, 7]
+
+Items:
+  Item 0: weight=4, value=4
+  Item 1: weight=1, value=2
+  Item 2: weight=3, value=7
+
+Optimal solution:
+  Take: Item 0 (4 lbs, $4) + Item 1 (1 lb, $2) + Item 2 (3 lbs, $7)
+  Total: 8 lbs, $13
+
+DP table shows:
+  dp[3][10] = 13 (maximum value)
+```
+
+## Edge Cases
+
+- **W = 0**: Return 0 (no capacity)
+- **No items**: Return 0
+- **All items too heavy**: Return 0
+- **Single item**: Return value if weight ≤ W, else 0
+- **All items fit**: Return sum of all values
+
+## Important Notes
+
+- **0/1 Knapsack**: Each item can be taken at most once
+- **Not fractional**: Cannot take part of an item
+- **Maximize value**: Goal is maximum value, not minimum weight
+- **O(n×W) time**: Pseudo-polynomial (depends on W)
+- **Space optimization**: Can reduce to O(W) space
+
+## Why Dynamic Programming Works
+
+**Optimal Substructure**: 
+- If we know the optimal solution for capacity w using first i-1 items
+- We can extend it by deciding whether to take the ith item
+- This gives us the optimal solution for capacity w using first i items
+
+**Overlapping Subproblems**: 
+- Multiple states may need the same subproblem solutions
+- DP table stores and reuses these solutions
+
+## Related Problems
+
+- **Partition Equal Subset Sum**: Similar DP problem
+- **Coin Change**: Different DP problem
+- **Target Sum**: Different problem
+- **Unbounded Knapsack**: Can take items multiple times
+
+## Takeaways
+
+- **Dynamic Programming** solves 0/1 knapsack efficiently
+- **Two choices** per item: take or skip
+- **O(n×W) time** to fill DP table
+- **Space can be optimized** to O(W)
+- **Classic DP problem** with many applications
+
