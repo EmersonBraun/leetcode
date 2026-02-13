@@ -1,6 +1,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import 'dotenv/config';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -120,34 +121,22 @@ const config: Config = {
           items: [
             {
               label: 'LeetCode Solutions',
-              to: '/docs/getting-started',
+              to: '/docs/',
             },
           ],
         },
         {
-          title: 'Author Social Links',
+          title: 'Connect',
           items: [
-            {
-              label: 'LinkedIn',
-              href: 'https://www.linkedin.com/in/emerson-braun/',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/EmersonfBraun',
-            },
-          ],
-        },
-        {
-          title: 'Tired of failing technical interviews?',
-          items: [
-            {
-              label: 'Get my FREE e-book',
-              href: 'https://emersonbraun.dev/ebook',
-            },
+            { label: 'Website', href: 'https://emersonbraun.dev/' },
+            { label: 'LinkedIn', href: 'https://www.linkedin.com/in/emerson-braun/' },
+            { label: 'X / Twitter', href: 'https://x.com/EmersonfBraun' },
+            { label: 'Instagram', href: 'https://www.instagram.com/emerson.braun.dev/' },
+            { label: 'YouTube', href: 'https://www.youtube.com/@emerson.braun_dev' },
           ],
         },
       ],
-      copyright: `LeetCode Solutions. Created by <a href="https://emersonbraun.dev/" target="_blank">Emerson Braun</a>, last updated on 27/08/2025`,
+      copyright: `LeetCode Solutions. Created by <a href="https://www.linkedin.com/in/emerson-braun/" target="_blank">Emerson Braun</a>`,
     },
     prism: {
       theme: prismThemes.github,

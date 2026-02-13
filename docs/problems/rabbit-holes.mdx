@@ -138,8 +138,8 @@ updateRabbitDistances(grid2);
 console.log('Example 2:', grid2);
 // [[4, 5, 6], [3, -1, -1], [2, 1, 0]]`}
   testCases={[
-    { input: '(grid => { updateRabbitDistances(grid); return JSON.stringify(grid); })([[-1,0,1],[1,1,-1],[1,1,0]])', expected: '[[-1,0,1],[2,1,-1],[2,1,0]]' },
-    { input: '(grid => { updateRabbitDistances(grid); return JSON.stringify(grid); })([[1,1,1],[1,-1,-1],[1,1,0]])', expected: '[[4,5,6],[3,-1,-1],[2,1,0]]' }
+    { input: '(grid => { updateRabbitDistances(grid); return JSON.stringify(grid); })([[-1,0,1],[1,1,-1],[1,1,0]])', expected: '[[-1,0,1],[2,2,-1],[2,2,0]]' },
+    { input: '(grid => { updateRabbitDistances(grid); return JSON.stringify(grid); })([[1,1,1],[1,-1,-1],[1,1,0]])', expected: '[[4,5,6],[3,-1,-1],[2,3,0]]' }
   ]}
 />
 
@@ -211,8 +211,8 @@ update_rabbit_distances(grid2)
 print('Example 2:', grid2)
 # [[4, 5, 6], [3, -1, -1], [2, 1, 0]]`}
   testCases={[
-    { input: '(lambda grid: (update_rabbit_distances(grid), grid)[1])([[-1,0,1],[1,1,-1],[1,1,0]])', expected: '[[-1, 0, 1], [2, 1, -1], [2, 1, 0]]' },
-    { input: '(lambda grid: (update_rabbit_distances(grid), grid)[1])([[1,1,1],[1,-1,-1],[1,1,0]])', expected: '[[4, 5, 6], [3, -1, -1], [2, 1, 0]]' }
+    { input: '(lambda grid: (update_rabbit_distances(grid), grid)[1])([[-1,0,1],[1,1,-1],[1,1,0]])', expected: '[[-1, 0, 1], [2, 2, -1], [2, 2, 0]]' },
+    { input: '(lambda grid: (update_rabbit_distances(grid), grid)[1])([[1,1,1],[1,-1,-1],[1,1,0]])', expected: '[[4, 5, 6], [3, -1, -1], [2, 3, 0]]' }
   ]}
 />
 

@@ -103,28 +103,36 @@ export default function CodeRunner({ language, code, testCases, title }: CodeRun
 
       for (let i = 0; i < testCases.length; i++) {
         const testCase = testCases[i];
+        const expectedEscaped = testCase.expected.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
         try {
-          // Create a test function from the code with proper variable scoping
+          // Run user code then test case; last expression (__passed__) is returned to JS
           const testCode = `
 ${code}
-
-# Test case ${i + 1}
-test_index = ${i + 1}
-test_input = """${testCase.input}"""
-expected_output = """${testCase.expected}"""
-
+import json
+__expected_str__ = """${expectedEscaped}"""
 try:
-    result = ${testCase.input}
-    print(f"Test {{test_index}} result: {{result}}")
-    print(f"Expected: {{expected_output}}")
-    print(f"Passed: {{str(result) == expected_output}}")
+    __expected_val__ = json.loads(__expected_str__)
+except (json.JSONDecodeError, ValueError):
+    if __expected_str__ in ('True', 'False'):
+        __expected_val__ = (__expected_str__ == 'True')
+    else:
+        __expected_val__ = __expected_str__
+try:
+    __result__ = ${testCase.input}
+    __passed__ = __result__ == __expected_val__
 except Exception as e:
-    print(f"Test {{test_index}} error: {{e}}")
+    __passed__ = False
+    __result__ = str(e)
+__passed__
 `;
-          await pyodide.runPythonAsync(testCode);
-          testOutput += `Test ${i + 1}: ✅ EXECUTED\n`;
+          const passed = await pyodide.runPythonAsync(testCode);
+          testOutput += `Test ${i + 1}: ${passed ? '✅ PASSED' : '❌ FAILED'}\n`;
           testOutput += `Input: ${testCase.input}\n`;
           testOutput += `Expected: ${testCase.expected}\n`;
+          if (!passed) {
+            const resultStr = await pyodide.runPythonAsync('str(__result__)');
+            testOutput += `Output: ${resultStr}\n`;
+          }
           testOutput += '-'.repeat(30) + '\n';
         } catch (error) {
           testOutput += `Test ${i + 1}: ❌ ERROR\n`;
@@ -159,22 +167,29 @@ except Exception as e:
         output += '\\nTest Results:\\n';
         output += '='.repeat(40) + '\\n';
         
-        ${testCases.map((testCase, i) => `
+        ${testCases.map((testCase, i) => {
+          const expectedEscaped = JSON.stringify(testCase.expected);
+          const inputForEval = testCase.input.replace(/\\/g, '\\\\').replace(/`/g, '\\`');
+          return `
         try {
           // Test case ${i + 1}
-          const result = eval(\`${testCase.input}\`);
-          const passed = String(result).includes('${testCase.expected}');
+          const result = eval(\`${inputForEval}\`);
+          const expectedStr = ${expectedEscaped};
+          let expectedParsed;
+          try { expectedParsed = JSON.parse(expectedStr); } catch (e) { expectedParsed = expectedStr; }
+          const passed = JSON.stringify(result) === JSON.stringify(expectedParsed);
           output += \`Test ${i + 1}: \${passed ? '✅ PASSED' : '❌ FAILED'}\\n\`;
-          output += \`Input: ${testCase.input}\\n\`;
-          output += \`Expected: ${testCase.expected}\\n\`;
-          output += \`Output: \${result}\\n\`;
+          output += \`Input: ${testCase.input.replace(/\\/g, '\\\\').replace(/`/g, '\\`')}\\n\`;
+          output += \`Expected: ${testCase.expected.replace(/\\/g, '\\\\').replace(/`/g, '\\`')}\\n\`;
+          output += \`Output: \${typeof result === 'object' ? JSON.stringify(result) : result}\\n\`;
           output += '-'.repeat(30) + '\\n';
         } catch (error) {
           output += \`Test ${i + 1}: ❌ ERROR\\n\`;
           output += \`Error: \${error}\\n\`;
           output += '-'.repeat(30) + '\\n';
         }
-        `).join('')}
+        `;
+        }).join('')}
         
         return output;
       `);

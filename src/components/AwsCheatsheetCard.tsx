@@ -1,46 +1,27 @@
-import Link from "@docusaurus/Link";
-import clsx from 'clsx';
+import { type ReactElement } from 'react';
+
 import styles from './AwsCheatsheetCard.module.css';
 
-export default function AwsCheatsheetCard() {
-    return (
-        <div className={styles.container}>
-            <h2 className={styles.title}>
-                ☁️ AWS Cheatsheet
-            </h2>
-            <p className={styles.description}>
-                Seu guia definitivo de preparação para <strong>certificações AWS</strong> com insights estruturados sobre os serviços mais importantes!
-            </p>
-            <div className={styles.listContainer}>
-                <ul className={styles.list}>
-                    <li className={styles.listItem}>
-                        <span className={styles.checkIcon}>✅</span>
-                        Domine os serviços AWS fundamentais
-                    </li>
-                    <li className={styles.listItem}>
-                        <span className={styles.checkIcon}>✅</span>
-                        Prepare-se para certificações AWS
-                    </li>
-                    <li className={styles.listItem}>
-                        <span className={styles.checkIcon}>✅</span>
-                        Aprenda arquiteturas em nuvem
-                    </li>
-                    <li className={styles.listItem}>
-                        <span className={styles.checkIcon}>✅</span>
-                        Referência rápida para desenvolvedores
-                    </li>
-                </ul>
-            </div>
-            <div className={styles.buttonContainer}>
-                <Link
-                    className={clsx("button button--lg", styles.button)}
-                    to="https://emersonbraun.github.io/aws-cheatsheet/">
-                    Acesse o AWS Cheatsheet 🚀
-                </Link>
-            </div>
-            <p className={styles.footer}>
-                Gratuito • Sempre atualizado • Feito para desenvolvedores
-            </p>
-        </div>
-    );
+export default function AwsCheatsheetCard(): ReactElement {
+  return (
+    <div className={styles.wrapper}>
+      <h3 className={styles.title}>
+        ☁️ Ready to master AWS?
+      </h3>
+      <p className={styles.description}>
+        Get my <strong>FREE AWS Cheatsheet</strong> — your definitive preparation guide for AWS certifications
+        with structured insights on the most important services!
+      </p>
+      <a
+        href="https://emersonbraun.github.io/aws-cheatsheet/"
+        className={styles.cta}
+        target="_blank"
+        rel="noopener noreferrer">
+        Open AWS Cheatsheet 🚀
+      </a>
+      <p className={styles.footer}>
+        Free • Always up to date • Made for developers
+      </p>
+    </div>
+  );
 }

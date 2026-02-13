@@ -157,8 +157,8 @@ const result2 = insertIntoBST(root2, 5);
 console.log('Example 2 - Root value:', result2.val); // 4
 console.log('Example 2 - Right left value:', result2.right.left.val); // 5`}
   testCases={[
-    { input: 'insertIntoBST(new TreeNode(2, new TreeNode(1), new TreeNode(3)), 4).right.right.val', expected: '4' },
-    { input: 'insertIntoBST(new TreeNode(4, new TreeNode(2, new TreeNode(1), new TreeNode(3)), new TreeNode(7)), 5).right.left.val', expected: '5' }
+    { input: '(() => { const r = new TreeNode(2); r.left = new TreeNode(1); r.right = new TreeNode(3); return insertIntoBST(r, 4).right.right.val; })()', expected: '4' },
+    { input: '(() => { const r = new TreeNode(4); r.left = new TreeNode(2); r.right = new TreeNode(7); r.left.left = new TreeNode(1); r.left.right = new TreeNode(3); return insertIntoBST(r, 5).right.left.val; })()', expected: '5' }
   ]}
 />
 

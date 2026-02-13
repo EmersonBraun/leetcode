@@ -473,7 +473,7 @@ Validation:
 
 ## Important Notes
 
-- **Strict inequality**: Left < node < right (not <= or >=)
+- **Strict inequality**: Left `&lt;` node `&lt;` right (not `<=` or `>=`)
 - **Bounds propagation**: Bounds are inherited from ancestors
 - **Ancestor constraint**: All descendants must satisfy all ancestor bounds
 - **O(n) time**: Must visit all nodes
@@ -493,7 +493,7 @@ Validation:
 - Tree: 10 → 15 → 6
 - Node 6 is in right subtree of 10, so must be > 10
 - But 6 < 10, so invalid
-- Bounds checking catches this: node 6 has bounds (10, 15), but 6 <= 10
+- Bounds checking catches this: node 6 has bounds (10, 15), but 6 `<=` 10
 
 ## Related Problems
 

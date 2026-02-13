@@ -245,14 +245,11 @@ import CodeRunner from '@site/src/components/CodeRunner';
 <CodeRunner
   language="javascript"
   title="JavaScript Brute Force Solution"
-  code={`/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
+  code={`function TreeNode(val, left, right) {
+  this.val = (val===undefined ? 0 : val);
+  this.left = (left===undefined ? null : left);
+  this.right = (right===undefined ? null : right);
+}
 
 /**
  * Rearrange BST to increasing order using node list
@@ -424,14 +421,11 @@ print(f"Tree: [5,None,6] → {' -> '.join(map(str, tree_to_array(result3)))}")`}
 <CodeRunner
   language="javascript"
   title="JavaScript Optimized Solution"
-  code={`/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
+  code={`function TreeNode(val, left, right) {
+  this.val = (val===undefined ? 0 : val);
+  this.left = (left===undefined ? null : left);
+  this.right = (right===undefined ? null : right);
+}
 
 /**
  * Rearrange BST to increasing order using recursion

@@ -339,7 +339,7 @@ def find_kth_largest_quickselect(nums: List[int], k: int) -> int:
 ## Key Insights
 
 - **Sorting is simple**: Easy to implement, O(n log n)
-- **Min heap is efficient**: O(n log k), better when k << n
+- **Min heap is efficient**: O(n log k), better when k `<<` n
 - **Quickselect is optimal**: O(n) average case
 - **Kth largest = (n-k)th smallest**: Useful for quickselect
 - **Heap size k**: Only need to track k largest elements
@@ -407,7 +407,7 @@ Sorted (descending): [9, 7, 3, 2, 2, 1]
 | Approach | Time | Space | Best For |
 |----------|------|-------|----------|
 | Sorting | O(n log n) | O(1) | Simple, small arrays |
-| Min Heap | O(n log k) | O(k) | When k << n |
+| Min Heap | O(n log k) | O(k) | When k `<<` n |
 | Quickselect | O(n) avg | O(1) | When k ≈ n/2 |
 
 ## Related Problems

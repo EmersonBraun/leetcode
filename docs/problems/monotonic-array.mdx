@@ -289,7 +289,7 @@ The solution uses **two flags**:
 
 - **Two flags**: Track both increasing and decreasing possibilities
 - **Single pass**: Check all pairs in one pass
-- **Equal elements**: Don't affect monotonicity (1 <= 1 is true)
+- **Equal elements**: Don't affect monotonicity (1 `<=` 1 is true)
 - **Early termination**: Can optimize to return false early if both flags become false
 - **O(n) time**: Must check all pairs
 
@@ -365,7 +365,7 @@ Result: false (neither)
 
 ## Important Notes
 
-- **Non-strict**: Allows equal elements (1 <= 1 is true)
+- **Non-strict**: Allows equal elements (1 `<=` 1 is true)
 - **Either direction**: Can be increasing OR decreasing
 - **Single pass**: Efficient O(n) solution
 - **Two flags**: Track both possibilities simultaneously

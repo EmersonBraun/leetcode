@@ -105,8 +105,8 @@ function topKFrequent(words, k) {
       return freqB - freqA;
     }
     
-    // If frequencies are equal, sort alphabetically (ascending)
-    return a.localeCompare(b);
+    // If frequencies are equal, sort alphabetically (ascending); use 'en' for stable test output
+    return a.localeCompare(b, 'en');
   });
   
   // Step 3: Return top k words
@@ -411,7 +411,7 @@ def top_k_frequent_bucket(words: List[str], k: int) -> List[str]:
 
 - **Time Complexity:** 
   - **Hash Map + Sort**: O(n log n) - Where n is the number of unique words. Counting is O(m) where m is total words, sorting is O(n log n).
-  - **Heap-based**: O(n log k) - Where n is unique words, k is the result size. More efficient when k << n.
+  - **Heap-based**: O(n log k) - Where n is unique words, k is the result size. More efficient when k `<<` n.
   - **Bucket Sort**: O(n + m) - Where n is unique words, m is max frequency. Linear time if frequencies are bounded.
 - **Space Complexity:** O(n) - For storing frequencies and unique words.
 
@@ -487,7 +487,7 @@ Step 4: Return top k = 2
 | Approach | Time | Space | Best For |
 |----------|------|-------|----------|
 | Hash Map + Sort | O(n log n) | O(n) | General purpose, simple |
-| Heap-based | O(n log k) | O(k) | When k << n |
+| Heap-based | O(n log k) | O(k) | When k `<<` n |
 | Bucket Sort | O(n + m) | O(n) | When frequencies are bounded |
 
 ## Related Problems

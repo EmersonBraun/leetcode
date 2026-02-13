@@ -229,6 +229,91 @@ def contains_nearby_duplicate_set(nums: List[int], k: int) -> bool:
 </TabItem>
 </Tabs>
 
+### Test the Alternative Solution (Sliding Window with Set)
+
+<Tabs>
+<TabItem value="javascript-set-run" label="JavaScript" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Alternative - Sliding Window with Set"
+  code={`/**
+ * Sliding window with set approach
+ */
+function containsNearbyDuplicateSet(nums, k) {
+  const window = new Set();
+  
+  for (let i = 0; i < nums.length; i++) {
+    // Remove element that's too far away (outside k distance)
+    if (i > k) {
+      window.delete(nums[i - k - 1]);
+    }
+    
+    // If current element is in window, we found a duplicate within k
+    if (window.has(nums[i])) {
+      return true;
+    }
+    
+    // Add current element to window
+    window.add(nums[i]);
+  }
+  
+  return false;
+}
+
+// Test cases
+console.log('Example 1:', containsNearbyDuplicateSet([1, 2, 1], 1)); // false
+console.log('Example 2:', containsNearbyDuplicateSet([2, 3, 2], 2)); // true
+console.log('Example 3:', containsNearbyDuplicateSet([1, 0, 1, 1], 1)); // true`}
+  testCases={[
+    { input: 'containsNearbyDuplicateSet([1, 2, 1], 1)', expected: 'false' },
+    { input: 'containsNearbyDuplicateSet([2, 3, 2], 2)', expected: 'true' },
+    { input: 'containsNearbyDuplicateSet([1, 0, 1, 1], 1)', expected: 'true' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python-set-run" label="Python">
+
+<CodeRunner
+  language="python"
+  title="Python Alternative - Sliding Window with Set"
+  code={`from typing import List
+
+def contains_nearby_duplicate_set(nums: List[int], k: int) -> bool:
+    """
+    Sliding window with set approach
+    """
+    window = set()
+    
+    for i, num in enumerate(nums):
+        # Remove element that's too far away (outside k distance)
+        if i > k:
+            window.discard(nums[i - k - 1])
+        
+        # If current element is in window, we found a duplicate within k
+        if num in window:
+            return True
+        
+        # Add current element to window
+        window.add(num)
+    
+    return False
+
+# Test cases
+print('Example 1:', contains_nearby_duplicate_set([1, 2, 1], 1))  # False
+print('Example 2:', contains_nearby_duplicate_set([2, 3, 2], 2))  # True
+print('Example 3:', contains_nearby_duplicate_set([1, 0, 1, 1], 1))  # True`}
+  testCases={[
+    { input: 'contains_nearby_duplicate_set([1, 2, 1], 1)', expected: 'False' },
+    { input: 'contains_nearby_duplicate_set([2, 3, 2], 2)', expected: 'True' },
+    { input: 'contains_nearby_duplicate_set([1, 0, 1, 1], 1)', expected: 'True' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
 ## Complexity
 
 - **Time Complexity:** O(n) - Where n is the length of the array. We visit each element once.
@@ -331,7 +416,7 @@ Check (2, 3): distance = |3 - 2| = 1
 ## Important Notes
 
 - **Unique indices**: i and j must be different
-- **At most k apart**: Distance <= k (inclusive)
+- **At most k apart**: Distance `<=` k (inclusive)
 - **Most recent index**: Only need to check closest duplicate
 - **Update always**: Always update index even if distance > k
 - **O(n) time**: Single pass is optimal

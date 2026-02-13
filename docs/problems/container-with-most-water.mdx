@@ -230,6 +230,87 @@ def max_area_brute_force(heights: List[int]) -> int:
 </TabItem>
 </Tabs>
 
+### Test the Brute Force Solution
+
+<Tabs>
+<TabItem value="javascript-brute-run" label="JavaScript" default>
+
+<CodeRunner
+  language="javascript"
+  title="JavaScript Brute Force Solution"
+  code={`/**
+ * Brute force solution - O(n²) time
+ * Check all possible pairs
+ */
+function maxAreaBruteForce(heights) {
+  let maxWater = 0;
+  const n = heights.length;
+  
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const width = j - i;
+      const height = Math.min(heights[i], heights[j]);
+      const area = width * height;
+      maxWater = Math.max(maxWater, area);
+    }
+  }
+  
+  return maxWater;
+}
+
+// Test cases
+console.log('Example 1:', maxAreaBruteForce([1, 4, 4, 8, 2])); // 8
+console.log('Example 2:', maxAreaBruteForce([1, 8, 6, 2, 5, 4, 8, 3, 7])); // 49
+console.log('Example 3:', maxAreaBruteForce([1, 1])); // 1
+console.log('Example 4:', maxAreaBruteForce([2, 3, 4, 5, 18, 17, 6])); // 17`}
+  testCases={[
+    { input: 'maxAreaBruteForce([1, 4, 4, 8, 2])', expected: '8' },
+    { input: 'maxAreaBruteForce([1, 8, 6, 2, 5, 4, 8, 3, 7])', expected: '49' },
+    { input: 'maxAreaBruteForce([1, 1])', expected: '1' },
+    { input: 'maxAreaBruteForce([2, 3, 4, 5, 18, 17, 6])', expected: '17' }
+  ]}
+/>
+
+</TabItem>
+<TabItem value="python-brute-run" label="Python">
+
+<CodeRunner
+  language="python"
+  title="Python Brute Force Solution"
+  code={`from typing import List
+
+def max_area_brute_force(heights: List[int]) -> int:
+    """
+    Brute force solution - O(n²) time
+    """
+    max_water = 0
+    n = len(heights)
+    
+    for i in range(n):
+        for j in range(i + 1, n):
+            width = j - i
+            height = min(heights[i], heights[j])
+            area = width * height
+            max_water = max(max_water, area)
+    
+    return max_water
+
+# Test cases
+print('Example 1:', max_area_brute_force([1, 4, 4, 8, 2]))  # 8
+print('Example 2:', max_area_brute_force([1, 8, 6, 2, 5, 4, 8, 3, 7]))  # 49
+print('Example 3:', max_area_brute_force([1, 1]))  # 1
+print('Example 4:', max_area_brute_force([2, 3, 4, 5, 18, 17, 6]))  # 17`}
+  testCases={[
+    { input: 'max_area_brute_force([1, 4, 4, 8, 2])', expected: '8' },
+    { input: 'max_area_brute_force([1, 8, 6, 2, 5, 4, 8, 3, 7])', expected: '49' },
+    { input: 'max_area_brute_force([1, 1])', expected: '1' },
+    { input: 'max_area_brute_force([2, 3, 4, 5, 18, 17, 6])', expected: '17' }
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
 ## Complexity
 
 - **Time Complexity:** O(n) - Where n is the length of the heights array. We traverse the array once with two pointers.

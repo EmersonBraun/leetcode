@@ -154,10 +154,10 @@ console.log(m.next(5)); // returns 4.0
 console.log(m.next(7)); // returns 5.0
 console.log(m.next(6)); // returns 6.0`}
   testCases={[
-    { input: 'm.next(3)', expected: '3' },
-    { input: 'm.next(5)', expected: '4' },
-    { input: 'm.next(7)', expected: '5' },
-    { input: 'm.next(6)', expected: '6' }
+    { input: '(function(){ const m = new MovingAverage(3); return m.next(3); })()', expected: '3' },
+    { input: '(function(){ const m = new MovingAverage(3); m.next(3); return m.next(5); })()', expected: '4' },
+    { input: '(function(){ const m = new MovingAverage(3); m.next(3); m.next(5); return m.next(7); })()', expected: '5' },
+    { input: '(function(){ const m = new MovingAverage(3); m.next(3); m.next(5); m.next(7); return m.next(6); })()', expected: '6' }
   ]}
 />
 

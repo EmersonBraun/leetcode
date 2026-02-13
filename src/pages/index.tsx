@@ -4,7 +4,7 @@ import Layout from '@theme/Layout';
 import clsx from 'clsx';
 import { type ReactElement } from 'react';
 
-import Ebook from '../components/ebook';
+import { EbookCta } from '../components/EbookCta';
 import AwsCheatsheetCard from '../components/AwsCheatsheetCard';
 import styles from './index.module.css';
 
@@ -20,7 +20,7 @@ function HomepageHeader() {
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/problems">
+            to="/docs/">
             Start Solving 🚀
           </Link>
         </div>
@@ -54,7 +54,7 @@ export default function Home(): ReactElement {
                     <div className={styles.buttons}>
                       <Link
                         className="button button--primary button--lg"
-                        to="/docs/problems">
+                        to="/docs/">
                         Explore Problems ✨
                       </Link>
                     </div>
@@ -81,13 +81,13 @@ export default function Home(): ReactElement {
                   <div className={styles.buttons} style={{ marginBottom: '4rem' }}>
                     <Link
                       className="button button--secondary button--lg"
-                      to="/docs/problems/contributing">
+                      href="https://github.com/EmersonBraun/leetcode">
                       Contribute to the Project 🤝
                     </Link>
                   </div>
 
                   {/* E-book Promotional Section */}
-                  <Ebook />
+                  <EbookCta />
 
                   <AwsCheatsheetCard />
                 </div>

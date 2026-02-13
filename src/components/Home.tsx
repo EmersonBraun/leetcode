@@ -5,25 +5,31 @@ import sidebars from '../../sidebars';
 import styles from '../pages/index.module.css';
 import { formatName } from '../utils/formatName';
 
+// Normalize sidebar: support either nested categories or a flat list of doc ids
+const rawItems = sidebars.tutorialSidebar[1]?.items ?? [];
+const leetCodeCategoriesNormalized = Array.isArray(rawItems) && typeof rawItems[0] === 'string'
+    ? [{ type: 'category', label: 'LeetCode Problems', items: rawItems as string[] }]
+    : (rawItems as Array<{ type: string; label: string; items: string[] }>);
+
 export default function Home() {
     const [searchTerm, setSearchTerm] = useState('');
-    const leetCodeCategories = sidebars.tutorialSidebar[1].items;
+    const leetCodeCategories = leetCodeCategoriesNormalized;
 
     const filteredCategories = useMemo(() => {
         if (!searchTerm.trim()) return leetCodeCategories;
-        
+
         return leetCodeCategories.map(category => {
             if (category.type === 'category') {
                 const filteredItems = category.items.filter(item => {
                     if (typeof item === 'string') {
                         const problemName = formatName(item).toLowerCase();
                         const categoryName = category.label.toLowerCase();
-                        return problemName.includes(searchTerm.toLowerCase()) || 
+                        return problemName.includes(searchTerm.toLowerCase()) ||
                                categoryName.includes(searchTerm.toLowerCase());
                     }
                     return false;
                 });
-                
+
                 if (filteredItems.length > 0) {
                     return {
                         ...category,
@@ -67,10 +73,10 @@ export default function Home() {
                 {searchTerm && (
                     <div className={styles.searchInfo}>
                         {filteredCategories.length > 0 ? (
-                            <span>Encontrados {filteredCategories.reduce((total, cat) => 
-                                total + (cat?.items?.length || 0), 0)} problemas</span>
+                            <span>{filteredCategories.reduce((total, cat) =>
+                                total + (cat?.items?.length || 0), 0)} problems found</span>
                         ) : (
-                            <span>Nenhum problema encontrado</span>
+                            <span>No problems found</span>
                         )}
                     </div>
                 )}

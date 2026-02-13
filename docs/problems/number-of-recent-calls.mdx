@@ -110,11 +110,11 @@ console.log(counter.ping(3000)); // 3
 console.log(counter.ping(3002)); // 3
 console.log(counter.ping(7000)); // 1`}
   testCases={[
-    { input: 'counter.ping(1)', expected: '1' },
-    { input: 'counter.ping(300)', expected: '2' },
-    { input: 'counter.ping(3000)', expected: '3' },
-    { input: 'counter.ping(3002)', expected: '3' },
-    { input: 'counter.ping(7000)', expected: '1' }
+    { input: '(function(){ const c = new CallCounter(); return c.ping(1); })()', expected: '1' },
+    { input: '(function(){ const c = new CallCounter(); c.ping(1); return c.ping(300); })()', expected: '2' },
+    { input: '(function(){ const c = new CallCounter(); c.ping(1); c.ping(300); return c.ping(3000); })()', expected: '3' },
+    { input: '(function(){ const c = new CallCounter(); c.ping(1); c.ping(300); c.ping(3000); return c.ping(3002); })()', expected: '3' },
+    { input: '(function(){ const c = new CallCounter(); c.ping(1); c.ping(300); c.ping(3000); c.ping(3002); return c.ping(7000); })()', expected: '1' }
   ]}
 />
 

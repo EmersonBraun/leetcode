@@ -343,7 +343,7 @@ def k_closest_quickselect(points: List[List[int]], k: int) -> List[List[int]]:
 
 - **Time Complexity:** 
   - **Sorting**: O(n log n) - Where n is the number of points
-  - **Max Heap**: O(n log k) - Better when k << n
+  - **Max Heap**: O(n log k) - Better when k `<<` n
   - **Quickselect**: O(n) average, O(n²) worst case
 - **Space Complexity:** 
   - **Sorting**: O(1) or O(n) depending on sorting algorithm
@@ -445,7 +445,7 @@ Result: [[1,1]]
 | Approach | Time | Space | Best For |
 |----------|------|-------|----------|
 | Sorting | O(n log n) | O(1) | General purpose, simple |
-| Max Heap | O(n log k) | O(k) | When k << n |
+| Max Heap | O(n log k) | O(k) | When k `<<` n |
 | Quickselect | O(n) avg | O(1) | When k is close to n/2 |
 
 ## Related Problems

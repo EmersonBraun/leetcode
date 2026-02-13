@@ -158,9 +158,9 @@ console.log('Example 3:', removeInvalidParentheses("()())()"));
 console.log('Example 4:', removeInvalidParentheses("(a)())()")); 
 // ["(a)()()", "(a())()"]`}
   testCases={[
-    { input: 'removeInvalidParentheses("(()()()").sort().join(",")', expected: '()()(),(()()),((())' },
+    { input: 'removeInvalidParentheses("(()()()").sort().join(",")', expected: '(()()),(())(),()()()' },
     { input: 'removeInvalidParentheses("()()()").join(",")', expected: '()()()' },
-    { input: 'removeInvalidParentheses("()())()").sort().join(",")', expected: '()()(),((())' }
+    { input: 'removeInvalidParentheses("()())()").sort().join(",")', expected: '(())(),()()()' }
   ]}
 />
 
