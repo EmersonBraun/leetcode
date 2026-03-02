@@ -192,9 +192,14 @@ tree3.right = new TreeNode(100);
 
 // Test cases
 console.log(minDiffInBST(tree1)); // 1
-console.log(minDiffInBST(tree2)); // 1
-console.log(minDiffInBST(null)); // Infinity
+console.log(minDiffInBST(tree2)); // 8
+console.log(minDiffInBST(tree3)); // 98
 `}
+  testCases={[
+    { input: 'minDiffInBST(tree1)', expected: '1' },
+    { input: 'minDiffInBST(tree2)', expected: '8' },
+    { input: 'minDiffInBST(tree3)', expected: '98' }
+  ]}
 />
 
 </TabItem>
@@ -257,8 +262,8 @@ tree3.right = TreeNode(100)
 
 # Test cases
 print(min_diff_in_bst(tree1))  # 1
-print(min_diff_in_bst(tree2))  # 1
-print(min_diff_in_bst(None))  # float('inf')
+print(min_diff_in_bst(tree2))  # 8
+print(min_diff_in_bst(tree3))  # 98
 `}
 />
 

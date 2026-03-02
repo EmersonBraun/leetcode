@@ -236,6 +236,11 @@ tree2.right.right = new TreeNode(20);
 console.log(verticalOrder(tree1)); // [[2],[8,3],[29],[9]]
 console.log(verticalOrder(tree2)); // [[32],[53],[100,3,9],[78],[20]]
 console.log(verticalOrder(null)); // []`}
+  testCases={[
+    { input: 'JSON.stringify(verticalOrder(tree1))', expected: '[[2],[8,3],[29],[9]]' },
+    { input: 'JSON.stringify(verticalOrder(tree2))', expected: '[[32],[53],[100,3,9],[78],[20]]' },
+    { input: 'JSON.stringify(verticalOrder(null))', expected: '[]' }
+  ]}
 />
 
 </TabItem>

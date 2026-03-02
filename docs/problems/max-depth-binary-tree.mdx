@@ -46,15 +46,11 @@ import TabItem from '@theme/TabItem';
 <CodeRunner
   language="javascript"
   title="JavaScript Maximum Depth Solution"
-  code={`
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
+  code={`function TreeNode(val, left, right) {
+  this.val = (val===undefined ? 0 : val);
+  this.left = (left===undefined ? null : left);
+  this.right = (right===undefined ? null : right);
+}
 
 /**
  * Find the maximum depth of a binary tree
@@ -63,10 +59,10 @@ import TabItem from '@theme/TabItem';
  */
 function maxDepth(root) {
   if (!root) return 0;
-  
+
   const leftDepth = maxDepth(root.left);
   const rightDepth = maxDepth(root.right);
-  
+
   return Math.max(leftDepth, rightDepth) + 1;
 }
 
@@ -87,6 +83,11 @@ console.log(maxDepth(tree1)); // 2
 console.log(maxDepth(tree2)); // 3
 console.log(maxDepth(null)); // 0
 `}
+  testCases={[
+    { input: 'maxDepth(tree1)', expected: '2' },
+    { input: 'maxDepth(tree2)', expected: '3' },
+    { input: 'maxDepth(null)', expected: '0' }
+  ]}
 />
 
 </TabItem>

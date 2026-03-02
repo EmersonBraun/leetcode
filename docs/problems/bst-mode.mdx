@@ -46,15 +46,11 @@ import TabItem from '@theme/TabItem';
 <CodeRunner
   language="javascript"
   title="JavaScript BST Mode Solution"
-  code={`
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
+  code={`function TreeNode(val, left, right) {
+  this.val = (val===undefined ? 0 : val);
+  this.left = (left===undefined ? null : left);
+  this.right = (right===undefined ? null : right);
+}
 
 /**
  * Find the mode in a BST
@@ -63,32 +59,32 @@ import TabItem from '@theme/TabItem';
  */
 function findMode(root) {
   if (!root) return -1;
-  
+
   let currVal = null;
   let currCount = 0;
   let maxCount = 0;
   let mode = null;
-  
+
   function inorder(node) {
     if (!node) return;
-    
+
     inorder(node.left);
-    
+
     if (node.val === currVal) {
       currCount++;
     } else {
       currVal = node.val;
       currCount = 1;
     }
-    
+
     if (currCount > maxCount) {
       maxCount = currCount;
       mode = node.val;
     }
-    
+
     inorder(node.right);
   }
-  
+
   inorder(root);
   return mode;
 }
@@ -113,6 +109,11 @@ console.log(findMode(tree1)); // 2
 console.log(findMode(tree2)); // 9
 console.log(findMode(null)); // -1
 `}
+  testCases={[
+    { input: 'findMode(tree1)', expected: '2' },
+    { input: 'findMode(tree2)', expected: '9' },
+    { input: 'findMode(null)', expected: '-1' }
+  ]}
 />
 
 </TabItem>

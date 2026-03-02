@@ -44,15 +44,19 @@ import TabItem from '@theme/TabItem';
 <CodeRunner
   language="javascript"
   title="JavaScript Bottom-Up Level Order Traversal Solution"
-  code={`
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
+  code={`function TreeNode(val, left, right) {
+  this.val = (val===undefined ? 0 : val);
+  this.left = (left===undefined ? null : left);
+  this.right = (right===undefined ? null : right);
+}
+
+function createTree(arr, index = 0) {
+  if (index >= arr.length || arr[index] === null) return null;
+  const root = new TreeNode(arr[index]);
+  root.left = createTree(arr, 2 * index + 1);
+  root.right = createTree(arr, 2 * index + 2);
+  return root;
+}
 
 /**
  * Perform bottom-up level order traversal of a binary tree
@@ -61,44 +65,37 @@ import TabItem from '@theme/TabItem';
  */
 function levelOrderBottom(root) {
   if (!root) return [];
-  
+
   const result = [];
   const queue = [root];
-  
+
   while (queue.length) {
     const levelSize = queue.length;
     const currentLevel = [];
-    
+
     for (let i = 0; i < levelSize; i++) {
       const node = queue.shift();
       currentLevel.push(node.val);
       if (node.left) queue.push(node.left);
       if (node.right) queue.push(node.right);
     }
-    
+
     result.unshift(currentLevel);
   }
-  
+
   return result;
 }
 
-// Test case 1: [2,1,2]
-const tree1 = new TreeNode(2);
-tree1.left = new TreeNode(1);
-tree1.right = new TreeNode(2);
-
-// Test case 2: [7,6,2,3,3]
-const tree2 = new TreeNode(7);
-tree2.left = new TreeNode(6);
-tree2.right = new TreeNode(2);
-tree2.left.left = new TreeNode(3);
-tree2.left.right = new TreeNode(3);
-
 // Test cases
-console.log(levelOrderBottom(tree1)); // [[1,2],[2]]
-console.log(levelOrderBottom(tree2)); // [[3,3],[6,2],[7]]
+console.log(levelOrderBottom(createTree([2,1,2]))); // [[1,2],[2]]
+console.log(levelOrderBottom(createTree([7,6,2,3,3]))); // [[3,3],[6,2],[7]]
 console.log(levelOrderBottom(null)); // []
 `}
+  testCases={[
+    { input: 'JSON.stringify(levelOrderBottom(createTree([2,1,2])))', expected: '[[1,2],[2]]' },
+    { input: 'JSON.stringify(levelOrderBottom(createTree([7,6,2,3,3])))', expected: '[[3,3],[6,2],[7]]' },
+    { input: 'JSON.stringify(levelOrderBottom(null))', expected: '[]' }
+  ]}
 />
 
 </TabItem>
