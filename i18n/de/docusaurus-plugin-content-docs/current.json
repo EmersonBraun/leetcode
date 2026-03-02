@@ -1,0 +1,14 @@
+{
+  "version.label": {
+    "message": "Weiter",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.Home": {
+    "message": "Startseite",
+    "description": "The label for category Home in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.LeetCode Problems": {
+    "message": "LeetCode Aufgaben",
+    "description": "The label for category LeetCode Problems in sidebar tutorialSidebar"
+  }
+}
