@@ -59,8 +59,8 @@ console.log('Example 1:', canCross([0, 1, 10]));
 console.log('Example 2:', canCross([0, 1, 2, 4])); 
 // true
 
-console.log('Example 3:', canCross([0, 1, 3, 5, 6, 8, 12, 17])); 
-// false`;
+console.log('Example 3:', canCross([0, 1, 3, 5, 6, 8, 12, 17]));
+// true`;
     const testCases = [
   {
     "input": "canCross([0, 1, 10])",
